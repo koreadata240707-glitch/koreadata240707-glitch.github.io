@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>한국데이터 매출 대시보드</title>
+</head>
+<body style="margin:0;font-family:-apple-system,'Malgun Gothic',sans-serif;background:#f5f7fb">
+<p id="m" style="text-align:center;margin-top:40vh;color:#64748b">불러오는 중…</p>
+<script>
+// 화면은 구글(사무실 PC가 올려둔 최신본)에서 받아와서 보여줍니다. 이 파일은 고칠 필요가 없어요.
+var API = 'https://script.google.com/macros/s/AKfycbzs41F3lBV5XdPUTQq8UVgp_NmWE5bmoWWDoGPaQ6zIo2Mr6w6vYcKU_LdUMz7UG2WAbw/exec';
+fetch(API, { method: 'POST', body: JSON.stringify({ fn: 'getHtml' }) })
+  .then(function (r) { return r.json(); })
+  .then(function (j) { document.open(); document.write(j.result.html); document.close(); })
+  .catch(function () { document.getElementById('m').textContent = '사이트를 불러오지 못했어요. 잠시 후 새로고침해 주세요.'; });
+</script>
+</body>
+</html>
