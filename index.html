@@ -11,7 +11,11 @@
 // 화면은 구글(사무실 PC가 올려둔 최신본)에서 받아와서 보여줍니다. 이 파일은 고칠 필요가 없어요.
 // 한 번 받은 화면은 이 브라우저에 저장해 두고 다음부터 바로 보여줍니다 (최신본은 화면이 알아서 다시 받아 둠).
 var API = 'https://script.google.com/macros/s/AKfycbzs41F3lBV5XdPUTQq8UVgp_NmWE5bmoWWDoGPaQ6zIo2Mr6w6vYcKU_LdUMz7UG2WAbw/exec';
-function render(html) { document.open(); document.write(html); document.close(); }
+function render(html) {
+  // 페이지 읽기가 끝난 뒤에 화면을 바꿔야 '불러오는 중' 글자가 남지 않음
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', function () { render(html); }); return; }
+  document.open(); document.write(html); document.close();
+}
 function load(n) {
   fetch(API, { method: 'POST', body: JSON.stringify({ fn: 'getHtml' }) })
     .then(function (r) { return r.json(); })
