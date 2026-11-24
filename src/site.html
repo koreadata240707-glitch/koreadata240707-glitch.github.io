@@ -519,7 +519,7 @@ function topList(n){
 
 /* 매출 */
 function renderSales(m,head){
-  m.innerHTML=head+`<p class="muted" style="margin-top:-4px"><b>매출계 · 순판매수량 = 쿠팡 Wing 판매분석과 같은 숫자</b>(취소·반품을 뺀 값, 오늘은 10분마다) · 주문금액 = 취소 전 금액 · 쿠팡 입금액 = 수수료를 뺀 돈<br>취소 = 출고 전 취소 · 반품 = 배송 후 돌아온 것 · 확인 중 = 물류비 리포트(약 1주 늦게 들어옴)가 오면 취소/반품으로 나뉨 · 오늘 줄의 개수는 다음 날 아침 정산 엑셀로 확정</p><div class="card"><h3><span>매출 내역</span><span class="seg" id="segS"><button data-v="daily" class="on">일별</button><button data-v="monthly">월별</button></span></h3>
+  m.innerHTML=head+`<p class="muted" style="margin-top:-4px"><b>매출계 · 순판매수량 = 쿠팡 Wing 판매분석과 같은 숫자</b>(취소·반품을 뺀 값, 오늘은 10분마다) · 주문금액 = 취소 전 금액 · 쿠팡 입금액 = 수수료를 뺀 돈<br>취소 = 출고 전 취소 · 반품 = 배송 후 돌아온 것 · 확인 중 = 물류비 리포트(약 1주 늦게 들어옴)가 오면 취소/반품으로 나뉨 · <span class="pill warn">예상</span> 오늘 줄의 주문건수·판매수량·취소·반품은 Wing 순판매수량과 최근 60일 취소·반품 비율로 계산한 예상치(회색), 다음 날 아침 정산 엑셀로 실제 숫자로 바뀜</p><div class="card"><h3><span>매출 내역</span><span class="seg" id="segS"><button data-v="daily" class="on">일별</button><button data-v="monthly">월별</button></span></h3>
   <div class="tbl-wrap" id="salesTbl"></div></div><div id="mcard"></div><div id="lcard"></div>`;
   drawMethod();drawLogi();
   const draw=v=>{const rows=(DATA[v]||[]).map(r=>Object.assign({},r,{'매출계':r['순매출']}));const key=v==='daily'?'날짜':'월';
@@ -537,7 +537,7 @@ function renderSales(m,head){
     const LIVE=new Set(['주문건수','판매수량','취소수량','반품수량','확인중수량']);
     document.getElementById('salesTbl').innerHTML=table(cols,rows,c=>c===key?'l':'',(c,val,r)=>{
       if(c===key)return esc(val)+(r['집계상태']?` <span class="pill warn">${esc(r['집계상태'])}</span>`:'');
-      if(r['집계상태']&&LIVE.has(c))return '<span class="muted">집계 중</span>';
+      if(r['집계상태']&&LIVE.has(c))return `<span class="muted" title="예상치 · 다음 날 아침 정산 엑셀로 실제 숫자로 바뀜">${val===''?'-':won(val)}</span>`;
       if(c==='취소반품구분')return val?`<span class="pill ${val==='실제'?'ok':'warn'}">${esc(val)}</span>`:'-';
       if(c==='매출계'||c==='순판매수량')return `<b>${val===''?'-':won(val)}</b>`;
       return val===''?'-':won(val);},names);};

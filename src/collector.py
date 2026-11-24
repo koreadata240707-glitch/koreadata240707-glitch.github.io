@@ -1184,7 +1184,30 @@ def build_tables(db, costs, fee_rate=0.0, saver_fee=0):
     today_s = d2s(t)
     for d, x in daily.items():
         x["q_net"] = wing_units[d] if d in wing_units else x["qty"] - x["q_can"] - x["q_ret"] - x["q_chk"]
-    if today_s in daily:
+    # 오늘 줄: 정산 엑셀이 다음 날 들어오기 전까지 개수는 예상치로 채움 (다음 날 아침 실제로 바뀜)
+    if today_s in daily and today_s in wing_units:
+        x = daily[today_s]
+        net = wing_units[today_s]
+        since_e = d2s(t - timedelta(days=60))
+        sold_e, canc_e = db.execute(
+            "SELECT COALESCE(SUM(CASE WHEN qty>0 THEN qty END),0), COALESCE(SUM(CASE WHEN qty<0 THEN -qty END),0) "
+            "FROM settle_lines WHERE recog_date>=? AND recog_date<?", (since_e, today_s)).fetchone()
+        rate_q = min(canc_e / sold_e, 0.5) if sold_e else 0.0
+        gross = max(x["qty"], round(net / (1 - rate_q))) if net > 0 else x["qty"]
+        cr = max(gross - net, 0)
+        c_sum = sum(daily[d]["q_can"] for d in daily if since_e <= d < today_s)
+        r_sum = sum(daily[d]["q_ret"] for d in daily if since_e <= d < today_s)
+        share_ret = r_sum / (c_sum + r_sum) if (c_sum + r_sum) else 0.5
+        q_o = db.execute("SELECT COALESCE(SUM(quantity),0), COUNT(DISTINCT order_id) FROM orders "
+                         "WHERE ordered_date>=? AND ordered_date<?", (since_e, today_s)).fetchone()
+        upo = (q_o[0] / q_o[1]) if q_o[1] else 1.0
+        x["qty"] = gross
+        x["q_ret"] = round(cr * share_ret)
+        x["q_can"] = cr - x["q_ret"]
+        x["q_chk"] = 0
+        x["cnt"] = max(x["cnt"], round(gross / upo))
+        x["live"] = 1
+    elif today_s in daily:
         daily[today_s]["live"] = 1
     for x in daily.values():
         x["fee"] = x["sales"] * fee_rate
@@ -1205,7 +1228,7 @@ def build_tables(db, costs, fee_rate=0.0, saver_fee=0):
                 r0(x["ad"]), r0(x["adsales"]), r0(x["refund"] + x["refund_est"]), r0(x["net"]),
                 ("예상" if x["refund_est"] and not x["refund"] else ("일부 예상" if x["refund_est"] else ("실제" if x["refund"] else ""))),
                 r0(x["q_can"]), r0(x["q_ret"]), r0(x["q_chk"]), r0(x["q_net"]),
-                ("집계 중" if x.get("live") else "")]
+                ("예상" if x.get("live") else "")]
 
     fmt = {str(i): "#,##0" for i in list(range(1, 15)) + list(range(16, 20))}
     days_sorted = sorted(k for k in daily if k)
