@@ -8,8 +8,8 @@
 <body style="margin:0;font-family:-apple-system,'Malgun Gothic',sans-serif;background:#f5f7fb">
 <p id="m" style="text-align:center;margin-top:40vh;color:#64748b">불러오는 중…</p>
 <script>
-// 화면은 이 저장소의 app.html 에 있어요. app.html 을 고쳐서 올리면 모든 직원 화면이 자동으로 바뀝니다.
-// (app.html 을 못 받으면 예전처럼 구글(사무실 PC가 올려둔 화면)에서 받아옵니다.)
+// 화면은 이 저장소의 src/site.html 에 있어요. src/site.html 을 고쳐서 올리면 모든 직원 화면이 자동으로 바뀝니다.
+// (src/site.html 을 못 받으면 예전처럼 구글(사무실 PC가 올려둔 화면)에서 받아옵니다.)
 // 한 번 받은 화면은 이 브라우저에 저장해 두고 다음부터 바로 보여줍니다 (최신본은 화면이 알아서 다시 확인함).
 var API = 'https://script.google.com/macros/s/AKfycbzs41F3lBV5XdPUTQq8UVgp_NmWE5bmoWWDoGPaQ6zIo2Mr6w6vYcKU_LdUMz7UG2WAbw/exec';
 function render(html) {
@@ -25,7 +25,7 @@ function fromGoogle() {
     .catch(function () { document.getElementById('m').textContent = '사이트를 불러오지 못했어요. 잠시 후 새로고침해 주세요.'; });
 }
 function load(n) {
-  fetch('app.html?v=' + Date.now(), { cache: 'no-store' })
+  fetch('src/site.html?v=' + Date.now(), { cache: 'no-store' })
     .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
     .then(save)
     .catch(function () {
@@ -35,8 +35,8 @@ function load(n) {
 }
 var saved = null;
 try {
-  // 저장된 화면을 버리고 새로 받게 하려면 숫자만 올리면 됨 (4: 화면을 GitHub app.html 에서 받기 시작)
-  if (localStorage.getItem('cd_v') !== '4') { localStorage.removeItem('cd_html'); localStorage.setItem('cd_v', '4'); }
+  // 저장된 화면을 버리고 새로 받게 하려면 숫자만 올리면 됨 (5: 화면을 GitHub src/site.html 에서 받기 시작)
+  if (localStorage.getItem('cd_v') !== '5') { localStorage.removeItem('cd_html'); localStorage.setItem('cd_v', '5'); }
   saved = localStorage.getItem('cd_html');
 } catch (e) {}
 if (saved) render(saved); else load(0);
