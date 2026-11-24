@@ -264,7 +264,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='1.4';
+const APP_VER='1.5';
 const TABS = [
   {id:'home', label:'대시보드'},
   {id:'sales', label:'매출'},
@@ -1843,7 +1843,8 @@ async function checkUpdate(manual){
     const html=await r.text();
     const nv=(html.match(/const APP_VER='([^']+)'/)||[])[1]||'';
     let old=null;try{old=localStorage.getItem('cd_html');localStorage.setItem('cd_html',html)}catch(e){}
-    if(old===html){if(manual)toast(`지금이 최신 화면이에요 (v${APP_VER})`);return;}
+    // 지금 보고 있는 화면의 버전(APP_VER)과 GitHub 최신 화면의 버전을 비교 (버전이 없으면 저장본과 비교)
+    if(nv?nv===APP_VER:old===html){if(manual)toast(`지금이 최신 화면이에요 (v${APP_VER})`);return;}
     if(manual){try{sessionStorage.setItem('cd_upd_from',APP_VER)}catch(e){}location.reload();}else newVersionBar(nv);
   }catch(e){if(manual)toast('업데이트 확인 실패: '+e.message)}
 }
