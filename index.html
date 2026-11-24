@@ -28,7 +28,7 @@ function load(n) {
 var saved = null;
 try {
   // 아주 예전 화면이 저장돼 있으면 버리고 새로 받기 (화면 버전이 바뀔 때 숫자만 올리면 됨)
-  if (localStorage.getItem('cd_v') !== '2') { localStorage.removeItem('cd_html'); localStorage.setItem('cd_v', '2'); }
+  if (localStorage.getItem('cd_v') !== '3') { localStorage.removeItem('cd_html'); localStorage.setItem('cd_v', '3'); }
   saved = localStorage.getItem('cd_html');
 } catch (e) {}
 if (saved) render(saved); else load(0);
