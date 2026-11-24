@@ -201,6 +201,48 @@ tr.click{cursor:pointer}
 .bit b{font-size:13px;display:block}.bit p{margin:2px 0 0;font-size:12px;color:var(--sub);line-height:1.4}.bit small{font-size:11px;color:var(--sub);white-space:nowrap;margin-left:auto}
 .bnew{width:6px;height:6px;border-radius:3px;background:var(--bad);display:inline-block;margin-left:4px;vertical-align:middle}.bempty{padding:28px;text-align:center;color:var(--sub);font-size:13px}
 .bpf{padding:10px 14px;font-size:12px;color:var(--sub)}
+</style><style>
+/* ===== 휴대폰·폴드 화면 (v1.7) ===== */
+.mmore{display:none;font-size:18px;line-height:1}
+.hbtns{display:contents}
+.mtog{display:none}
+@media (max-width:700px){
+  .top{padding:10px 12px;gap:8px}.top .logo{width:30px;height:30px}.top h2{font-size:15px}
+  .mmore{display:grid}
+  .hbtns{display:none;position:fixed;top:54px;right:10px;z-index:40;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px rgba(15,23,42,.16);padding:6px;flex-direction:column;gap:4px;min-width:150px}
+  .hbtns.show{display:flex}.hbtns .btn-ghost{border:0;text-align:left;padding:10px 12px;font-size:14px}
+  .bpanel{position:fixed;top:54px;left:8px;right:8px;width:auto;max-width:none}
+  /* 메뉴는 화면 아래로 */
+  header{backdrop-filter:none;-webkit-backdrop-filter:none;background:#fff}
+  nav{position:fixed;left:0;right:0;bottom:0;z-index:20;max-width:none;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:4px 6px calc(4px + env(safe-area-inset-bottom));gap:2px}
+  nav button{padding:10px 10px;font-size:13px;border-bottom:0;border-radius:10px}
+  nav button.on{background:var(--brand-soft);border-bottom:0}
+  main{padding:12px 12px calc(76px + env(safe-area-inset-bottom))}
+  .kpis{grid-template-columns:repeat(2,1fr)!important;gap:8px}.kpi{padding:12px;min-width:0}.kpi .v{font-size:18px;word-break:break-all}
+  .card{padding:12px}.chart-box{height:220px}
+  /* 표는 카드로: 첫 칸이 제목, 중요한 칸만 먼저 보이고 누르면 나머지가 펼쳐짐 */
+  .tbl-wrap{overflow:visible}
+  table.mc,table.mc tbody{display:block}table.mc thead{display:none}
+  table.mc tr{display:grid;grid-template-columns:1fr 1fr;gap:2px 14px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+  table.mc td{display:flex;justify-content:space-between;align-items:baseline;gap:8px;border:0;padding:3px 0;white-space:nowrap;text-align:right;font-size:13px;min-width:0;max-width:none;overflow:visible}
+  table.mc td::before{content:attr(data-l);color:var(--sub);text-align:left;flex:none;max-width:58%;font-weight:400}
+  table.mc td.mh{grid-column:1/-1;justify-content:flex-start;text-align:left;font-weight:700;font-size:14px;padding-bottom:4px}
+  table.mc td.mh::before{display:none}
+  table.mc td.pri{font-weight:700}
+  table.mc td.wide,table.mc td.mh{white-space:normal}table.mc td.wide{grid-column:1/-1;text-align:left;justify-content:flex-start;word-break:break-all}table.mc td.wide::before{min-width:52px}
+  table.mc tr.mt:not(.open) td:not(.mh):not(.pri):not(.mtog){display:none}
+  table.mc tr.mt .mtog{display:block;grid-column:1/-1;text-align:center;font-size:12px;color:var(--sub);padding-top:2px}
+  table.mc tr.mt .mtog::before{content:'▾ 자세히'}table.mc tr.mt.open .mtog::before{content:'▴ 접기'}
+  table.mc td:empty:not(.mtog){display:none}
+  tbody tr:hover{background:#fff}
+}
+@media (max-width:360px){ /* 폴드 접은 화면 */
+  .top h2 small{display:none}main{padding-left:8px;padding-right:8px}.kpi .v{font-size:16px}
+  table.mc tr{grid-template-columns:1fr}
+}
+@media (min-width:560px) and (max-width:700px){ /* 폴드 펼친 화면: 카드 두 줄 */
+  table.mc tbody{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start}table.mc tr{margin:0}
+}
 </style></head>
 <body>
 
@@ -252,10 +294,13 @@ tr.click{cursor:pointer}
       <h2>한국데이터 매출 대시보드 <small id="appVer" style="font-size:12px;color:var(--sub);font-weight:500"></small></h2>
       <span class="who" id="who"></span>
       <span class="bellw"><button class="bell" id="bellBtn" title="알림" onclick="toggleBell()"><svg viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="bcnt" id="bellCnt" hidden></span></button><div class="bpanel" id="bellPanel" hidden></div></span>
+      <button class="bell mmore" title="메뉴" onclick="event.stopPropagation();document.getElementById('hbtns').classList.toggle('show')">⋯</button>
+      <span class="hbtns" id="hbtns">
       <button class="btn-ghost" onclick="openPwModal(false)">비밀번호 변경</button>
       <button class="btn-ghost" onclick="refreshData()">새로고침</button>
       <button class="btn-ghost" onclick="checkUpdate(true)">업데이트</button>
       <button class="btn-ghost" onclick="logout()">로그아웃</button>
+      </span>
     </div>
     <nav id="nav"></nav>
   </header>
@@ -265,7 +310,35 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='1.6';
+const APP_VER='1.7';
+
+/* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
+const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
+const M_PRI=['매출계','순판매수량','상품명','옵션명','주문가능재고','소진예상(일)','매출액','금액','광고매출(14일)','ROAS','반품률','상태','판매수량','현재고','추정이익'];
+function mobilizeTables(root){
+  (root||document).querySelectorAll('table').forEach(t=>{
+    if(t.classList.contains('mc')&&!t.querySelector('tbody tr:not([data-m])'))return;
+    const ths=[...t.querySelectorAll('thead th')].map(th=>(th.textContent||'').replace(/\s+/g,' ').trim());
+    if(!ths.length)return;
+    t.classList.add('mc');
+    const many=ths.length>4;
+    let pri=[];if(many){for(const n of M_PRI){const i=ths.indexOf(n);if(i>0&&!pri.includes(i))pri.push(i);if(pri.length>=3)break;}
+      for(let i=1;pri.length<2&&i<ths.length;i++)if(!pri.includes(i))pri.push(i);}
+    t.querySelectorAll('tbody tr:not([data-m])').forEach(tr=>{
+      tr.setAttribute('data-m','1');const tds=[...tr.children];if(tds.length<2)return;
+      tds.forEach((td,i)=>{td.setAttribute('data-l',ths[i]||'');if(i===0)td.classList.add('mh');if(pri.includes(i))td.classList.add('pri');if(i>0&&M_WIDE.includes(ths[i]))td.classList.add('wide');});
+      if(many&&tds.length>pri.length+1){tr.classList.add('mt');const g=document.createElement('td');g.className='mtog';tr.appendChild(g);}
+    });
+  });
+}
+document.addEventListener('click',e=>{
+  if(!window.matchMedia('(max-width:700px)').matches)return;
+  const h=$('hbtns');if(h&&h.classList.contains('show')&&!e.target.closest('#hbtns'))h.classList.remove('show');
+  const tr=e.target.closest('table.mc tr.mt');if(!tr||e.target.closest('input,select,button,a,textarea'))return;
+  tr.classList.toggle('open');
+},true);
+new MutationObserver(()=>{clearTimeout(window.__mcT);window.__mcT=setTimeout(()=>mobilizeTables(document),30)}).observe(document.body,{childList:true,subtree:true});
+
 const TABS = [
   {id:'home', label:'대시보드'},
   {id:'sales', label:'매출'},
