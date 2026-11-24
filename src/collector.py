@@ -1107,6 +1107,29 @@ def build_tables(db, costs, fee_rate=0.0, saver_fee=0):
             x["stl_nocost"] += 1
         if "취소" in (tx or ""):
             x["ret"] += abs(q)
+    # 정산취소를 취소(출고 전) / 반품(배송 후) 으로 나눔: 물류비 리포트의 배송비 기록으로 판단
+    #  - 배송비가 청구된 적 있음(출고됨) → 반품  (쿠팡은 반품 때 배송비도 정산취소하므로 청구 기록만 봄)
+    #  - 배송비 기록이 없음 → 출고 전 취소 (물류비 리포트가 그 날짜까지 들어와 있을 때만)
+    #  ※ 2026-10월 검증: 이 방식 반품 106개 / 판매 869개 = 12.2% = Wing 고객반품 관리의 10월 반품률 12.2%
+    #  - 물류비 리포트가 아직 안 들어온 날짜 → 확인 중
+    ship = {}
+    cfs_until = ""
+    try:
+        for oid, tx, n in db.execute("SELECT order_id, tx_type, COUNT(*) FROM cfs_lines WHERE kind='배송비' GROUP BY 1, 2"):
+            o = ship.setdefault(oid, [0, 0])
+            o[0 if "취소" not in tx else 1] += n
+        cfs_until = db.execute("SELECT MAX(occur_date) FROM cfs_lines").fetchone()[0] or ""
+    except sqlite3.OperationalError:
+        pass
+    for d, oid, q in db.execute("SELECT recog_date, order_id, qty FROM settle_lines WHERE qty<0"):
+        x = daily[d]
+        o = ship.get(oid)
+        if o and o[0] > 0:
+            x["q_ret"] += abs(q)
+        elif cfs_until and d <= cfs_until:
+            x["q_can"] += abs(q)
+        else:
+            x["q_chk"] += abs(q)
     # 취소·반품 금액 (정산 엑셀: 실제) + 정산 전 날짜는 과거 취소율로 추정
     for d, vid, q, gross in db.execute(
             "SELECT recog_date, vendor_item_id, qty, gross FROM settle_lines WHERE tx_type LIKE '%취소%'"):
@@ -1153,6 +1176,16 @@ def build_tables(db, costs, fee_rate=0.0, saver_fee=0):
             x["sales"] = g + x["refund"]
         x["refund_est"] = x["sales"] - x["refund"] - g
         x["wing"] = g
+    wing_units = {}
+    try:
+        wing_units = {d: u for d, u in db.execute("SELECT sale_date, units FROM wing_daily")}
+    except sqlite3.OperationalError:
+        pass
+    today_s = d2s(t)
+    for d, x in daily.items():
+        x["q_net"] = wing_units[d] if d in wing_units else x["qty"] - x["q_can"] - x["q_ret"] - x["q_chk"]
+    if today_s in daily:
+        daily[today_s]["live"] = 1
     for x in daily.values():
         x["fee"] = x["sales"] * fee_rate
         # 순매출 = 주문 매출 − 취소·반품 (정산 엑셀이 있는 날은 실제, 없는 날은 추정)
@@ -1162,22 +1195,26 @@ def build_tables(db, costs, fee_rate=0.0, saver_fee=0):
         x["stl_profit"] = x["stl"] - x["stl_cost"] - x["ad"] if x["stl"] else 0
 
     head = ["주문건수", "판매수량", "매출액", "원가", "예상수수료", "추정이익", "정산금액", "정산기준이익",
-            "반품건수", "취소건수", "광고비", "광고매출", "취소반품액", "순매출", "취소반품구분"]
+            "반품건수", "취소건수", "광고비", "광고매출", "취소반품액", "순매출", "취소반품구분",
+            "취소수량", "반품수량", "확인중수량", "순판매수량", "집계상태"]
 
     def row(label, x):
         return [label, r0(x["cnt"]), r0(x["qty"]), r0(x["sales"]), r0(x["cost"]), r0(x["fee"]),
                 r0(x["profit"]), r0(x["stl"]),
                 (r0(x["stl_profit"]) if x["stl"] and not x["stl_nocost"] else ""), r0(x["ret"]), r0(x["can"]),
                 r0(x["ad"]), r0(x["adsales"]), r0(x["refund"] + x["refund_est"]), r0(x["net"]),
-                ("예상" if x["refund_est"] and not x["refund"] else ("일부 예상" if x["refund_est"] else ("실제" if x["refund"] else "")))]
+                ("예상" if x["refund_est"] and not x["refund"] else ("일부 예상" if x["refund_est"] else ("실제" if x["refund"] else ""))),
+                r0(x["q_can"]), r0(x["q_ret"]), r0(x["q_chk"]), r0(x["q_net"]),
+                ("집계 중" if x.get("live") else "")]
 
-    fmt = {str(i): "#,##0" for i in range(1, 15)}
+    fmt = {str(i): "#,##0" for i in list(range(1, 15)) + list(range(16, 20))}
     days_sorted = sorted(k for k in daily if k)
     tables.append(("일별요약", ["날짜"] + head, [row(d, daily[d]) for d in reversed(days_sorted)], fmt, False))
     monthly = defaultdict(lambda: defaultdict(float))
     for d in days_sorted:
         for k, v in daily[d].items():
-            monthly[d[:7]][k] += v
+            if k != "live":
+                monthly[d[:7]][k] += v
     tables.append(("월별요약", ["월"] + head, [row(m, monthly[m]) for m in sorted(monthly, reverse=True)], fmt, False))
 
     # 재고 ---------------------------------------------------------------

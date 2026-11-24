@@ -188,7 +188,7 @@ tr.click{cursor:pointer}
 }
 .avgp{display:block;font-size:11px;color:#2563eb;margin-top:2px;white-space:nowrap}.avgp.none{color:#9aa1ab}
 </style>
-<style>th.th2l{white-space:pre-line}</style></head>
+</head>
 <body>
 
 <!-- 로그인 / 회원가입 -->
@@ -239,8 +239,6 @@ tr.click{cursor:pointer}
       <h2>한국데이터 매출 대시보드</h2>
       <span class="who" id="who"></span>
       <button class="btn-ghost" onclick="openPwModal(false)">비밀번호 변경</button>
-      <button class="btn-ghost" onclick="refreshData()">새로고침</button>
-      <button class="btn-ghost" onclick="checkUpdate(true)">업데이트</button>
       <button class="btn-ghost" onclick="logout()">로그아웃</button>
     </div>
     <nav id="nav"></nav>
@@ -521,19 +519,28 @@ function topList(n){
 
 /* 매출 */
 function renderSales(m,head){
-  m.innerHTML=head+`<p class="muted" style="margin-top:-4px">매출액 = 취소 전 주문 금액 · <b>매출계 = 쿠팡 Wing 판매분석의 '매출'과 같은 금액</b>(취소·반품을 뺀 금액, 최근 15일은 Wing 숫자 그대로 · 그 전은 정산 엑셀이 들어온 날은 <b>실제</b>, 아직 없는 날은 지난 취소·반품 비율 ${(((DATA.kpi||{})['취소반품 추정률']||0)*100).toFixed(1)}%로 <b>예상</b>)<br>정산금액(쿠팡 정산일)은 주문한 날이 아니라 쿠팡이 매출로 인정한 날(보통 배송 완료·구매 확정 뒤) 기준이라, 그날 매출액과 다를 수 있어요.</p><div class="card"><h3><span>매출 내역</span><span class="seg" id="segS"><button data-v="daily" class="on">일별</button><button data-v="monthly">월별</button></span></h3>
+  m.innerHTML=head+`<p class="muted" style="margin-top:-4px"><b>매출계 · 순판매수량 = 쿠팡 Wing 판매분석과 같은 숫자</b>(취소·반품을 뺀 값, 오늘은 10분마다) · 주문금액 = 취소 전 금액 · 쿠팡 입금액 = 수수료를 뺀 돈<br>취소 = 출고 전 취소 · 반품 = 배송 후 돌아온 것 · 확인 중 = 물류비 리포트(약 1주 늦게 들어옴)가 오면 취소/반품으로 나뉨 · 오늘 줄의 개수는 다음 날 아침 정산 엑셀로 확정</p><div class="card"><h3><span>매출 내역</span><span class="seg" id="segS"><button data-v="daily" class="on">일별</button><button data-v="monthly">월별</button></span></h3>
   <div class="tbl-wrap" id="salesTbl"></div></div><div id="mcard"></div><div id="lcard"></div>`;
   drawMethod();drawLogi();
   const draw=v=>{const rows=(DATA[v]||[]).map(r=>Object.assign({},r,{'매출계':r['순매출']}));const key=v==='daily'?'날짜':'월';
-    const hasRet=has('반품 데이터 있음');
-    let cols=[key,'주문건수','판매수량'];if(hasRet)cols.push('반품건수');cols.push('매출액');
-    if(rows.length&&rows[0]['순매출']!==undefined)cols.push('취소반품액','매출계','취소반품구분');
+    const hasQ=rows.length&&rows[0]['순판매수량']!==undefined;
+    let cols=[key,'주문건수','판매수량'];
+    if(hasQ)cols.push('취소수량','반품수량','확인중수량','순판매수량');else if(has('반품 데이터 있음'))cols.push('반품건수');
+    cols.push('매출액');
+    if(rows.length&&rows[0]['순매출']!==undefined)cols.push('취소반품액','매출계');
     cols.push('원가');if(rows.some(r=>Number(r['예상수수료'])))cols.push('예상수수료');
     if(has('광고 데이터 있음'))cols.push('광고비');
     cols.push('추정이익');
     if(has('정산 데이터 있음'))cols.push('정산금액','정산기준이익');
-    if(hasRet)cols.push('취소건수');
-    document.getElementById('salesTbl').innerHTML=table(cols,rows,c=>c===key?'l':c==='정산금액'?'th2l':'',(c,v)=>c===key?esc(v):c==='취소반품구분'?(v?`<span class="pill ${v==='실제'?'ok':'warn'}">${esc(v)}</span>`:'-'):(v===''?'-':won(v)),{'정산금액':'정산금액\n(쿠팡 정산일)'});};
+    if(rows.length&&rows[0]['순매출']!==undefined)cols.push('취소반품구분');
+    const names={'취소수량':'취소','반품수량':'반품','확인중수량':'확인 중','순판매수량':'순판매수량','매출액':'주문금액','취소반품액':'취소·반품액','정산금액':'쿠팡 입금액','취소반품구분':'취소·반품액 구분'};
+    const LIVE=new Set(['주문건수','판매수량','취소수량','반품수량','확인중수량']);
+    document.getElementById('salesTbl').innerHTML=table(cols,rows,c=>c===key?'l':'',(c,val,r)=>{
+      if(c===key)return esc(val)+(r['집계상태']?` <span class="pill warn">${esc(r['집계상태'])}</span>`:'');
+      if(r['집계상태']&&LIVE.has(c))return '<span class="muted">집계 중</span>';
+      if(c==='취소반품구분')return val?`<span class="pill ${val==='실제'?'ok':'warn'}">${esc(val)}</span>`:'-';
+      if(c==='매출계'||c==='순판매수량')return `<b>${val===''?'-':won(val)}</b>`;
+      return val===''?'-':won(val);},names);};
   draw('daily');
   document.getElementById('segS').onclick=e=>{const v=e.target.dataset.v;if(!v)return;
     document.querySelectorAll('#segS button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));draw(v)};
@@ -1770,29 +1777,6 @@ window.addEventListener('message',e=>{
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#extFetch');if(!b||EXT_BUSY)return;
   EXT_BUSY=true;extPlace();window.postMessage({kdApp:'run'},location.origin);toast('Wing 정산·광고센터에서 받는 중… (1~3분)')});
 [300,1500,4000].forEach(t=>setTimeout(()=>{if(!EXT)window.postMessage({kdApp:'ping'},location.origin)},t));
-/* 새로고침: 화면은 그대로 두고 최신 자료만 다시 받음 */
-async function refreshData(){
-  if(!TOKEN)return;
-  toast('최신 자료를 받는 중…');
-  try{
-    const fresh=await call('getData',TOKEN);
-    const same=JSON.stringify(fresh)===JSON.stringify(DATA);
-    DATA=fresh;try{store.set('cd_data',JSON.stringify(fresh))}catch(e){}
-    const y=window.scrollY;buildNav();show(TAB,'replace');window.scrollTo(0,y);
-    toast(same?'바뀐 자료가 없어요 (마지막 업데이트: '+(DATA.updated||'-')+')':'최신 자료로 바꿨어요');
-  }catch(e){toast('자료를 받지 못했어요: '+e.message)}
-}
-/* 업데이트: GitHub의 화면 파일(src/site.html)을 확인해서 새 버전이면 바로 바꿈 */
-async function checkUpdate(manual){
-  try{
-    const r=await fetch('src/site.html?v='+Date.now(),{cache:'no-store'});
-    if(!r.ok)throw new Error('화면 파일을 찾지 못했어요');
-    const html=await r.text();
-    let old=null;try{old=localStorage.getItem('cd_html');localStorage.setItem('cd_html',html)}catch(e){}
-    if(old===html){if(manual)toast('지금이 최신 화면이에요');return;}
-    if(manual)location.reload();else newVersionBar();
-  }catch(e){if(manual)toast('업데이트 확인 실패: '+e.message)}
-}
 function newVersionBar(){   // 화면이 새로 바뀌었으면 위에 안내 띄우기
   if(document.getElementById('nvb'))return;
   const d=document.createElement('div');d.id='nvb';
@@ -1813,8 +1797,8 @@ initLogin();
   let me=null;try{me=JSON.parse(store.get('cd_me')||'null')}catch(e){}
   if(t&&me){TOKEN=t;ME=me;startApp();}   // 로그인 상태면 서버 확인을 기다리지 않고 바로 시작 (만료되면 자동 로그아웃)
   // 다음 접속을 빠르게: 최신 화면을 미리 받아 둠 (GitHub 주소에서 열었을 때)
-  // GitHub에 올라온 최신 화면(src/site.html)을 미리 받아 두고, 바뀌었으면 안내
-  if(!IN_GAS)setTimeout(()=>checkUpdate(false),2000);
+  if(!IN_GAS){setTimeout(()=>{call('getHtml').then(r=>{if(!r||!r.html)return;let old=null;try{old=localStorage.getItem('cd_html');localStorage.setItem('cd_html',r.html)}catch(e){}
+    if(old&&old!==r.html)newVersionBar();}).catch(()=>{})},2000);}
 })();
 </script>
 </body>
