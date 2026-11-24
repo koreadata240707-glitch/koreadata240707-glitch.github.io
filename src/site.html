@@ -309,7 +309,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='1.8';
+const APP_VER='1.9';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -782,12 +782,13 @@ function renderStock(m,head){
   <div class="toolbar"><span class="seg" id="segK"><button data-s="" class="on">전체 ${all.length}</button><button data-s="품절">품절 ${cnt('품절')}</button><button data-s="부족">부족 ${cnt('부족')}</button><button data-s="정상">정상 ${cnt('정상')}</button></span>
   <input class="input" id="kq" placeholder="상품명 검색" style="flex:1;max-width:280px">
   <label class="muted"><input type="checkbox" id="kh" checked> 안 팔리는 품절 옵션 숨기기 (${all.filter(dead).length}개)</label></div>
-  <p class="muted">부족 = 최근 30일 판매 속도로 14일 안에 소진 예상</p>
+  <p class="muted">남은 재고 많은 순 · 부족 = 최근 30일 판매 속도로 14일 안에 소진 예상</p>
   <div class="tbl-wrap" id="kt"></div></div>`;
   let st='';
   const draw=()=>{const q=document.getElementById('kq').value.trim().toLowerCase();
     const hide=document.getElementById('kh').checked;
-    const rows=all.filter(r=>(!hide||!dead(r))&&(!st||r['상태']===st)&&(!q||(String(r['상품명'])+' '+r['옵션명']+' '+r['판매자SKU']).toLowerCase().includes(q)));
+    const rows=all.filter(r=>(!hide||!dead(r))&&(!st||r['상태']===st)&&(!q||(String(r['상품명'])+' '+r['옵션명']+' '+r['판매자SKU']).toLowerCase().includes(q)))
+      .sort((a,b)=>cnum(b['주문가능재고'])-cnum(a['주문가능재고']));   // 남은 재고(주문가능재고) 많은 순
     document.getElementById('kt').innerHTML=table(['상태','상품명','옵션명','판매자SKU','주문가능재고','최근30일판매','일평균판매','소진예상(일)'],rows,
       c=>['상태','상품명','옵션명','판매자SKU'].includes(c)?'l':'',(c,v)=>{
         if(c==='상태')return `<span class="pill ${v==='품절'?'bad':v==='부족'?'warn':'ok'}">${esc(v)}</span>`;
