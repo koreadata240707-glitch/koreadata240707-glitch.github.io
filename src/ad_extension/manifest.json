@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "한국데이터 광고·정산 자동 받기",
+  "version": "1.2.0",
+  "description": "쿠팡 광고센터 광고 보고서와 Wing 로켓그로스 정산·물류비 리포트를 매일 자동으로 받아 다운로드 폴더에 저장합니다. 매출 대시보드의 [정산·광고 받기] 버튼과도 연결됩니다.",
+  "icons": { "16": "icon16.png", "32": "icon32.png", "48": "icon48.png", "128": "icon128.png" },
+  "action": { "default_popup": "popup.html", "default_title": "광고·정산 자동 받기" },
+  "background": { "service_worker": "background.js" },
+  "permissions": ["alarms", "downloads", "storage", "scripting", "tabs", "notifications"],
+  "host_permissions": ["https://advertising.coupang.com/*", "https://wing.coupang.com/*"],
+  "content_scripts": [
+    { "matches": ["https://koreadata240707-glitch.github.io/*"], "js": ["site_bridge.js"], "run_at": "document_end" }
+  ]
+}
