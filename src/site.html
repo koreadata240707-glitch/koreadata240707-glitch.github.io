@@ -188,7 +188,19 @@ tr.click{cursor:pointer}
 }
 .avgp{display:block;font-size:11px;color:#2563eb;margin-top:2px;white-space:nowrap}.avgp.none{color:#9aa1ab}
 </style>
-<style>th.th2l{white-space:pre-line}</style></head>
+<style>th.th2l{white-space:pre-line}</style><style>
+.bellw{position:relative}.bell{position:relative;border:1px solid var(--line);background:#fff;border-radius:10px;width:38px;height:33px;cursor:pointer;display:grid;place-items:center;padding:0}
+.bell svg{width:18px;height:18px}.bell .bcnt{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--bad);color:#fff;font-size:11px;font-weight:700;line-height:18px}
+.bpanel{position:absolute;right:0;top:42px;width:380px;max-width:calc(100vw - 24px);background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px rgba(15,23,42,.16);overflow:hidden;z-index:30}
+.bph{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}.bph span{font-size:12px;color:var(--sub)}
+.btabs{display:flex;gap:4px;padding:8px 10px;border-bottom:1px solid var(--line)}.btabs button{border:0;background:none;padding:6px 10px;border-radius:8px;font-size:13px;color:var(--sub);cursor:pointer}.btabs button.on{background:var(--brand-soft);color:var(--brand);font-weight:700}
+.bit{display:flex;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer;text-decoration:none;color:inherit}.bit:hover{background:#fafcff}
+.bdot{flex:none;width:34px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:11px;font-weight:700}
+.bdot.t문의,.bdot.t센터{background:#eaf1ff;color:var(--brand)}.bdot.tWing{background:#fef3c7;color:var(--warn)}.bdot.t위반{background:#fee2e2;color:var(--bad)}
+.bit b{font-size:13px;display:block}.bit p{margin:2px 0 0;font-size:12px;color:var(--sub);line-height:1.4}.bit small{font-size:11px;color:var(--sub);white-space:nowrap;margin-left:auto}
+.bnew{width:6px;height:6px;border-radius:3px;background:var(--bad);display:inline-block;margin-left:4px;vertical-align:middle}.bempty{padding:28px;text-align:center;color:var(--sub);font-size:13px}
+.bpf{padding:10px 14px;font-size:12px;color:var(--sub)}
+</style></head>
 <body>
 
 <!-- 로그인 / 회원가입 -->
@@ -238,6 +250,7 @@ tr.click{cursor:pointer}
       <div class="logo" role="img" aria-label="한국데이터"></div>
       <h2>한국데이터 매출 대시보드</h2>
       <span class="who" id="who"></span>
+      <span class="bellw"><button class="bell" id="bellBtn" title="알림" onclick="toggleBell()"><svg viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="bcnt" id="bellCnt" hidden></span></button><div class="bpanel" id="bellPanel" hidden></div></span>
       <button class="btn-ghost" onclick="openPwModal(false)">비밀번호 변경</button>
       <button class="btn-ghost" onclick="refreshData()">새로고침</button>
       <button class="btn-ghost" onclick="checkUpdate(true)">업데이트</button>
@@ -364,7 +377,34 @@ function buildNav(){
   document.getElementById('nav').innerHTML=tabs.map(t=>`<button data-t="${t.id}">${t.label}</button>`).join('');
   document.getElementById('nav').onclick=e=>{const t=e.target.dataset.t;if(t)show(t)};
   if(!tabs.some(t=>t.id===TAB))TAB='home';
+  drawBell();
 }
+/* 알림 종: 수집 프로그램이 요약지표 '알림' 칸에 넣은 Wing 알림·미답변 문의·계정 제재 */
+let BELL_TAB='전체';
+function bellData(){try{return JSON.parse((DATA&&DATA.kpi&&DATA.kpi['알림'])||'{}')}catch(e){return {}}}
+function bellKey(it){return it.type+'|'+it.title+'|'+(it.text||'')+'|'+(it.count||'')}
+function bellSeen(){try{return JSON.parse(localStorage.getItem('cd_bell_seen')||'[]')}catch(e){return []}}
+function drawBell(){
+  const B=bellData(),items=B.items||[],seen=new Set(bellSeen());
+  const unread=items.filter(it=>!seen.has(bellKey(it))).length;
+  const c=$('bellCnt');if(c){c.hidden=!unread;c.textContent=unread>99?'99+':unread;}
+  const p=$('bellPanel');if(!p||p.hidden)return;
+  const kinds=['전체','문의','센터','Wing','위반'].filter(k=>k==='전체'||items.some(it=>it.type===k));
+  if(!kinds.includes(BELL_TAB))BELL_TAB='전체';
+  const list=items.filter(it=>BELL_TAB==='전체'||it.type===BELL_TAB);
+  const at=B.at?new Date(B.at+':00Z').toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'-';
+  p.innerHTML=`<div class="bph"><b>알림</b><span>Wing 확인 ${esc(at)}</span></div>
+    <div class="btabs">${kinds.map(k=>`<button data-k="${k}" class="${k===BELL_TAB?'on':''}">${k==='센터'?'고객센터':k} ${k==='전체'?items.length:items.filter(it=>it.type===k).length}</button>`).join('')}</div>
+    ${list.length?list.map(it=>`<a class="bit" href="${esc(it.url||'https://wing.coupang.com')}" target="_blank" rel="noopener"><div class="bdot t${esc(it.type)}">${esc(it.type==='센터'?'센터':it.type)}</div><div style="min-width:0"><b>${esc(it.title)}${seen.has(bellKey(it))?'':'<span class="bnew"></span>'}</b>${it.text?`<p>${esc(it.text)}</p>`:''}</div>${it.at?`<small>${esc(it.at.slice(5).replace('T',' '))}</small>`:''}</a>`).join(''):'<div class="bempty">새 알림이 없어요</div>'}
+    <div class="bpf">누르면 Wing 해당 화면이 열려요 · 답변·처리는 Wing에서 해 주세요</div>`;
+  p.querySelector('.btabs').onclick=e=>{const k=e.target.dataset.k;if(k){BELL_TAB=k;drawBell();}};
+}
+function toggleBell(){
+  const p=$('bellPanel');p.hidden=!p.hidden;drawBell();
+  if(!p.hidden){try{localStorage.setItem('cd_bell_seen',JSON.stringify((bellData().items||[]).map(bellKey)))}catch(e){}
+    setTimeout(()=>{const c=$('bellCnt');if(c)c.hidden=true},300);}
+}
+document.addEventListener('click',e=>{const p=$('bellPanel');if(p&&!p.hidden&&!e.target.closest('.bellw'))p.hidden=true;});
 async function startApp(){
   {const h0=decodeURIComponent(location.hash.slice(1)).split('/')[0];if(h0&&TABS.some(x=>x.id===h0))TAB=h0;}
   document.getElementById('login').classList.add('hidden');

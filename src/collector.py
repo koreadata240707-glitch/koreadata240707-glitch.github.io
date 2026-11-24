@@ -1484,6 +1484,7 @@ def build_tables(db, costs, fee_rate=0.0, saver_fee=0):
         ["세이버 월 구독료", saver_fee],
         ["위안 환율", float(meta_get(db, "cny_rate", 0) or 0)],
         ["위안 환율 시각", meta_get(db, "cny_rate_at", "") or ""],
+        ["알림", alerts_payload(db)],
     ]
     tables.append(("_요약지표", ["항목", "값"], kpi, {}, True))
     if db.execute("SELECT COUNT(*) FROM ads").fetchone()[0]:
@@ -1702,6 +1703,14 @@ def collect_all(api, db, opt, t, rg_days, rev_days, ord_days, ret_days, backfill
     except Exception as e:
         log.warning("  정산 엑셀 반영 건너뜀: %s", e)
     try:
+        import_wing_alerts(db, api.vendor_id, opt)
+    except Exception as e:
+        log.warning("  Wing 알림 반영 건너뜀: %s", e)
+    try:
+        collect_inquiries(api, db)
+    except Exception as e:
+        log.warning("  문의 조회 건너뜀: %s", e)
+    try:
         import_wing_sales(db, api.vendor_id, opt)
     except Exception as e:
         log.warning("  Wing 매출 반영 건너뜀: %s", e)
@@ -1742,6 +1751,116 @@ def import_wing_sales(db, vendor_id, opt=None):
     db.commit()
     log.info("  Wing 판매분석 매출 %d일 반영 (받은 시각 %s)", len(rows), j.get("fetchedAt", "")[:16])
     return len(rows)
+
+
+def import_wing_alerts(db, vendor_id, opt=None):
+    """크롬 확장이 저장하는 Wing 알림(종 알림 · 미답변 문의 수 · 계정 제재)을 읽어 둠"""
+    files = []
+    for folder in _excel_folders(opt):
+        files += glob.glob(os.path.join(folder, f"{vendor_id}-wing알림*.json"))
+    files = sorted(set(files), key=os.path.getmtime)
+    if not files:
+        return
+    for old in files[:-1]:
+        try:
+            _archive(old, os.path.join(BASE_DIR, "정산엑셀_보관"), os.path.basename(old))
+        except Exception:
+            pass
+    with open(files[-1], encoding="utf-8") as f:
+        meta_set(db, "wing_alerts", f.read())
+    db.commit()
+
+
+def collect_inquiries(api, db):
+    """쿠팡 Open API: 미답변 상품문의 + 쿠팡 고객센터 이관 문의 (최근 7일). 실패해도 다른 수집은 계속"""
+    t = today_kst()
+    a, b = d2s(t - timedelta(days=6)), d2s(t)
+    out = []
+    base = f"/v2/providers/openapi/apis/api"
+    probe = []
+    try:
+        page = 1
+        while page <= 5:
+            res = api.get(f"{base}/v5/vendors/{api.vendor_id}/onlineInquiries",
+                          {"vendorId": api.vendor_id, "inquiryStartAt": a, "inquiryEndAt": b,
+                           "answeredType": "NOANSWER", "pageNum": page, "pageSize": 50}, retries=2)
+            if page == 1:
+                probe.append("onlineInquiries\n" + json.dumps(res, ensure_ascii=False)[:3000])
+            data = res.get("data") or {}
+            items = data.get("content") if isinstance(data, dict) else data
+            for q in items or []:
+                out.append({"type": "문의", "id": str(q.get("inquiryId", "")), "at": str(q.get("inquiryAt", ""))[:16],
+                            "vid": str(q.get("vendorItemId", "") or ""), "name": q.get("productName") or q.get("sellerProductName") or "",
+                            "text": (q.get("content") or "")[:120]})
+            pg = (data.get("pagination") or {}) if isinstance(data, dict) else {}
+            if not items or page >= int(pg.get("totalPages") or 1):
+                break
+            page += 1
+    except Exception as e:
+        probe.append(f"onlineInquiries ERROR {e}")
+        log.warning("  상품문의 조회 건너뜀: %s", e)
+    try:
+        res = api.get(f"{base}/v4/vendors/{api.vendor_id}/callCenterInquiries",
+                      {"vendorId": api.vendor_id, "partnerCounselingStatus": "NO_ANSWER", "inquiryStartAt": a,
+                       "inquiryEndAt": b, "pageNum": 1, "pageSize": 30}, retries=2)
+        probe.append("callCenterInquiries\n" + json.dumps(res, ensure_ascii=False)[:3000])
+        data = res.get("data") or {}
+        items = data.get("content") if isinstance(data, dict) else data
+        for q in items or []:
+            out.append({"type": "센터", "id": str(q.get("inquiryId", "")), "at": str(q.get("inquiryAt", "") or q.get("receiptAt", ""))[:16],
+                        "vid": str(q.get("vendorItemId", "") or ""), "name": q.get("itemName") or q.get("productName") or "",
+                        "text": (q.get("content") or "")[:120]})
+    except Exception as e:
+        probe.append(f"callCenterInquiries ERROR {e}")
+        log.warning("  고객센터 문의 조회 건너뜀: %s", e)
+    try:
+        fnp = os.path.join(BASE_DIR, "logs", "inquiry_probe.txt")
+        if not os.path.exists(fnp) or time.time() - os.path.getmtime(fnp) > 6 * 3600:
+            with open(fnp, "w", encoding="utf-8") as f:
+                f.write("\n\n".join(probe))
+    except Exception:
+        pass
+    meta_set(db, "inquiries", json.dumps(out, ensure_ascii=False))
+    db.commit()
+    if out:
+        log.info("  미답변 문의 %d건", len(out))
+    return len(out)
+
+
+def alerts_payload(db):
+    """대시보드 종 알림에 쓸 내용 (요약지표 '알림' 칸에 JSON 으로 넣음)"""
+    items = []
+    try:
+        w = json.loads(meta_get(db, "wing_alerts", "") or "{}")
+    except Exception:
+        w = {}
+    W = "https://wing.coupang.com"
+    for n in ((w.get("bell") or {}).get("bellNotificationDtos") or []):
+        items.append({"type": "Wing", "title": n.get("message") or "", "count": n.get("count") or 1,
+                      "url": W + (n.get("url") or "/")})
+    acc = w.get("account") or {}
+    for s_ in acc.get("activeSuspensions") or []:
+        items.append({"type": "위반", "title": "계정 제재: " + (s_.get("reason") or s_.get("type") or json.dumps(s_, ensure_ascii=False)[:80]),
+                      "url": W + "/tenants/hermes/compliance-center"})
+    if acc.get("sellerCancellationStrike"):
+        items.append({"type": "위반", "title": "판매자 취소 경고", "url": W + "/tenants/hermes/compliance-center"})
+    inq = w.get("inquiry") or {}
+    pq = (inq.get("productUnansweredInquiry") or {}).get("count") or 0
+    cq = (inq.get("csUnansweredInquiry") or {}).get("count") or 0
+    try:
+        detail = json.loads(meta_get(db, "inquiries", "") or "[]")
+    except Exception:
+        detail = []
+    for q in detail:
+        items.append({"type": q["type"], "title": (q.get("name") or "상품문의")[:60], "text": q.get("text", ""), "at": q.get("at", ""),
+                      "url": W + ("/tenants/cs/product/inquiries" if q["type"] == "문의" else "/tenants/cs/csinquiry")})
+    n_p = sum(1 for q in detail if q["type"] == "문의")
+    n_c = sum(1 for q in detail if q["type"] == "센터")
+    if pq > n_p:
+        items.append({"type": "문의", "title": f"미답변 상품문의 {pq}건", "url": W + "/tenants/cs/product/inquiries"})
+    if cq > n_c:
+        items.append({"type": "센터", "title": f"미답변 고객센터 문의 {cq}건", "url": W + "/tenants/cs/csinquiry"})
+    return json.dumps({"at": (w.get("fetchedAt") or "")[:16], "items": items}, ensure_ascii=False)
 
 
 def fix_settle_and_orders(db):
