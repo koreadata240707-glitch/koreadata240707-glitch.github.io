@@ -68,6 +68,7 @@ main{max-width:1180px;margin:0 auto;padding:16px}
 .seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
 
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+#salesTbl th,#salesTbl td{padding:9px 7px}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
 th{font-weight:600;color:var(--sub);background:#fafbfd;position:sticky;top:0}
@@ -264,7 +265,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='1.5';
+const APP_VER='1.6';
 const TABS = [
   {id:'home', label:'대시보드'},
   {id:'sales', label:'매출'},
@@ -565,7 +566,7 @@ function topList(n){
 
 /* 매출 */
 function renderSales(m,head){
-  m.innerHTML=head+`<p class="muted" style="margin-top:-4px"><b>매출계 · 순판매수량 = 쿠팡 Wing 판매분석과 같은 숫자</b>(취소·반품을 뺀 값, 오늘은 10분마다) · 주문금액 = 취소 전 금액 · 쿠팡 입금액 = 수수료를 뺀 돈<br>취소 = 출고 전 취소 · 반품 = 배송 후 돌아온 것 · 확인 중 = 물류비 리포트(약 1주 늦게 들어옴)가 오면 취소/반품으로 나뉨 · <span class="pill warn">예상</span> 오늘 줄의 주문건수·판매수량·취소·반품은 Wing 순판매수량과 최근 60일 취소·반품 비율로 계산한 예상치(회색), 다음 날 아침 정산 엑셀로 실제 숫자로 바뀜<br>쿠팡 입금액(쿠팡 정산일)은 주문한 날이 아니라 쿠팡이 매출로 인정한 날(보통 배송 완료·구매 확정 뒤) 기준이라, 그날 매출과 다를 수 있어요.</p><div class="card"><h3><span>매출 내역</span><span class="seg" id="segS"><button data-v="daily" class="on">일별</button><button data-v="monthly">월별</button></span></h3>
+  m.innerHTML=head+`<p class="muted" style="margin-top:-4px"><b>매출계 · 순판매수량 = 쿠팡 Wing 판매분석과 같은 숫자</b>(취소·반품을 뺀 값, 오늘은 10분마다) · 주문금액 = 취소 전 금액 · 쿠팡 정산 예정액 = 판매수수료를 뺀, 쿠팡이 정산해 줄 돈<br>취소 = 출고 전 취소 · 반품 = 배송 후 돌아온 것 · 확인 중 = 물류비 리포트(약 1주 늦게 들어옴)가 오면 취소/반품으로 나뉨 · <span class="pill warn">예상</span> 오늘 줄의 주문건수·판매수량·취소·반품은 Wing 순판매수량과 최근 60일 취소·반품 비율로 계산한 예상치(회색), 다음 날 아침 정산 엑셀로 실제 숫자로 바뀜<br>쿠팡 정산 예정액은 주문한 날이 아니라 쿠팡이 매출로 인정한 날(보통 배송 완료·구매 확정 뒤) 기준이라, 그날 매출과 다를 수 있어요.</p><div class="card"><h3><span>매출 내역</span><span class="seg" id="segS"><button data-v="daily" class="on">일별</button><button data-v="monthly">월별</button></span></h3>
   <div class="tbl-wrap" id="salesTbl"></div></div><div id="mcard"></div><div id="lcard"></div>`;
   drawMethod();drawLogi();
   const draw=v=>{const rows=(DATA[v]||[]).map(r=>Object.assign({},r,{'매출계':r['순매출']}));const key=v==='daily'?'날짜':'월';
@@ -578,10 +579,9 @@ function renderSales(m,head){
     if(has('광고 데이터 있음'))cols.push('광고비');
     cols.push('추정이익');
     if(has('정산 데이터 있음'))cols.push('정산금액','정산기준이익');
-    if(rows.length&&rows[0]['순매출']!==undefined)cols.push('취소반품구분');
-    const names={'취소수량':'취소','반품수량':'반품','확인중수량':'확인 중','순판매수량':'순판매수량','매출액':'주문금액','취소반품액':'취소·반품액','정산금액':'쿠팡 입금액\n(쿠팡 정산일)','취소반품구분':'취소·반품액 구분'};
+    const names={'취소수량':'취소','반품수량':'반품','확인중수량':'확인 중','순판매수량':'순판매수량','매출액':'주문금액','취소반품액':'취소·반품액','정산금액':'쿠팡 정산 예정액','취소반품구분':'취소·반품액 구분'};
     const LIVE=new Set(['주문건수','판매수량','취소수량','반품수량','확인중수량']);
-    document.getElementById('salesTbl').innerHTML=table(cols,rows,c=>c===key?'l':c==='정산금액'?'th2l':'',(c,val,r)=>{
+    document.getElementById('salesTbl').innerHTML=table(cols,rows,c=>c===key?'l':'',(c,val,r)=>{
       if(c===key)return esc(val)+(r['집계상태']?` <span class="pill warn">${esc(r['집계상태'])}</span>`:'');
       if(r['집계상태']&&LIVE.has(c))return `<span class="muted" title="예상치 · 다음 날 아침 정산 엑셀로 실제 숫자로 바뀜">${val===''?'-':won(val)}</span>`;
       if(c==='취소반품구분')return val?`<span class="pill ${val==='실제'?'ok':'warn'}">${esc(val)}</span>`:'-';
