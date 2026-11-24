@@ -12,8 +12,8 @@
 // 한 번 받은 화면은 이 브라우저에 저장해 두고 다음부터 바로 보여줍니다 (최신본은 화면이 알아서 다시 받아 둠).
 var API = 'https://script.google.com/macros/s/AKfycbzs41F3lBV5XdPUTQq8UVgp_NmWE5bmoWWDoGPaQ6zIo2Mr6w6vYcKU_LdUMz7UG2WAbw/exec';
 function render(html) {
-  // 페이지 읽기가 끝난 뒤에 화면을 바꿔야 '불러오는 중' 글자가 남지 않음
-  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', function () { render(html); }); return; }
+  // 페이지를 완전히 다 읽은(load) 뒤에 화면을 바꿔야 함. 읽는 도중(DOMContentLoaded)에 바꾸면 크롬에서 가끔 하얀 화면이 됨
+  if (document.readyState !== 'complete') { window.addEventListener('load', function () { setTimeout(function () { render(html); }, 0); }); return; }
   document.open(); document.write(html); document.close();
 }
 function load(n) {
