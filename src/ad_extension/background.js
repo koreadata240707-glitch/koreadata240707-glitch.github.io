@@ -68,13 +68,48 @@ chrome.runtime.onInstalled.addListener(async d => {
 chrome.runtime.onStartup.addListener(schedule);
 chrome.alarms.onAlarm.addListener(a => {
   if (a.name === 'tick') { maybeRun('ad'); maybeRun('settle'); }
-  if (a.name === 'wing') wingSales().catch(() => {});
+  if (a.name === 'wing') { wingSales().catch(() => {}); wingAlerts().catch(() => {}); }
 });
 
 // ---------- Wing 판매분석 매출 (10분마다) ----------
 // Wing 홈 '판매분석' 그래프와 같은 숫자(최근 15일, 판매-취소)를 받아 다운로드 폴더에 wing매출.json 으로 저장.
 // 수집 프로그램이 이 파일로 대시보드 '순매출'을 Wing과 똑같이 맞춤. 로그인 안 돼 있으면 조용히 건너뜀.
 const WING_SALES = 'https://wing.coupang.com/tenants/rfm-ss/api/nudging-card/sale-statistics/data';
+// Wing JSON 받기 (서비스워커에서 먼저, 안 되면 열려 있는 Wing 탭 안에서)
+async function wingJson(url, ok) {
+  try {
+    const r = await fetch(url, { credentials: 'include' });
+    const j = await r.json();
+    if (ok(j)) return j;
+  } catch (e) {}
+  const tabs = await chrome.tabs.query({ url: 'https://wing.coupang.com/*' });
+  for (const t of tabs) {
+    try {
+      const [res] = await chrome.scripting.executeScript({ target: { tabId: t.id }, world: 'MAIN',
+        func: async u => { try { return await (await fetch(u, { credentials: 'include' })).json(); } catch (e) { return null; } },
+        args: [url] });
+      if (res && ok(res.result)) return res.result;
+    } catch (e) {}
+  }
+  return null;
+}
+// ---------- Wing 알림 (종 알림 · 미답변 문의 · 계정 제재) ----------
+async function wingAlerts() {
+  const W = 'https://wing.coupang.com';
+  const bell = await wingJson(W + '/winglayout/bell/notification/find', j => j && j.data && 'bellNotificationCount' in j.data);
+  if (!bell) return;      // 로그인 안 됨
+  const inq = await wingJson(W + '/tenants/cs/card/content/unanswered-inquiry', j => j && j.productUnansweredInquiry);
+  const acct = await wingJson(W + '/tenants/hermes/api/compliance-center/account-status', j => j && 'activeSuspensions' in j);
+  const body = JSON.stringify({ fetchedAt: new Date().toISOString(), bell: bell.data, inquiry: inq, account: acct });
+  const sig = JSON.stringify([bell.data, inq, acct]);
+  const st = await chrome.storage.local.get(['alertSig', 'alertAt']);
+  if (st.alertSig === sig && Date.now() - (st.alertAt || 0) < 60 * 60e3) return;
+  const url = 'data:application/json;base64,' + btoa(unescape(encodeURIComponent(body)));
+  try { if (chrome.downloads.setUiOptions) await chrome.downloads.setUiOptions({ enabled: false }); } catch (e) {}
+  try { await download(url, `${VENDOR}-wing알림.json`, 'overwrite'); }
+  finally { try { if (chrome.downloads.setUiOptions) await chrome.downloads.setUiOptions({ enabled: true }); } catch (e) {} }
+  await chrome.storage.local.set({ alertSig: sig, alertAt: Date.now() });
+}
 async function wingFetch() {
   try {
     const r = await fetch(WING_SALES, { credentials: 'include' });
