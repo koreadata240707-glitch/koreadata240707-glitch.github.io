@@ -503,7 +503,7 @@ function drawDaily(n){
     const r=byDate[key]||{};labels.push(key.slice(5).replace('-','/'));
     a.push(r['순매출']!==undefined&&r['순매출']!==''?r['순매출']:(r['매출액']||0));b.push(r['추정이익']||0);}
   charts.d=new Chart(document.getElementById('cDaily'),{type:'line',data:{labels,datasets:[
-    {label:(DATA.daily||[])[0]&&DATA.daily[0]['순매출']!==undefined?'순매출':'매출액',data:a,borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,.08)',fill:true,borderWidth:2.5,pointRadius:0,cubicInterpolationMode:'monotone'},
+    {label:(DATA.daily||[])[0]&&DATA.daily[0]['순매출']!==undefined?'매출계':'매출액',data:a,borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,.08)',fill:true,borderWidth:2.5,pointRadius:0,cubicInterpolationMode:'monotone'},
     {label:'추정이익',data:b,borderColor:'#f59e0b',backgroundColor:'#f59e0b',borderWidth:2,pointRadius:0,cubicInterpolationMode:'monotone'}]},options:chartOpts()});
 }
 function topList(n){
@@ -519,17 +519,18 @@ function topList(n){
 
 /* 매출 */
 function renderSales(m,head){
-  m.innerHTML=head+`<p class="muted" style="margin-top:-4px">매출액 = 취소 전 주문 금액 · <b>순매출 = 쿠팡 Wing 판매분석의 '매출'과 같은 금액</b>(취소·반품을 뺀 금액, 최근 15일은 Wing 숫자 그대로 · 그 전은 정산 엑셀이 들어온 날은 <b>실제</b>, 아직 없는 날은 지난 취소·반품 비율 ${(((DATA.kpi||{})['취소반품 추정률']||0)*100).toFixed(1)}%로 <b>예상</b>)</p><div class="card"><h3><span>매출 내역</span><span class="seg" id="segS"><button data-v="daily" class="on">일별</button><button data-v="monthly">월별</button></span></h3>
+  m.innerHTML=head+`<p class="muted" style="margin-top:-4px">매출액 = 취소 전 주문 금액 · <b>매출계 = 쿠팡 Wing 판매분석의 '매출'과 같은 금액</b>(취소·반품을 뺀 금액, 최근 15일은 Wing 숫자 그대로 · 그 전은 정산 엑셀이 들어온 날은 <b>실제</b>, 아직 없는 날은 지난 취소·반품 비율 ${(((DATA.kpi||{})['취소반품 추정률']||0)*100).toFixed(1)}%로 <b>예상</b>)</p><div class="card"><h3><span>매출 내역</span><span class="seg" id="segS"><button data-v="daily" class="on">일별</button><button data-v="monthly">월별</button></span></h3>
   <div class="tbl-wrap" id="salesTbl"></div></div><div id="mcard"></div><div id="lcard"></div>`;
   drawMethod();drawLogi();
-  const draw=v=>{const rows=DATA[v]||[];const key=v==='daily'?'날짜':'월';
-    let cols=[key,'주문건수','판매수량','매출액'];
-    if(rows.length&&rows[0]['순매출']!==undefined)cols.push('취소반품액','순매출','취소반품구분');
+  const draw=v=>{const rows=(DATA[v]||[]).map(r=>Object.assign({},r,{'매출계':r['순매출']}));const key=v==='daily'?'날짜':'월';
+    const hasRet=has('반품 데이터 있음');
+    let cols=[key,'주문건수','판매수량'];if(hasRet)cols.push('반품건수');cols.push('매출액');
+    if(rows.length&&rows[0]['순매출']!==undefined)cols.push('취소반품액','매출계','취소반품구분');
     cols.push('원가');if(rows.some(r=>Number(r['예상수수료'])))cols.push('예상수수료');
     if(has('광고 데이터 있음'))cols.push('광고비');
     cols.push('추정이익');
     if(has('정산 데이터 있음'))cols.push('정산금액','정산기준이익');
-    if(has('반품 데이터 있음'))cols.push('반품건수','취소건수');
+    if(hasRet)cols.push('취소건수');
     document.getElementById('salesTbl').innerHTML=table(cols,rows,c=>c===key?'l':'',(c,v)=>c===key?esc(v):c==='취소반품구분'?(v?`<span class="pill ${v==='실제'?'ok':'warn'}">${esc(v)}</span>`:'-'):(v===''?'-':won(v)));};
   draw('daily');
   document.getElementById('segS').onclick=e=>{const v=e.target.dataset.v;if(!v)return;
