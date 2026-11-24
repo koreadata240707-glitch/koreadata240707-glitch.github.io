@@ -8,27 +8,35 @@
 <body style="margin:0;font-family:-apple-system,'Malgun Gothic',sans-serif;background:#f5f7fb">
 <p id="m" style="text-align:center;margin-top:40vh;color:#64748b">불러오는 중…</p>
 <script>
-// 화면은 구글(사무실 PC가 올려둔 최신본)에서 받아와서 보여줍니다. 이 파일은 고칠 필요가 없어요.
-// 한 번 받은 화면은 이 브라우저에 저장해 두고 다음부터 바로 보여줍니다 (최신본은 화면이 알아서 다시 받아 둠).
+// 화면은 이 저장소의 app.html 에 있어요. app.html 을 고쳐서 올리면 모든 직원 화면이 자동으로 바뀝니다.
+// (app.html 을 못 받으면 예전처럼 구글(사무실 PC가 올려둔 화면)에서 받아옵니다.)
+// 한 번 받은 화면은 이 브라우저에 저장해 두고 다음부터 바로 보여줍니다 (최신본은 화면이 알아서 다시 확인함).
 var API = 'https://script.google.com/macros/s/AKfycbzs41F3lBV5XdPUTQq8UVgp_NmWE5bmoWWDoGPaQ6zIo2Mr6w6vYcKU_LdUMz7UG2WAbw/exec';
 function render(html) {
   // 페이지를 완전히 다 읽은(load) 뒤에 화면을 바꿔야 함. 읽는 도중(DOMContentLoaded)에 바꾸면 크롬에서 가끔 하얀 화면이 됨
   if (document.readyState !== 'complete') { window.addEventListener('load', function () { setTimeout(function () { render(html); }, 0); }); return; }
   document.open(); document.write(html); document.close();
 }
-function load(n) {
+function save(html) { try { localStorage.setItem('cd_html', html); } catch (e) {} render(html); }
+function fromGoogle() {
   fetch(API, { method: 'POST', body: JSON.stringify({ fn: 'getHtml' }) })
     .then(function (r) { return r.json(); })
-    .then(function (j) { try { localStorage.setItem('cd_html', j.result.html); } catch (e) {} render(j.result.html); })
+    .then(function (j) { save(j.result.html); })
+    .catch(function () { document.getElementById('m').textContent = '사이트를 불러오지 못했어요. 잠시 후 새로고침해 주세요.'; });
+}
+function load(n) {
+  fetch('app.html?v=' + Date.now(), { cache: 'no-store' })
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+    .then(save)
     .catch(function () {
-      if (n < 4) { document.getElementById('m').textContent = '불러오는 중… (' + (n + 1) + ')'; setTimeout(function () { load(n + 1); }, 1500); }
-      else { document.getElementById('m').textContent = '사이트를 불러오지 못했어요. 잠시 후 새로고침해 주세요.'; }
+      if (n < 3) { document.getElementById('m').textContent = '불러오는 중… (' + (n + 1) + ')'; setTimeout(function () { load(n + 1); }, 1500); }
+      else fromGoogle();
     });
 }
 var saved = null;
 try {
-  // 아주 예전 화면이 저장돼 있으면 버리고 새로 받기 (화면 버전이 바뀔 때 숫자만 올리면 됨)
-  if (localStorage.getItem('cd_v') !== '3') { localStorage.removeItem('cd_html'); localStorage.setItem('cd_v', '3'); }
+  // 저장된 화면을 버리고 새로 받게 하려면 숫자만 올리면 됨 (4: 화면을 GitHub app.html 에서 받기 시작)
+  if (localStorage.getItem('cd_v') !== '4') { localStorage.removeItem('cd_html'); localStorage.setItem('cd_v', '4'); }
   saved = localStorage.getItem('cd_html');
 } catch (e) {}
 if (saved) render(saved); else load(0);
