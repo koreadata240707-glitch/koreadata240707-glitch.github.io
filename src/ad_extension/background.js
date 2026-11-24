@@ -57,13 +57,56 @@ chrome.notifications.onClicked.addListener(id => {
 });
 
 // ---------- 일정 ----------
-function schedule() { chrome.alarms.create('tick', { delayInMinutes: 1, periodInMinutes: 30 }); }
+function schedule() {
+  chrome.alarms.create('tick', { delayInMinutes: 1, periodInMinutes: 30 });
+  chrome.alarms.create('wing', { delayInMinutes: 1, periodInMinutes: 10 });
+}
 chrome.runtime.onInstalled.addListener(async d => {
   schedule();
   if (d.reason === 'update') { const ss = await getState('settle'); if (!ss.fixedV111) await setState('settle', { done: {}, fixedV111: true }); }
 });
 chrome.runtime.onStartup.addListener(schedule);
-chrome.alarms.onAlarm.addListener(a => { if (a.name === 'tick') { maybeRun('ad'); maybeRun('settle'); } });
+chrome.alarms.onAlarm.addListener(a => {
+  if (a.name === 'tick') { maybeRun('ad'); maybeRun('settle'); }
+  if (a.name === 'wing') wingSales().catch(() => {});
+});
+
+// ---------- Wing 판매분석 매출 (10분마다) ----------
+// Wing 홈 '판매분석' 그래프와 같은 숫자(최근 15일, 판매-취소)를 받아 다운로드 폴더에 wing매출.json 으로 저장.
+// 수집 프로그램이 이 파일로 대시보드 '순매출'을 Wing과 똑같이 맞춤. 로그인 안 돼 있으면 조용히 건너뜀.
+const WING_SALES = 'https://wing.coupang.com/tenants/rfm-ss/api/nudging-card/sale-statistics/data';
+async function wingFetch() {
+  try {
+    const r = await fetch(WING_SALES, { credentials: 'include' });
+    const j = await r.json();
+    if (j && Array.isArray(j.cardData)) return j;
+  } catch (e) {}
+  // 쿠키가 안 붙는 경우: 열려 있는 Wing 탭 안에서 받기
+  const tabs = await chrome.tabs.query({ url: 'https://wing.coupang.com/*' });
+  for (const t of tabs) {
+    try {
+      const [res] = await chrome.scripting.executeScript({ target: { tabId: t.id }, world: 'MAIN',
+        func: async u => { try { return await (await fetch(u, { credentials: 'include' })).json(); } catch (e) { return null; } },
+        args: [WING_SALES] });
+      if (res && res.result && Array.isArray(res.result.cardData)) return res.result;
+    } catch (e) {}
+  }
+  return null;
+}
+async function wingSales() {
+  const j = await wingFetch();
+  if (!j || !j.cardData.length) return;
+  const body = JSON.stringify({ fetchedAt: new Date().toISOString(), cardData: j.cardData });
+  const sig = JSON.stringify(j.cardData);
+  const prev = (await chrome.storage.local.get('wingSig')).wingSig;
+  const age = Date.now() - ((await chrome.storage.local.get('wingAt')).wingAt || 0);
+  if (prev === sig && age < 60 * 60e3) return;     // 안 바뀌었으면 1시간에 한 번만 저장
+  const url = 'data:application/json;base64,' + btoa(unescape(encodeURIComponent(body)));
+  try { if (chrome.downloads.setUiOptions) await chrome.downloads.setUiOptions({ enabled: false }); } catch (e) {}
+  try { await download(url, `${VENDOR}-wing매출.json`, 'overwrite'); }
+  finally { try { if (chrome.downloads.setUiOptions) await chrome.downloads.setUiOptions({ enabled: true }); } catch (e) {} }
+  await chrome.storage.local.set({ wingSig: sig, wingAt: Date.now() });
+}
 
 // 로그인이 풀려 멈췄다면, 사람이 다시 로그인하는 순간 이어서 받음
 chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
