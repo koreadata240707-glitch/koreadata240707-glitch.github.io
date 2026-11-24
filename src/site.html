@@ -189,7 +189,7 @@ tr.click{cursor:pointer}
 }
 .avgp{display:block;font-size:11px;color:#2563eb;margin-top:2px;white-space:nowrap}.avgp.none{color:#9aa1ab}
 </style>
-<style>th.th2l{white-space:pre-line}</style><style>
+<style>th.th2l{white-space:pre-line}@media (min-width:701px){th.dcol,td.dcol{display:none}}#segK{flex-wrap:wrap}</style><style>
 .bellw{position:relative}.bell{position:relative;border:1px solid var(--line);background:#fff;border-radius:10px;width:38px;height:33px;cursor:pointer;display:grid;place-items:center;padding:0}
 .bell svg{width:18px;height:18px}.bell .bcnt{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--bad);color:#fff;font-size:11px;font-weight:700;line-height:18px}
 .bpanel{position:absolute;right:0;top:42px;width:380px;max-width:calc(100vw - 24px);background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px rgba(15,23,42,.16);overflow:hidden;z-index:30}
@@ -197,7 +197,7 @@ tr.click{cursor:pointer}
 .btabs{display:flex;gap:4px;padding:8px 10px;border-bottom:1px solid var(--line)}.btabs button{border:0;background:none;padding:6px 10px;border-radius:8px;font-size:13px;color:var(--sub);cursor:pointer}.btabs button.on{background:var(--brand-soft);color:var(--brand);font-weight:700}
 .bit{display:flex;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer;text-decoration:none;color:inherit}.bit:hover{background:#fafcff}
 .bdot{flex:none;width:34px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:11px;font-weight:700}
-.bdot.t문의,.bdot.t센터{background:#eaf1ff;color:var(--brand)}.bdot.tWing{background:#fef3c7;color:var(--warn)}.bdot.t위반{background:#fee2e2;color:var(--bad)}
+.bdot.t문의,.bdot.t센터{background:#eaf1ff;color:var(--brand)}.bdot.tWing{background:#fef3c7;color:var(--warn)}.bdot.t위반{background:#fee2e2;color:var(--bad)}.bdot.t재고{background:#dcfce7;color:var(--good)}.bdot.t가격{background:#f3e8ff;color:#7c3aed}
 .bit b{font-size:13px;display:block}.bit p{margin:2px 0 0;font-size:12px;color:var(--sub);line-height:1.4}.bit small{font-size:11px;color:var(--sub);white-space:nowrap;margin-left:auto}
 .bnew{width:6px;height:6px;border-radius:3px;background:var(--bad);display:inline-block;margin-left:4px;vertical-align:middle}.bempty{padding:28px;text-align:center;color:var(--sub);font-size:13px}
 .bpf{padding:10px 14px;font-size:12px;color:var(--sub)}
@@ -309,11 +309,11 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='1.9';
+const APP_VER='2.0';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
-const M_PRI=['매출계','순판매수량','상품명','옵션명','주문가능재고','소진예상(일)','매출액','금액','광고매출(14일)','ROAS','반품률','상태','판매수량','현재고','추정이익'];
+const M_PRI=['입고추천','매출계','순판매수량','상품명','옵션명','주문가능재고','소진예상(일)','매출액','금액','광고매출(14일)','ROAS','반품률','상태','판매수량','현재고','추정이익'];
 function mobilizeTables(root){
   (root||document).querySelectorAll('table').forEach(t=>{
     if(t.classList.contains('mc')&&!t.querySelector('tbody tr:not([data-m])'))return;
@@ -464,7 +464,7 @@ function drawBell(){
   const unread=items.filter(it=>!seen.has(bellKey(it))).length;
   const c=$('bellCnt');if(c){c.hidden=!unread;c.textContent=unread>99?'99+':unread;}
   const p=$('bellPanel');if(!p||p.hidden)return;
-  const kinds=['전체','문의','센터','Wing','위반'].filter(k=>k==='전체'||items.some(it=>it.type===k));
+  const kinds=['전체','문의','센터','재고','가격','Wing','위반'].filter(k=>k==='전체'||items.some(it=>it.type===k));
   if(!kinds.includes(BELL_TAB))BELL_TAB='전체';
   const list=items.filter(it=>BELL_TAB==='전체'||it.type===BELL_TAB);
   const at=B.at?new Date(B.at+':00Z').toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'-';
@@ -743,6 +743,18 @@ function groupRows(rows){
   return Object.values(out).map(o=>Object.assign(o,{'1개당 이익':o['나간수량']&&!o._nocost?o['추정이익']/o['나간수량']:'','원가':o._nocost?'원가 미입력':o['원가']}))
     .concat(left.map(r=>Object.assign({},r,{'나간수량':r['판매수량'],'옵션수':1,'옵션명':(r['옵션명']||'')+' · 원가 미연결'})));
 }
+/* 조회 대비 구매 (최근 30일, Wing 재고현황) */
+function convCard(){
+  const rows=(DATA.inventory||[]).filter(r=>cnum(r['조회30일'])>0).map(r=>Object.assign({},r,{'구매전환율':cnum(r['판매30일'])/cnum(r['조회30일'])}))
+    .sort((a,b)=>cnum(b['조회30일'])-cnum(a['조회30일'])).slice(0,40);
+  if(!rows.length)return '';
+  return `<div class="card" style="margin-top:16px"><h3><span>조회 대비 구매 <span class="muted">최근 30일 · 쿠팡 Wing 재고현황 · 조회 많은 순 40개</span></span></h3><div class="tbl-wrap">${
+    table(['상품명','옵션명','조회30일','판매30일','구매전환율','취소30일','반품30일'],rows,c=>['상품명','옵션명'].includes(c)?'l':'',
+      (c,v)=>{if(c==='상품명'||c==='옵션명')return `<span class="name">${esc(v)}</span>`;
+        if(c==='구매전환율')return `<b class="${v<0.02?'down':v>=0.08?'up':''}">${(v*100).toFixed(1)}%</b>`;
+        return v===''?'-':won(v);},{'조회30일':'조회','판매30일':'판매(취소 전)','취소30일':'취소','반품30일':'반품'})}</div>
+    <p class="muted" style="margin-top:8px">구매전환율 = 판매 ÷ 조회. 조회는 많은데 전환율이 낮으면 가격·상세페이지·리뷰를 먼저 보세요.</p></div>`;
+}
 function renderProducts(m,head){
   m.innerHTML=head+`<div class="card"><h3><span>상품별 판매 순위</span></h3>
   ${rangeBar('rgP')}
@@ -750,7 +762,7 @@ function renderProducts(m,head){
   <input class="input" id="q" placeholder="상품명 검색" style="flex:1;min-width:140px;max-width:280px">
   <select class="input" id="sort"><option value="매출액">매출액순</option><option value="판매수량">판매수량순</option><option value="추정이익">이익순</option><option value="현재고">재고순</option></select></div>
   <p class="muted" id="pnote" style="margin:0 0 8px"></p>
-  <div class="tbl-wrap" id="pt"></div></div>`;
+  <div class="tbl-wrap" id="pt"></div></div>`+convCard();
   const draw=()=>{const R=RG.rgP;const q=$('q').value.trim().toLowerCase();const s=$('sort').value;
     let rows=rangeRows(R);if(PGRP)rows=groupRows(rows);
     rows=rows.filter(r=>!q||(String(r['상품명'])+' '+r['옵션명']).toLowerCase().includes(q));
@@ -778,24 +790,45 @@ function renderStock(m,head){
   const all=DATA.inventory||[];
   const dead=r=>r['상태']==='품절'&&!Number(r['최근30일판매']);   // 재고 0 + 최근 30일 판매 0 = 지금은 안 쓰는 옵션
   const cnt=s=>all.filter(r=>r['상태']===s).length;
+  const hasW=all.some(r=>r['입고추천']!==undefined&&r['아이템위너']!==undefined&&(r['아이템위너']||r['Wing소진(일)']!==''));
+  const F={'발주':r=>cnum(r['입고추천'])>0,'과잉':r=>cnum(r['과잉수량'])>0,'위너':r=>r['아이템위너']==='위너 아님'};
+  let sp={};try{sp=JSON.parse((DATA.kpi||{})['판매자 정보']||'{}')}catch(e){}
+  const best=sp.best||{};
   m.innerHTML=head+`<div class="card"><h3><span>로켓그로스 재고 현황</span><span class="muted">${esc((all[0]||{})['조회시각']||'')}</span></h3>
-  <div class="toolbar"><span class="seg" id="segK"><button data-s="" class="on">전체 ${all.length}</button><button data-s="품절">품절 ${cnt('품절')}</button><button data-s="부족">부족 ${cnt('부족')}</button><button data-s="정상">정상 ${cnt('정상')}</button></span>
+  <div class="toolbar"><span class="seg" id="segK"><button data-s="" class="on">전체 ${all.length}</button><button data-s="품절">품절 ${cnt('품절')}</button><button data-s="부족">부족 ${cnt('부족')}</button><button data-s="정상">정상 ${cnt('정상')}</button>${hasW?`<button data-s="발주">발주 필요 ${all.filter(F['발주']).length}</button><button data-s="과잉">과잉 ${all.filter(F['과잉']).length}</button><button data-s="위너">위너 아님 ${all.filter(F['위너']).length}</button>`:''}</span>
   <input class="input" id="kq" placeholder="상품명 검색" style="flex:1;max-width:280px">
   <label class="muted"><input type="checkbox" id="kh" checked> 안 팔리는 품절 옵션 숨기기 (${all.filter(dead).length}개)</label></div>
-  <p class="muted">남은 재고 많은 순 · 부족 = 최근 30일 판매 속도로 14일 안에 소진 예상</p>
+  <p class="muted">남은 재고 많은 순 · 부족 = 최근 30일 판매 속도로 14일 안에 소진 예상${hasW?` · <b>입고 추천</b> = 쿠팡 Wing 재고현황의 권장 입고 수량 · 줄을 누르면 상세${best.sellerScoreNum!=null?` · 판매자 점수 ${esc(best.sellerScoreNum)} · 아이템위너 비율 ${esc(best.itemWinnerRatio)}%`:''}`:''}</p>
   <div class="tbl-wrap" id="kt"></div></div>`;
   let st='';
+  const DCOL=['입고중','과잉수량','월보관비','품절로놓친매출30일','조회30일','판매30일','취소30일','구매전환율','반품30일','반품률3개월','반품사유','아이템위너','판매가','개당 쿠팡 비용'];
+  const dval=(c,r)=>{
+    if(c==='구매전환율'){const pv=cnum(r['조회30일']),u=cnum(r['판매30일']);return pv?(u/pv*100).toFixed(1)+'%':'-';}
+    if(c==='반품률3개월'){const v=r[c];return v===''||v==null?'-':(Number(v)*100).toFixed(1)+'%'+(r['반품률상태']?` (${esc(r['반품률상태'])})`:'');}
+    if(c==='개당 쿠팡 비용'){const a=cnum(r['개당판매수수료']),b=cnum(r['개당배송비']),d=cnum(r['개당입출고비']);return a+b+d?`${won(a+b+d)} <span class="muted">(수수료 ${won(a)} · 배송 ${won(b)} · 입출고 ${won(d)})</span>`:'-';}
+    if(c==='반품사유'||c==='아이템위너')return esc(r[c]||'-');
+    const v=r[c];return v===''||v==null?'-':won(v);};
   const draw=()=>{const q=document.getElementById('kq').value.trim().toLowerCase();
     const hide=document.getElementById('kh').checked;
-    const rows=all.filter(r=>(!hide||!dead(r))&&(!st||r['상태']===st)&&(!q||(String(r['상품명'])+' '+r['옵션명']+' '+r['판매자SKU']).toLowerCase().includes(q)))
-      .sort((a,b)=>cnum(b['주문가능재고'])-cnum(a['주문가능재고']));   // 남은 재고(주문가능재고) 많은 순
-    document.getElementById('kt').innerHTML=table(['상태','상품명','옵션명','판매자SKU','주문가능재고','최근30일판매','일평균판매','소진예상(일)'],rows,
-      c=>['상태','상품명','옵션명','판매자SKU'].includes(c)?'l':'',(c,v)=>{
+    const rows=all.filter(r=>(!hide||!dead(r))&&(!st||(F[st]?F[st](r):r['상태']===st))&&(!q||(String(r['상품명'])+' '+r['옵션명']+' '+r['판매자SKU']).toLowerCase().includes(q)))
+      .sort(st==='발주'?(a,b)=>cnum(a['추천기한(일)'])-cnum(b['추천기한(일)'])||cnum(b['입고추천'])-cnum(a['입고추천']):st==='과잉'?(a,b)=>cnum(b['월보관비'])-cnum(a['월보관비']):(a,b)=>cnum(b['주문가능재고'])-cnum(a['주문가능재고']));
+    const cols=['상태','상품명','옵션명','판매자SKU','주문가능재고','최근30일판매','일평균판매','소진예상(일)'].concat(hasW?['입고추천'].concat(DCOL):[]);
+    document.getElementById('kt').innerHTML=table(cols,rows,
+      c=>(['상태','상품명','옵션명','판매자SKU'].includes(c)?'l':'')+(DCOL.includes(c)?' dcol':''),(c,v,r)=>{
         if(c==='상태')return `<span class="pill ${v==='품절'?'bad':v==='부족'?'warn':'ok'}">${esc(v)}</span>`;
         if(c==='상품명'||c==='옵션명')return `<span class="name">${esc(v)}</span>`;
         if(c==='판매자SKU')return esc(v);
+        if(c==='입고추천'){const n=cnum(v),d=r['추천기한(일)'];return n?`<b class="${cnum(d)<=7?'down':''}">${won(n)}개</b>${d!==''?` <span class="muted">· ${esc(d)}일 안에</span>`:''}`:'<span class="muted">-</span>';}
+        if(DCOL.includes(c))return dval(c,r);
         if(v==='')return '-';
-        return won(v);});};
+        return won(v);});
+    // PC: 줄을 누르면 아래에 상세 펼치기 (휴대폰은 카드의 ▾ 자세히)
+    if(hasW)document.querySelectorAll('#kt tbody tr').forEach((tr,i)=>{tr.classList.add('click');tr.onclick=()=>{
+      if(window.matchMedia('(max-width:700px)').matches)return;
+      const nx=tr.nextElementSibling;if(nx&&nx.classList.contains('kdet')){nx.remove();return;}
+      const r=rows[i],d=document.createElement('tr');d.className='kdet';
+      d.innerHTML=`<td colspan="${cols.length}" style="background:#fafcff;white-space:normal;text-align:left"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px 18px;font-size:13px">${DCOL.map(c=>`<div><span class="muted">${esc(c)}</span> <b style="float:right">${dval(c,r)}</b></div>`).join('')}</div><div style="margin-top:8px"><a href="https://wing.coupang.com/tenants/rfm-inventory/management/list" target="_blank" rel="noopener">Wing 재고현황에서 보기 →</a></div></td>`;
+      tr.after(d);}});};
   draw();document.getElementById('kq').oninput=draw;document.getElementById('kh').onchange=draw;
   document.getElementById('segK').onclick=e=>{if(e.target.dataset.s===undefined)return;st=e.target.dataset.s;
     document.querySelectorAll('#segK button').forEach(b=>b.classList.toggle('on',b===e.target));draw()};
@@ -862,7 +895,19 @@ function renderReturns(m,head){
   <div class="card" style="margin-top:16px"><h3>최근 반품·취소 내역</h3><div class="tbl-wrap">${
     table(['매출인식일','주문번호','상품명','옵션명','수량','금액'],DATA.recentReturns||[],c=>['수량','금액'].includes(c)?'':'l',
       (c,v)=>['수량','금액'].includes(c)?won(v):(c==='상품명'||c==='옵션명')?`<span class="name">${esc(v)}</span>`:esc(v))}</div></div>
-  <p class="muted">※ 쿠팡 정산 엑셀(판매수수료 리포트)의 "주문 정산취소" 줄을 반품·취소로 집계해요. 반품 사유는 Wing > 로켓그로스 > 고객반품 관리에서 확인할 수 있어요.</p>`;
+  <p class="muted">※ 쿠팡 정산 엑셀(판매수수료 리포트)의 "주문 정산취소" 줄을 반품·취소로 집계해요.</p>`+returnInsightCard();
+}
+/* 쿠팡 고객반품 관리(최근 3개월): 상품별 반품률·사유 - 크롬 확장이 Wing에서 받아 옴 */
+function returnInsightCard(){
+  const rows=(DATA.inventory||[]).filter(r=>cnum(r['반품3개월'])>0).sort((a,b)=>cnum(b['반품률3개월'])-cnum(a['반품률3개월']));
+  if(!rows.length)return '';
+  return `<div class="card" style="margin-top:16px"><h3><span>상품별 반품률·사유 <span class="muted">쿠팡 고객반품 관리 · 최근 3개월</span></span></h3><div class="tbl-wrap">${
+    table(['상품명','옵션명','주문3개월','반품3개월','반품률3개월','반품률상태','반품사유'],rows,c=>['상품명','옵션명','반품사유','반품률상태'].includes(c)?'l':'',
+      (c,v)=>{if(c==='상품명'||c==='옵션명')return `<span class="name">${esc(v)}</span>`;
+        if(c==='반품률3개월')return Number(v)>=0.15?`<b class="down">${(Number(v)*100).toFixed(1)}%</b>`:(Number(v)*100).toFixed(1)+'%';
+        if(c==='반품률상태')return v?`<span class="pill ${v==='양호'?'ok':'bad'}">${esc(v)}</span>`:'-';
+        if(c==='반품사유')return esc(v||'-');return won(v);},{'주문3개월':'주문','반품3개월':'반품','반품률3개월':'반품률','반품률상태':'쿠팡 기준'})}</div>
+    <p class="muted" style="margin-top:8px">반품률 상태는 쿠팡이 카테고리별 기준으로 판단한 값이에요. 사유는 많은 순으로 3개까지.</p></div>`;
 }
 
 /* 정산 */
