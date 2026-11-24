@@ -1141,6 +1141,18 @@ def build_tables(db, costs, fee_rate=0.0, saver_fee=0):
             "SELECT ad_date, SUM(spend), SUM(sales14), SUM(impressions), SUM(clicks) FROM ads GROUP BY ad_date"):
         x = daily[d]
         x["ad_raw"], x["ad"], x["adsales"], x["imp"], x["clk"] = sp or 0, (sp or 0) * AD_VAT, s14 or 0, imp or 0, clk or 0
+    # Wing 판매분석 매출(판매-취소)이 있는 날은 순매출을 Wing 숫자와 똑같이 맞춤 (오늘은 실시간)
+    wing = {}
+    try:
+        wing = {d: g for d, g in db.execute("SELECT sale_date, gmv FROM wing_daily")}
+    except sqlite3.OperationalError:
+        pass
+    for d, g in wing.items():
+        x = daily[d]
+        if x["sales"] < g + x["refund"]:          # 주문 API가 늦게 들어온 날: 모자란 주문 금액을 채움
+            x["sales"] = g + x["refund"]
+        x["refund_est"] = x["sales"] - x["refund"] - g
+        x["wing"] = g
     for x in daily.values():
         x["fee"] = x["sales"] * fee_rate
         # 순매출 = 주문 매출 − 취소·반품 (정산 엑셀이 있는 날은 실제, 없는 날은 추정)
@@ -1630,6 +1642,10 @@ def collect_all(api, db, opt, t, rg_days, rev_days, ord_days, ret_days, backfill
     except Exception as e:
         log.warning("  정산 엑셀 반영 건너뜀: %s", e)
     try:
+        import_wing_sales(db, api.vendor_id, opt)
+    except Exception as e:
+        log.warning("  Wing 매출 반영 건너뜀: %s", e)
+    try:
         fix_settle_and_orders(db)
     except Exception as e:
         log.warning("  정산/주문 보정 건너뜀: %s", e)
@@ -1637,6 +1653,35 @@ def collect_all(api, db, opt, t, rg_days, rev_days, ord_days, ret_days, backfill
     meta_set(db, "rg_initialized", datetime.now(KST).isoformat())
     meta_set(db, "initialized", datetime.now(KST).isoformat())
     db.commit()
+
+
+def import_wing_sales(db, vendor_id, opt=None):
+    """크롬 확장이 10분마다 저장하는 Wing 판매분석 매출(판매-취소, 최근 15일)을 읽음"""
+    db.execute("CREATE TABLE IF NOT EXISTS wing_daily (sale_date TEXT PRIMARY KEY, gmv REAL, units REAL, fetched_at TEXT)")
+    files = []
+    for folder in _excel_folders(opt):
+        files += glob.glob(os.path.join(folder, f"{vendor_id}-wing매출*.json"))
+    files = sorted(set(files), key=os.path.getmtime)
+    if not files:
+        return 0
+    newest = files[-1]
+    for old in files[:-1]:
+        try:
+            _archive(old, os.path.join(BASE_DIR, "정산엑셀_보관"), os.path.basename(old))
+        except Exception:
+            pass
+    key = f"{os.path.getmtime(newest):.0f}"
+    if meta_get(db, "wing_file") == key:
+        return 0
+    j = json.load(open(newest, encoding="utf-8"))
+    rows = [(str(r["date"])[:10], float(r.get("gmv") or 0), float(r.get("unitsSold") or 0), j.get("fetchedAt", ""))
+            for r in j.get("cardData", []) if r.get("date")]
+    with db:
+        db.executemany("INSERT OR REPLACE INTO wing_daily VALUES (?,?,?,?)", rows)
+    meta_set(db, "wing_file", key)
+    db.commit()
+    log.info("  Wing 판매분석 매출 %d일 반영 (받은 시각 %s)", len(rows), j.get("fetchedAt", "")[:16])
+    return len(rows)
 
 
 def fix_settle_and_orders(db):

@@ -452,10 +452,10 @@ function renderHome(m,head){
   const hasAd=has('광고 데이터 있음'), adRaw=Number(k['이번 달 광고비(VAT별도)'])||0, adRoas=adRaw?(Number(k['이번 달 광고매출'])||0)/adRaw:0;
   m.innerHTML=head+`
   <div class="kpis">
-    ${hasNet?kpi('어제 순매출',k['어제 순매출'],`주문 ${short(k['어제 매출'])}원 − 취소·반품(예상)`):kpi('어제 매출',k['어제 매출'])}
-    ${hasNet?kpi('오늘 순매출',k['오늘 순매출'],`주문 ${short(k['오늘 매출'])}원 · 실시간`):kpi('오늘 매출',k['오늘 매출'],'오늘 결제 기준 (실시간)')}
-    ${hasNet?kpi('이번 달 순매출',k['이번 달 순매출'],`주문 ${short(thisM)}원${pace?` · 월말 예상 ${short(pace*netRatio)}원`:''}`):kpi('이번 달 매출',thisM, pace?`월말 예상 ${short(pace)}원`:'')}
-    ${hasNet?kpi('지난 달 순매출',k['지난 달 순매출'],`주문 ${short(k['지난 달 매출'])}원`):kpi('지난 달 매출',k['지난 달 매출'])}
+    ${hasNet?kpi('어제 매출 (Wing 기준)',k['어제 순매출'],`취소 전 주문 ${short(k['어제 매출'])}원`):kpi('어제 매출',k['어제 매출'])}
+    ${hasNet?kpi('오늘 매출 (Wing 기준)',k['오늘 순매출'],`취소 전 주문 ${short(k['오늘 매출'])}원 · 10분마다`):kpi('오늘 매출',k['오늘 매출'],'오늘 결제 기준 (실시간)')}
+    ${hasNet?kpi('이번 달 매출 (Wing 기준)',k['이번 달 순매출'],`취소 전 주문 ${short(thisM)}원${pace?` · 월말 예상 ${short(pace*netRatio)}원`:''}`):kpi('이번 달 매출',thisM, pace?`월말 예상 ${short(pace)}원`:'')}
+    ${hasNet?kpi('지난 달 매출 (Wing 기준)',k['지난 달 순매출'],`취소 전 주문 ${short(k['지난 달 매출'])}원`):kpi('지난 달 매출',k['지난 달 매출'])}
     ${kpi('이번 달 추정이익',k['이번 달 추정이익'], noCost?`<span class="pill warn">원가 미입력 ${noCost}개</span>`:(hasAd?'매출 − 원가 − 광고비':(fee?`수수료 ${(fee*100).toFixed(1)}% 반영`:'매출 − 원가')))}
     ${hasAd?kpi('이번 달 광고비',k['이번 달 광고비'],`ROAS ${adRoas?Math.round(adRoas*100)+'%':'-'} · 광고매출 ${short(k['이번 달 광고매출'])}원`):kpi('최근 7일 매출',k['최근 7일 매출'])}
     ${kpi('이번 달 주문',null,'',won(k['이번 달 주문건수'])+'<span style="font-size:14px;font-weight:600"> 건</span>')}
@@ -519,7 +519,7 @@ function topList(n){
 
 /* 매출 */
 function renderSales(m,head){
-  m.innerHTML=head+`<p class="muted" style="margin-top:-4px">매출액 = 주문 금액 그대로 · 순매출 = 취소·반품을 뺀 금액 (정산 엑셀이 들어온 날은 <b>실제</b>, 아직 없는 날은 지난 취소·반품 비율 ${(((DATA.kpi||{})['취소반품 추정률']||0)*100).toFixed(1)}%로 <b>예상</b>)</p><div class="card"><h3><span>매출 내역</span><span class="seg" id="segS"><button data-v="daily" class="on">일별</button><button data-v="monthly">월별</button></span></h3>
+  m.innerHTML=head+`<p class="muted" style="margin-top:-4px">매출액 = 취소 전 주문 금액 · <b>순매출 = 쿠팡 Wing 판매분석의 '매출'과 같은 금액</b>(취소·반품을 뺀 금액, 최근 15일은 Wing 숫자 그대로 · 그 전은 정산 엑셀이 들어온 날은 <b>실제</b>, 아직 없는 날은 지난 취소·반품 비율 ${(((DATA.kpi||{})['취소반품 추정률']||0)*100).toFixed(1)}%로 <b>예상</b>)</p><div class="card"><h3><span>매출 내역</span><span class="seg" id="segS"><button data-v="daily" class="on">일별</button><button data-v="monthly">월별</button></span></h3>
   <div class="tbl-wrap" id="salesTbl"></div></div><div id="mcard"></div><div id="lcard"></div>`;
   drawMethod();drawLogi();
   const draw=v=>{const rows=DATA[v]||[];const key=v==='daily'?'날짜':'월';
