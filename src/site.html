@@ -248,7 +248,7 @@ tr.click{cursor:pointer}
   <header>
     <div class="top">
       <div class="logo" role="img" aria-label="한국데이터"></div>
-      <h2>한국데이터 매출 대시보드</h2>
+      <h2>한국데이터 매출 대시보드 <small id="appVer" style="font-size:12px;color:var(--sub);font-weight:500"></small></h2>
       <span class="who" id="who"></span>
       <span class="bellw"><button class="bell" id="bellBtn" title="알림" onclick="toggleBell()"><svg viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="bcnt" id="bellCnt" hidden></span></button><div class="bpanel" id="bellPanel" hidden></div></span>
       <button class="btn-ghost" onclick="openPwModal(false)">비밀번호 변경</button>
@@ -263,6 +263,8 @@ tr.click{cursor:pointer}
 <div class="toast" id="toast"></div>
 
 <script>
+// 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
+const APP_VER='1.4';
 const TABS = [
   {id:'home', label:'대시보드'},
   {id:'sales', label:'매출'},
@@ -406,6 +408,8 @@ function toggleBell(){
 }
 document.addEventListener('click',e=>{const p=$('bellPanel');if(p&&!p.hidden&&!e.target.closest('.bellw'))p.hidden=true;});
 async function startApp(){
+  {const v=$('appVer');if(v)v.textContent='v'+APP_VER;let f=null;try{f=sessionStorage.getItem('cd_upd_from');sessionStorage.removeItem('cd_upd_from')}catch(e){}
+   if(f)setTimeout(()=>toast(f===APP_VER?`지금이 최신 화면이에요 (v${APP_VER})`:`v${f} → v${APP_VER}로 업데이트했어요`),600);}
   {const h0=decodeURIComponent(location.hash.slice(1)).split('/')[0];if(h0&&TABS.some(x=>x.id===h0))TAB=h0;}
   document.getElementById('login').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
@@ -1837,16 +1841,17 @@ async function checkUpdate(manual){
     const r=await fetch('src/site.html?v='+Date.now(),{cache:'no-store'});
     if(!r.ok)throw new Error('화면 파일을 찾지 못했어요');
     const html=await r.text();
+    const nv=(html.match(/const APP_VER='([^']+)'/)||[])[1]||'';
     let old=null;try{old=localStorage.getItem('cd_html');localStorage.setItem('cd_html',html)}catch(e){}
-    if(old===html){if(manual)toast('지금이 최신 화면이에요');return;}
-    if(manual)location.reload();else newVersionBar();
+    if(old===html){if(manual)toast(`지금이 최신 화면이에요 (v${APP_VER})`);return;}
+    if(manual){try{sessionStorage.setItem('cd_upd_from',APP_VER)}catch(e){}location.reload();}else newVersionBar(nv);
   }catch(e){if(manual)toast('업데이트 확인 실패: '+e.message)}
 }
-function newVersionBar(){   // 화면이 새로 바뀌었으면 위에 안내 띄우기
+function newVersionBar(nv){   // 화면이 새로 바뀌었으면 위에 안내 띄우기
   if(document.getElementById('nvb'))return;
   const d=document.createElement('div');d.id='nvb';
   d.style.cssText='position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:70;background:#0f172a;color:#fff;border-radius:12px;padding:10px 12px 10px 16px;font-size:14px;display:flex;gap:10px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.2)';
-  d.innerHTML='새 화면이 나왔어요 <button class="btn" style="padding:6px 12px">새로고침</button>';
+  d.innerHTML=(nv?`새 화면 v${nv}이 나왔어요`:'새 화면이 나왔어요')+' <button class="btn" style="padding:6px 12px">새로고침</button>';
   d.querySelector('button').onclick=()=>location.reload();document.body.appendChild(d);
 }
 function alertBox(html){
