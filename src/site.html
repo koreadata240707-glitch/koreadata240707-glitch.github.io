@@ -35,16 +35,16 @@ button,input,select{font:inherit}
 
 /* 앱 레이아웃 */
 header{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-.top{max-width:1180px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px}
+.top{max-width:1600px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px}
 .top .logo{width:38px;height:38px;margin:0}
 .top h2{font-size:17px;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .who{font-size:13px;color:var(--sub);white-space:nowrap}
 .btn-ghost{border:1px solid var(--line);background:#fff;border-radius:10px;padding:7px 12px;font-size:13px;cursor:pointer}
-nav{max-width:1180px;margin:0 auto;padding:0 12px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+nav{max-width:1600px;margin:0 auto;padding:0 12px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
 nav::-webkit-scrollbar{display:none}
 nav button{border:0;background:none;padding:10px 12px;font-size:14px;font-weight:600;color:var(--sub);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap}
 nav button.on{color:var(--brand);border-bottom-color:var(--brand)}
-main{max-width:1180px;margin:0 auto;padding:16px}
+main{max-width:1600px;margin:0 auto;padding:16px}
 .banner{border-radius:12px;padding:12px 14px;font-size:14px;margin-bottom:14px}
 .banner.err{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
 .banner.info{background:var(--brand-soft);color:#1e40af}
@@ -68,6 +68,7 @@ main{max-width:1180px;margin:0 auto;padding:16px}
 .seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
 
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media (min-width:701px){.tbl-wrap th:first-child,.tbl-wrap td:first-child{position:sticky;left:0;z-index:1;background:var(--card)}.tbl-wrap th:first-child{z-index:2;background:#fafbfd}}
 #salesTbl th,#salesTbl td{padding:9px 7px}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
@@ -309,7 +310,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='2.1';
+const APP_VER='2.2';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
