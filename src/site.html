@@ -316,7 +316,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='2.6';
+const APP_VER='2.7';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -673,6 +673,7 @@ function renderSales(m,head){
       if(r['집계상태']&&LIVE.has(c))return `<span class="muted" title="예상치 · 다음 날 아침 정산 엑셀로 실제 숫자로 바뀜">${val===''?'-':won(val)}</span>`;
       if(c==='취소반품구분')return val?`<span class="pill ${val==='실제'?'ok':'warn'}">${esc(val)}</span>`:'-';
       if(c==='매출계'||c==='순판매수량')return `<b>${val===''?'-':won(val)}</b>`;
+      if(c==='정산기준이익'&&val===''&&Number(r['정산금액']))return '<span class="muted" style="font-size:11px" title="그날 정산된 상품 중 원가가 없는 상품이 있어요 · 원가·마진 탭에서 입력하면 숫자로 바뀜">원가 미입력</span>';
       return val===''?'-':won(val);},names);};
   draw('daily');fitSalesBox();
   document.getElementById('salesMove').onclick=e=>{const d=+e.target.dataset.d;if(!d)return;const w=document.getElementById('salesTbl');w.scrollBy({left:d*Math.max(200,w.clientWidth*0.6),behavior:'smooth'})};
