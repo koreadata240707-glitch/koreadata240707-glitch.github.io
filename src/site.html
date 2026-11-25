@@ -309,7 +309,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='2.0';
+const APP_VER='2.1';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -344,7 +344,7 @@ const TABS = [
   {id:'products', label:'상품'},
   {id:'stock', label:'재고'},
   {id:'returns', label:'반품·취소', need:'반품 데이터 있음'},
-  {id:'settle', label:'정산', need:'정산 데이터 있음'},
+  {id:'settle', label:'정산', need:'정산 데이터 있음', admin:true},
   {id:'ads', label:'광고', need:'광고 데이터 있음'},
   {id:'costs', label:'원가·마진', admin:true},
   {id:'warranty', label:'보증·교환'},
@@ -558,6 +558,8 @@ function show(t,mode){
 
 /* 대시보드 */
 function has(k){return Number((DATA.kpi||{})[k])===1}
+function MONEY(){return !!(ME&&ME.role==='관리자')}   // 원가·이익·정산 숫자는 관리자만
+const MONEY_COLS=new Set(['원가','추정이익','1개당 이익','정산금액','정산기준이익']);
 function renderHome(m,head){
   const k=DATA.kpi||{};
   const thisM=Number(k['이번 달 매출'])||0;
@@ -575,7 +577,7 @@ function renderHome(m,head){
     ${hasNet?kpi('오늘 매출 (Wing 기준)',k['오늘 순매출'],`취소 전 주문 ${short(k['오늘 매출'])}원 · 10분마다`):kpi('오늘 매출',k['오늘 매출'],'오늘 결제 기준 (실시간)')}
     ${hasNet?kpi('이번 달 매출 (Wing 기준)',k['이번 달 순매출'],`취소 전 주문 ${short(thisM)}원${pace?` · 월말 예상 ${short(pace*netRatio)}원`:''}`):kpi('이번 달 매출',thisM, pace?`월말 예상 ${short(pace)}원`:'')}
     ${hasNet?kpi('지난 달 매출 (Wing 기준)',k['지난 달 순매출'],`취소 전 주문 ${short(k['지난 달 매출'])}원`):kpi('지난 달 매출',k['지난 달 매출'])}
-    ${kpi('이번 달 추정이익',k['이번 달 추정이익'], noCost?`<span class="pill warn">원가 미입력 ${noCost}개</span>`:(hasAd?'매출 − 원가 − 광고비':(fee?`수수료 ${(fee*100).toFixed(1)}% 반영`:'매출 − 원가')))}
+    ${!MONEY()?'':kpi('이번 달 추정이익',k['이번 달 추정이익'], noCost?`<span class="pill warn">원가 미입력 ${noCost}개</span>`:(hasAd?'매출 − 원가 − 광고비':(fee?`수수료 ${(fee*100).toFixed(1)}% 반영`:'매출 − 원가')))}
     ${hasAd?kpi('이번 달 광고비',k['이번 달 광고비'],`ROAS ${adRoas?Math.round(adRoas*100)+'%':'-'} · 광고매출 ${short(k['이번 달 광고매출'])}원`):kpi('최근 7일 매출',k['최근 7일 매출'])}
     ${kpi('이번 달 주문',null,'',won(k['이번 달 주문건수'])+'<span style="font-size:14px;font-weight:600"> 건</span>')}
     ${kpi('재고 알림',null,'로켓그로스 창고 기준',`<span class="${soldOut?'down':''}">품절 ${soldOut}</span> · <span style="color:${low?'var(--warn)':'inherit'}">부족 ${low}</span>`)}
@@ -586,19 +588,19 @@ function renderHome(m,head){
     <div class="card"><h3>매출 TOP 5 <span class="muted">최근 30일</span></h3>${topList(5)}</div>
   </div>
   <div class="grid2">
-    <div class="card"><h3>월별 매출 · 원가${hasAd?' · 광고비':''} · 추정이익</h3><div class="chart-box"><canvas id="cMonthly"></canvas></div></div>
+    <div class="card"><h3>월별 매출${MONEY()?' · 원가':''}${hasAd?' · 광고비':''}${MONEY()?' · 추정이익':''}</h3><div class="chart-box"><canvas id="cMonthly"></canvas></div></div>
     <div class="card"><h3>재고 알림 <span class="muted">품절·14일 내 소진</span></h3>${stockAlerts(6)}</div>
   </div>
-  <p class="muted">※ 매출은 고객 결제일 기준 금액이에요. 추정이익 = 매출 − 원가${fee?` − 수수료(${(fee*100).toFixed(1)}%)`:''}${hasAd?' − 광고비(VAT 포함)':''} 이고, ${hasAd?'':'광고비·'}입출고비·택배비는 빠져 있어요.${hasAd?` 광고는 ${esc(k['광고 마지막 날짜']||'')}까지 반영.`:''}</p>`;
+  <p class="muted">※ 매출은 고객 결제일 기준 금액이에요.${!MONEY()?(hasAd?` 광고는 ${esc(k['광고 마지막 날짜']||'')}까지 반영.`:'')+'</p>':` 추정이익 = 매출 − 원가${fee?` − 수수료(${(fee*100).toFixed(1)}%)`:''}${hasAd?' − 광고비(VAT 포함)':''} 이고, ${hasAd?'':'광고비·'}입출고비·택배비는 빠져 있어요.${hasAd?` 광고는 ${esc(k['광고 마지막 날짜']||'')}까지 반영.`:''}</p>`}`;
   drawDaily(30);
   document.getElementById('seg').onclick=e=>{const n=+e.target.dataset.n;if(!n)return;
     document.querySelectorAll('#seg button').forEach(b=>b.classList.toggle('on',+b.dataset.n===n));drawDaily(n)};
   const mo=(DATA.monthly||[]).slice(0,12).reverse();
   charts.m=new Chart(document.getElementById('cMonthly'),{type:'bar',data:{labels:mo.map(r=>r['월']),datasets:[
     {label:'매출액',data:mo.map(r=>r['매출액']),backgroundColor:'#2563eb',borderRadius:6},
-    {label:'원가',data:mo.map(r=>r['원가']),backgroundColor:'#cbd5e1',borderRadius:6},
+    ...(!MONEY()?[]:[{label:'원가',data:mo.map(r=>r['원가']),backgroundColor:'#cbd5e1',borderRadius:6}]),
     ...(hasAd?[{label:'광고비',data:mo.map(r=>r['광고비']||0),backgroundColor:'#f43f5e',borderRadius:6}]:[]),
-    {label:'추정이익',data:mo.map(r=>r['추정이익']),backgroundColor:'#f59e0b',borderRadius:6}]},options:chartOpts()});
+    ...(!MONEY()?[]:[{label:'추정이익',data:mo.map(r=>r['추정이익']),backgroundColor:'#f59e0b',borderRadius:6}])]},options:chartOpts()});
 }
 function stockAlerts(n){
   const rows=(DATA.inventory||[]).filter(r=>r['상태']==='부족'||(r['상태']==='품절'&&Number(r['최근30일판매'])>0)).slice(0,n);
@@ -623,7 +625,7 @@ function drawDaily(n){
     a.push(r['순매출']!==undefined&&r['순매출']!==''?r['순매출']:(r['매출액']||0));b.push(r['추정이익']||0);}
   charts.d=new Chart(document.getElementById('cDaily'),{type:'line',data:{labels,datasets:[
     {label:(DATA.daily||[])[0]&&DATA.daily[0]['순매출']!==undefined?'매출계':'매출액',data:a,borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,.08)',fill:true,borderWidth:2.5,pointRadius:0,cubicInterpolationMode:'monotone'},
-    {label:'추정이익',data:b,borderColor:'#f59e0b',backgroundColor:'#f59e0b',borderWidth:2,pointRadius:0,cubicInterpolationMode:'monotone'}]},options:chartOpts()});
+    ...(!MONEY()?[]:[{label:'추정이익',data:b,borderColor:'#f59e0b',backgroundColor:'#f59e0b',borderWidth:2,pointRadius:0,cubicInterpolationMode:'monotone'}])]},options:chartOpts()});
 }
 function topList(n){
   const p=(DATA.products||[]).slice(0,n);
@@ -663,7 +665,7 @@ function renderSales(m,head){
   document.getElementById('segS').onclick=e=>{const v=e.target.dataset.v;if(!v)return;
     document.querySelectorAll('#segS button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));draw(v)};
 }
-function drawLogi(){const el=$('lcard');if(!el)return;const M=DATA.logiMonthly||[];if(!M.length){el.innerHTML='';return}
+function drawLogi(){const el=$('lcard');if(!el)return;const M=DATA.logiMonthly||[];if(!M.length||!MONEY()){el.innerHTML='';return}
   const by={};M.forEach(r=>{const m=String(r['월']);const o=by[m]=by[m]||{m,A:0,P:0,S:0,C:0,whA:0,whC:0,shA:0,shC:0,n:0};const A=cnum(r['정가']),P=cnum(r['프로모션할인']),S=cnum(r['세이버할인']),C=cnum(r['청구']);
     o.A+=A;o.P+=P;o.S+=S;o.C+=C;if(r['구분']==='입출고비'){o.whA+=A;o.whC+=C;o.n+=cnum(r['건수'])}else{o.shA+=A;o.shC+=C}});
   const rows=Object.values(by).sort((a,b)=>a.m<b.m?1:-1);const T=rows.reduce((t,o)=>{t.A+=o.A;t.P+=o.P;t.S+=o.S;t.C+=o.C;return t},{A:0,P:0,S:0,C:0});
@@ -689,14 +691,15 @@ function methodCard(){
       if(!r)return;any=true;x.cnt+=cnum(r['판매수량']);x.q+=cnum(r['판매수량'])*k;x.amt+=cnum(r['매출액']);
       if(isNaN(Number(r['원가'])))x.nocost=true;else{x.cost+=cnum(r['원가']);x.profit+=cnum(r['추정이익'])}});
     const rows=Object.values(by).sort((a,b)=>a.n-b.n);const T=rows.reduce((t,x)=>({cnt:t.cnt+x.cnt,q:t.q+x.q,amt:t.amt+x.amt,cost:t.cost+x.cost,profit:t.profit+x.profit}),{cnt:0,q:0,amt:0,cost:0,profit:0});
-    const tr=(lab,x,cls)=>`<tr class="${cls||''}"><td class="l">${lab}</td><td>${won(x.cnt)}건</td><td>${won(x.q)}개</td><td>${won(x.amt)}</td><td>${x.cnt&&!x.nocost?won(x.cost):'-'}</td><td class="${sgn(x.profit)}">${x.cnt&&!x.nocost?won(x.profit):'-'}</td><td>${x.q?won(x.amt/x.q):'-'}</td><td class="${sgn(x.profit)}">${x.q&&!x.nocost?won(x.profit/x.q):'-'}</td></tr>`;
-    return {any,T,html:`<div class="mgrp"><div class="mhead"><b>${esc(g.name)}</b> <span class="muted">${esc(g.batch||'')}</span></div><div class="tbl-wrap"><table><thead><tr><th class="l">판매 방법</th><th>판매 건수</th><th>나간 수량</th><th>매출액</th><th>원가</th><th>추정이익</th><th>1개당 매출</th><th>1개당 이익</th></tr></thead><tbody>${
+    const tr=(lab,x,cls)=>`<tr class="${cls||''}"><td class="l">${lab}</td><td>${won(x.cnt)}건</td><td>${won(x.q)}개</td><td>${won(x.amt)}</td>${MONEY()?`<td>${x.cnt&&!x.nocost?won(x.cost):'-'}</td><td class="${sgn(x.profit)}">${x.cnt&&!x.nocost?won(x.profit):'-'}</td>`:''}<td>${x.q?won(x.amt/x.q):'-'}</td>${MONEY()?`<td class="${sgn(x.profit)}">${x.q&&!x.nocost?won(x.profit/x.q):'-'}</td>`:''}</tr>`;
+    return {any,T,html:`<div class="mgrp"><div class="mhead"><b>${esc(g.name)}</b> <span class="muted">${esc(g.batch||'')}</span></div><div class="tbl-wrap"><table><thead><tr><th class="l">판매 방법</th><th>판매 건수</th><th>나간 수량</th><th>매출액</th>${MONEY()?'<th>원가</th><th>추정이익</th>':''}<th>1개당 매출</th>${MONEY()?'<th>1개당 이익</th>':''}</tr></thead><tbody>${
       rows.map(x=>tr(x.n===1?'1개 단품':x.n+'개 번들',x)).join('')}${tr('합계',T,'tot')}</tbody></table></div></div>`}});
   cards.sort((a,b)=>b.T.amt-a.T.amt);
   return `<div class="card"><h3><span>판매 방법별 실적 <span class="muted">번들이 있는 상품만</span></span></h3>${rangeBar('rgM')}
-  <p class="muted" style="margin:-4px 0 10px">원가는 원가·마진의 단품 원가 × 묶음 수 · 추정이익은 수수료를 뺀 값(로켓그로스 배송·입출고비 전)</p>${cards.map(c=>c.html).join('')}</div>`;
+  ${MONEY()?'<p class="muted" style="margin:-4px 0 10px">원가는 원가·마진의 단품 원가 × 묶음 수 · 추정이익은 수수료를 뺀 값(로켓그로스 배송·입출고비 전)</p>':''}${cards.map(c=>c.html).join('')}</div>`;
 }
 function table(cols,rows,cls,fmt,names){
+  if(!MONEY())cols=cols.filter(c=>!MONEY_COLS.has(c));
   if(!rows.length)return '<div class="empty">데이터가 아직 없어요</div>';
   return `<table><thead><tr>${cols.map(c=>`<th class="${cls(c)}">${esc((names||{})[c]||c)}</th>`).join('')}</tr></thead><tbody>${
     rows.map(r=>`<tr>${cols.map(c=>`<td class="${cls(c)}">${fmt(c,r[c],r)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
@@ -760,7 +763,7 @@ function renderProducts(m,head){
   ${rangeBar('rgP')}
   <div class="toolbar"><span class="seg" id="grp"><button data-v="0" class="${PGRP?'':'on'}">쿠팡 옵션별</button><button data-v="1" class="${PGRP?'on':''}">우리 상품별로 묶기</button></span>
   <input class="input" id="q" placeholder="상품명 검색" style="flex:1;min-width:140px;max-width:280px">
-  <select class="input" id="sort"><option value="매출액">매출액순</option><option value="판매수량">판매수량순</option><option value="추정이익">이익순</option><option value="현재고">재고순</option></select></div>
+  <select class="input" id="sort"><option value="매출액">매출액순</option><option value="판매수량">판매수량순</option>${MONEY()?'<option value="추정이익">이익순</option>':''}<option value="현재고">재고순</option></select></div>
   <p class="muted" id="pnote" style="margin:0 0 8px"></p>
   <div class="tbl-wrap" id="pt"></div></div>`+convCard();
   const draw=()=>{const R=RG.rgP;const q=$('q').value.trim().toLowerCase();const s=$('sort').value;
@@ -768,7 +771,7 @@ function renderProducts(m,head){
     rows=rows.filter(r=>!q||(String(r['상품명'])+' '+r['옵션명']).toLowerCase().includes(q));
     const sk=s==='판매수량'&&PGRP?'나간수량':s;rows=rows.slice().sort((a,b)=>(Number(b[sk])||0)-(Number(a[sk])||0)).map((r,i)=>Object.assign({},r,{'순위':i+1}));
     const tot=rows.reduce((t,r)=>{t.a+=cnum(r['매출액']);t.p+=isNaN(Number(r['추정이익']))?0:cnum(r['추정이익']);return t},{a:0,p:0});
-    $('pnote').innerHTML=`${(DATA.optDaily||[]).length?rangeLabel(R):'최근 30일'} · ${rows.length}줄 · 매출 ${won(tot.a)}원 · 추정이익 ${won(tot.p)}원${PGRP?' · <b>나간 수량</b> = 번들은 묶음 수만큼 곱한 장수':''}${(DATA.optDaily||[]).length?'':' · 기간 선택은 다음 수집부터 돼요'}`;
+    $('pnote').innerHTML=`${(DATA.optDaily||[]).length?rangeLabel(R):'최근 30일'} · ${rows.length}줄 · 매출 ${won(tot.a)}원${MONEY()?` · 추정이익 ${won(tot.p)}원`:''}${PGRP?' · <b>나간 수량</b> = 번들은 묶음 수만큼 곱한 장수':''}${(DATA.optDaily||[]).length?'':' · 기간 선택은 다음 수집부터 돼요'}`;
     let cols=PGRP?['순위','상품명','옵션명','옵션수','판매수량','나간수량','매출액','원가','추정이익','1개당 이익','현재고']:['순위','상품명','옵션명','판매수량','매출액','원가','추정이익','현재고','재고일수'];
     if(!PGRP&&has('반품 데이터 있음'))cols.push('반품수량','반품률');
     const names={'옵션명':PGRP?'차수·메모':'옵션명','판매수량':PGRP?'판매 건수':'판매수량'};
