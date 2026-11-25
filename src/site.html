@@ -70,6 +70,11 @@ main{max-width:1600px;margin:0 auto;padding:16px}
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 @media (min-width:701px){.tbl-wrap th:first-child,.tbl-wrap td:first-child{position:sticky;left:0;z-index:1;background:var(--card)}.tbl-wrap th:first-child{z-index:2;background:#fafbfd}}
 #salesTbl th,#salesTbl td{padding:9px 7px}
+/* 매출표: 칸이 많아 창이 좁으면 옆이 잘려 보임 → 제목 줄바꿈으로 칸 폭 줄이고, 표 안에서 위아래·옆으로 밀게 해서 옆 스크롤바가 항상 화면에 보이게 */
+#salesTbl th{white-space:normal;word-break:keep-all;line-height:1.25;vertical-align:bottom;min-width:44px}
+@media (min-width:701px){#salesTbl{max-height:calc(100vh - 150px);overflow:auto}#salesTbl th{z-index:3}#salesTbl th:first-child{z-index:4}}
+@media (min-width:701px) and (max-width:1300px){#salesTbl table{font-size:12px}#salesTbl th,#salesTbl td{padding:8px 5px}}
+#salesTbl::-webkit-scrollbar{height:12px;width:10px}#salesTbl::-webkit-scrollbar-thumb{background:#b8c2d0;border-radius:6px;border:2px solid #fff}#salesTbl::-webkit-scrollbar-track{background:#eef1f5}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
 th{font-weight:600;color:var(--sub);background:#fafbfd;position:sticky;top:0}
@@ -310,7 +315,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='2.2';
+const APP_VER='2.3';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
