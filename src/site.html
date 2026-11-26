@@ -217,6 +217,14 @@ tr.click{cursor:pointer}
 .ctrates{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
 .ctrates button{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 11px;font-size:13px;font-weight:700;cursor:pointer}
 .ctrates button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.ctform .ctlab{display:block;font-size:12px;color:var(--sub);font-weight:600}.ctform .ctlab.wide{grid-column:1/-1}
+.ctrhint{font-weight:500;color:var(--brand);margin-left:4px}.ctrhint a{margin-left:6px;cursor:pointer;text-decoration:underline}
+.ctrin{display:inline-flex;align-items:center;gap:4px;font-size:13px;color:var(--sub);white-space:nowrap}
+.ctform .ctrin input{width:64px;margin:0;padding:7px 8px;text-align:right;font-weight:700}
+.ctform h3.cth{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.ctform label.ctocr{display:inline-flex;align-items:center;border:1px solid var(--brand);color:var(--brand);background:#fff;border-radius:9px;padding:6px 11px;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+.ctform label.ctocr.busy{opacity:.6;pointer-events:none}
+.ctform input.ctfilled{background:#fef9c3;border-color:#eab308}
 .ctside{position:sticky;top:120px;display:flex;flex-direction:column;gap:12px}
 .ctcalc table{width:100%;border-collapse:collapse;font-size:13px}
 .ctcalc td{padding:6px 0;border-bottom:1px dashed var(--line)}
@@ -401,7 +409,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='2.9';
+const APP_VER='3.0';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -540,9 +548,35 @@ function logout(silent){
 }
 
 /* ═══════════════════════ 계약서 (관리자 전용) ═══════════════════════
-   견적(기준 금액 × 요율 + 출장비 + 추가 작업비 → 부가세 → 최종 금액)을 회사 계약서 양식에 자동으로 넣고
+   견적(기준 금액 × 요율 + 출장·작업비 + 추가 작업비 → 부가세 → 최종 금액)을 회사 계약서 양식에 자동으로 넣고
    A4 미리보기 · PDF · 인쇄 · 이력/버전 · 검토·승인 · 서명본 보관까지 합니다. 실제 송금 기능은 없습니다. */
 const CT_RATES=[38,41,43,45,48,50,52];
+/* 사이버 침해 사고 대응 서비스 비용 기준 (최종 확정 피해금액 → 요율). 금액을 넣으면 먼저 자동으로 고르고, 사람이 바꿀 수 있음 */
+const CT_TIERS=[[15e7,38,'1억 5천만원 이하'],[3e8,41,'1억 5천만원 초과 3억원 이하'],[5e8,43,'3억원 초과 5억원 이하'],[1e9,45,'5억원 초과 10억원 이하'],
+  [15e8,48,'10억원 초과 15억원 이하'],[2e9,50,'15억원 초과 20억원 이하'],[Infinity,52,'20억원 초과']];
+function ctTier(b){return CT_TIERS.find(t=>b<=t[0])}
+/* 사업자등록증 글자(OCR 결과)에서 갑 정보 뽑기. 못 찾은 칸은 비워 둠 */
+function ctParseBiz(t){
+  t=String(t||'').replace(/\r/g,'').replace(/﻿/g,'').replace(/：/g,':').replace(/[ \t ]+/g,' ');
+  const L=s=>s.replace(/\s/g,'').split('').map(ch=>ch.replace(/[()]/g,'\\$&')).join('\\s*');
+  const STOP=['생년월일','개업연월일','법인등록번호','사업장소재지','본점소재지','사업의종류','업태','종목','발급사유','공동사업자','사업자단위','전자세금계산서','대표자','성명','법인명','상호'];
+  const cut=v=>{let i=v.length;STOP.forEach(s=>{const m=new RegExp(L(s)).exec(v);if(m&&m.index<i)i=m.index});return v.slice(0,i).replace(/^[\s:.\-]+|[\s:,.]+$/g,'').trim()};
+  const line=labels=>{for(const lb of labels){const m=new RegExp(L(lb)+'\\s*:?\\s*([^\\n]*)\\n?([^\\n]*)').exec(t);if(!m)continue;
+    let v=cut(m[1]);const nx=m[2].trim();if(!v&&nx&&!nx.includes(':'))v=cut(nx);if(v)return {v,nx}}return null};
+  const o={};
+  const no=/(\d{3})\s*-\s*(\d{2})\s*-\s*(\d{5})/.exec(t);
+  if(no){o.bizno=`${no[1]}-${no[2]}-${no[3]}`;const cn=new RegExp(L('법인등록번호')+'\\s*:?\\s*(\\d{6})\\s*-\\s*(\\d{7})').exec(t);if(cn)o.bizno+=` / ${cn[1]}-${cn[2]}`;}
+  const nm=line(['법인명(단체명)','법인명','상호(법인명)','상호']);if(nm)o.cname=nm.v;
+  const ceo=line(['대표자','성명']);if(ceo)o.ceo=ceo.v;
+  const ad=line(['사업장소재지','사업장주소']);
+  if(ad){o.addr=ad.v;const nx=ad.nx;   // 주소가 다음 줄로 넘어간 경우 이어 붙임
+    if(nx&&!nx.includes(':')&&nx.length<40&&cut(nx)===nx&&!o.addr.endsWith(nx)&&/[동호층로길번지)\d]/.test(nx))o.addr+=' '+nx;}
+  const clean=s=>s.split(/\n+/).map(x=>x.replace(/^[\s:,]+|[\s:,]+$/g,'')).filter(Boolean).join(', ').slice(0,60);
+  const k=new RegExp(L('사업의종류')+'([\\s\\S]{0,400})').exec(t),seg=k?k[1]:t;
+  const ty=new RegExp(L('업태')+'\\s*:?([\\s\\S]*?)'+L('종목')).exec(seg);if(ty&&clean(ty[1]))o.biztype=clean(ty[1]);
+  const it=new RegExp(L('종목')+'\\s*:?([\\s\\S]*?)(?=발\\s*급|공\\s*동\\s*사|사\\s*업\\s*자\\s*단|전\\s*자\\s*세|개\\s*업|\\d{4}\\s*년|세\\s*무\\s*서|$)').exec(seg);if(it&&clean(it[1]))o.bizitem=clean(it[1]);
+  return o;
+}
 const CT_TYPES={pay:'랜섬웨어 위탁 결제 대행 계약서',rec:'데이터 복구 용역 계약서',nda:'비밀유지계약서'};
 const CT_TSHORT={pay:'결제 대행',rec:'복구 용역',nda:'비밀유지'};
 const CT_CO={KD:'주식회사 한국데이터',KDRC:'㈜한국데이터복구센터'};
@@ -562,7 +596,7 @@ function ctCalc(f){
   const svc=Math.round(base*rate/100),trip=days*unit,pay=f.type==='pay';
   const lines=[{k:'base',name:pay?'해커비':'기준 금액',qty:'1',unit:base,amt:base,basis:'기준 금액'},
     {k:'svc',name:pay?'결제대행수수료':'서비스 비용',qty:rate+'%',unit:svc,amt:svc,basis:`기준 금액 × ${rate}%`}];
-  if(trip)lines.push({k:'trip',name:'출장비',qty:days+'일',unit:unit,amt:trip,basis:`${days}일 × ${won(unit)}원`});
+  if(trip)lines.push({k:'trip',name:'출장·작업비',qty:days+'일',unit:unit,amt:trip,basis:`${days}일 × ${won(unit)}원`});
   if(extra)lines.push({k:'extra',name:'추가 작업비',qty:'1',unit:extra,amt:extra,basis:'추가 작업'});
   lines.forEach(l=>{l.vat=Math.round(l.amt/10);l.total=l.amt+l.vat});
   const supply=lines.reduce((s,l)=>s+l.amt,0),vat=lines.reduce((s,l)=>s+l.vat,0);
@@ -752,7 +786,7 @@ async function ctLoad(force){
 }
 function ctBlank(prev){
   const d=ctToday();
-  const f={type:'pay',company:'KD',date:d,recDate:d,ndaFrom:d,ndaTo:ctAddYear(d),rate:45,base:'',tripDays:'',tripUnit:'',extra:'',special:'',
+  const f={type:'pay',company:'KD',date:d,recDate:d,ndaFrom:d,ndaTo:ctAddYear(d),rate:38,rateAuto:true,base:'',tripDays:'',tripUnit:'',extra:'',special:'',
     our_mgr:ME&&ME.name||'',our_tel:'',our_email:''};
   if(prev)['cname','bizno','ceo','addr','biztype','bizitem','mgr','tel','email','rep','our_mgr','our_tel','our_email','company'].forEach(x=>f[x]=prev.f[x]||f[x]);
   return {id:'',company:f.company,type:f.type,status:'작성중',ver:0,f,body:null,tplVer:0,approval:{},files:[],log:[],versions:[]};
@@ -783,7 +817,7 @@ function ctFormView(b,m){
     <h3>계약 구분</h3>
     <div class="ctrow"><label>계약 회사(을)<select id="ct_company">${Object.entries(CT_CO).map(([k,v])=>`<option value="${k}"${c.company===k?' selected':''}>${v}</option>`).join('')}</select></label>
       <label>계약서 종류<select id="ct_type">${Object.entries(CT_TYPES).map(([k,v])=>`<option value="${k}"${c.type===k?' selected':''}>${v}</option>`).join('')}</select></label></div>
-    <h3>고객사(갑) 정보</h3>
+    <h3 class="cth">고객사(갑) 정보<label class="ctocr" id="ctBizLab"><span>📄 사업자등록증으로 자동 입력</span><input type="file" id="ctBiz" accept="image/*,.pdf" hidden></label></h3>
     <div class="ctrow">${ctIn('cname','고객사명 *',f.cname,{ph:'예: 주식회사 OO'})}${ctIn('bizno','사업자등록번호 *',f.bizno,{ph:'000-00-00000 / 법인번호'})}
       ${ctIn('ceo','대표자명 *',f.ceo)}${ctIn('rep','대표번호',f.rep)}
       ${ctIn('addr','사업장 주소 *',f.addr,{wide:1})}
@@ -794,8 +828,8 @@ function ctFormView(b,m){
       ${nda?ctIn('recDate','복구 계약 체결일',f.recDate,{type:'date'})+ctIn('ndaFrom','계약기간 시작',f.ndaFrom,{type:'date'})+ctIn('ndaTo','계약기간 끝',f.ndaTo,{type:'date'}):''}
       ${nda?'':ctIn('our_mgr','우리 담당자(직책)',f.our_mgr)+ctIn('our_tel','우리 연락처',f.our_tel)+ctIn('our_email','우리 Email',f.our_email)}</div>
     ${nda?'':`<h3>비용 (자동 견적)</h3>
-    <div class="ctrow">${ctIn('base',c.type==='pay'?'기준 금액 (해커비, 원) *':'기준 금액 (원) *',f.base?won(f.base):'',{num:1,ph:'0'})}
-      <label>적용 요율<div class="ctrates" id="ctRates">${CT_RATES.map(r=>`<button type="button" data-r="${r}" class="${Number(f.rate)===r?'on':''}">${r}%</button>`).join('')}</div></label>
+    <div class="ctrow">${ctIn('base',c.type==='pay'?'기준 금액 (해커비, 원) *':'기준 금액 (원) *',f.base?won(f.base):'',{num:1,ph:'0',wide:1})}
+      <div class="ctlab wide">적용 요율 <span class="ctrhint" id="ctRateHint"></span><div class="ctrates" id="ctRates">${CT_RATES.map(r=>`<button type="button" data-r="${r}" class="${Number(f.rate)===r?'on':''}">${r}%</button>`).join('')}<span class="ctrin">직접 <input id="ct_rate" inputmode="decimal" value="${esc(f.rate)}">%</span></div></div>
       ${ctIn('tripDays','출장 일수',f.tripDays,{num:1,ph:'0'})}${ctIn('tripUnit','출장 1일 단가 (원)',f.tripUnit?won(f.tripUnit):'',{num:1,ph:'0'})}
       ${ctIn('extra','추가 작업비 (원)',f.extra?won(f.extra):'',{num:1,ph:'0'})}</div>`}
     <h3>특약사항 <span class="muted" style="font-weight:400;font-size:12px">한 줄에 하나씩 · 계약서에 번호를 붙여 들어가요</span></h3>
@@ -824,13 +858,18 @@ function ctFormView(b,m){
   const read=()=>{const g=id=>{const e=$('ct_'+id);return e?e.value:undefined};
     ['cname','bizno','ceo','rep','addr','biztype','bizitem','mgr','tel','email','date','recDate','ndaFrom','ndaTo','our_mgr','our_tel','our_email','special'].forEach(x=>{const v=g(x);if(v!==undefined)f[x]=v});
     ['base','tripDays','tripUnit','extra'].forEach(x=>{const v=g(x);if(v!==undefined)f[x]=ctInt(v)||''});};
-  const drawCalc=()=>{read();const el=$('ctCalc');
+  const syncRate=()=>{if(nda)return;const b=ctInt(f.base),t=ctTier(b);if(f.rateAuto)f.rate=t[1];
+    const r=$('ctRates');if(!r)return;r.querySelectorAll('button').forEach(x=>x.classList.toggle('on',Number(x.dataset.r)===Number(f.rate)));
+    const ri=$('ct_rate');if(ri&&document.activeElement!==ri)ri.value=f.rate;
+    $('ctRateHint').innerHTML=f.rateAuto?(b?`자동 · ${t[2]} → ${t[1]}%`:'자동 · 금액을 넣으면 기준표대로 골라져요')
+      :`직접 정함 · 기준표는 ${t[1]}%${lock?'':' <a href="#" id="ctRateAuto">기준표대로</a>'}`;};
+  const drawCalc=()=>{read();syncRate();const el=$('ctCalc');
     if(nda){el.innerHTML='<b>비용</b><p class="muted" style="font-size:13px;line-height:1.6;margin:6px 0 0">비밀유지계약서에는 금액이 들어가지 않아요.</p>';return;}
     const k=ctCalc(f);
     el.innerHTML=`<b>자동 견적</b><table style="margin-top:6px">
       <tr><td>기준 금액</td><td>${won(k.base)}</td></tr>
       <tr><td>서비스 비용 <span class="muted">${k.rate}%</span></td><td>${won(k.svc)}</td></tr>
-      <tr><td>출장비 <span class="muted">${k.days}일 × ${won(k.unit)}</span></td><td>${won(k.trip)}</td></tr>
+      <tr><td>출장·작업비 <span class="muted">${k.days}일 × ${won(k.unit)}</span></td><td>${won(k.trip)}</td></tr>
       <tr><td>추가 작업비</td><td>${won(k.extra)}</td></tr>
       <tr><td><b>공급가액</b></td><td>${won(k.supply)}</td></tr>
       <tr><td>부가세 <span class="muted">10%</span></td><td>${won(k.vat)}</td></tr>
@@ -838,13 +877,19 @@ function ctFormView(b,m){
   drawCalc();ctApprView(c,m);
   const form=$('ctForm');
   if(lock)form.querySelectorAll('input,select,textarea,button').forEach(x=>x.disabled=true);
-  form.addEventListener('input',e=>{if(e.target.classList.contains('num')){const p=e.target.selectionStart,l=e.target.value.length;const n=ctInt(e.target.value);
+  form.addEventListener('input',e=>{e.target.classList.remove('ctfilled');
+    if(e.target.id==='ct_rate'){const v=e.target.value.replace(/[^\d.]/g,'');if(v!==e.target.value)e.target.value=v;const n=Number(v);
+      if(v&&n>0&&n<=100){f.rate=Math.round(n*100)/100;f.rateAuto=false;}drawCalc();return;}
+    if(e.target.classList.contains('num')){const p=e.target.selectionStart,l=e.target.value.length;const n=ctInt(e.target.value);
       if(e.target.id!=='ct_tripDays'){e.target.value=n?won(n):'';try{const d=e.target.value.length-l;e.target.setSelectionRange(p+d,p+d)}catch(_){}}}
     if(e.target.id==='ct_date'&&c.type==='nda'){}drawCalc();});
   ['ct_company','ct_type'].forEach(id=>{const s=$(id);if(s)s.onchange=()=>{read();c.company=f.company=$('ct_company').value;c.type=f.type=$('ct_type').value;
     if(c.id&&!confirm('이미 저장된 계약서의 회사·종류를 바꾸면 새 계약번호로 따로 저장돼요. 바꿀까요?')){s.value=s.id==='ct_company'?c.id.split('-')[0]:Object.keys(CT_CODE).find(k=>CT_CODE[k]===c.id.split('-')[1]);return;}
     if(c.id){c.id='';c.ver=0;c.versions=[];c.files=[];c.log=[];c.status='작성중';c.approval={};}c.body=null;c.tplVer=0;ctFormView(b,m)}});
-  const rates=$('ctRates');if(rates)rates.onclick=e=>{const r=e.target.closest('[data-r]');if(!r||lock)return;f.rate=Number(r.dataset.r);rates.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===r));drawCalc();};
+  const rates=$('ctRates');if(rates)rates.onclick=e=>{const r=e.target.closest('[data-r]');if(!r||lock)return;f.rate=Number(r.dataset.r);f.rateAuto=false;drawCalc();};
+  const ri=$('ct_rate');if(ri)ri.onblur=()=>{ri.value=f.rate};
+  const rh=$('ctRateHint');if(rh)rh.onclick=e=>{if(e.target.id!=='ctRateAuto')return;e.preventDefault();f.rateAuto=true;drawCalc();};
+  const bz=$('ctBiz');if(bz)bz.onchange=()=>{const file=bz.files[0];bz.value='';ctBizRead(file,f,lock,drawCalc)};
   $('ctSave').onclick=()=>ctSaveNow(b,m);
   $('ctPrev').onclick=()=>{read();ctPreview(c,'view')};
   $('ctPdf').onclick=()=>{read();ctPreview(c,'pdf')};
@@ -900,6 +945,20 @@ async function ctDownload(fid,name){
   toast('받는 중…');
   try{const r=await call('ctFile',TOKEN,fid);const bin=atob(r.b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
     ctSaveBlob(new Blob([u],{type:r.mime||'application/pdf'}),name||r.name)}catch(e){toast(e.message)}
+}
+async function ctBizRead(file,f,lock,redraw){
+  if(!file||lock)return;if(file.size>10*1024*1024){toast('10MB 이하 파일만 읽을 수 있어요');return}
+  const mime=file.type||(/\.pdf$/i.test(file.name)?'application/pdf':'');
+  if(!/^(image\/(png|jpe?g|gif|bmp|webp)|application\/pdf)$/.test(mime)){toast('JPG·PNG 사진이나 PDF만 읽을 수 있어요');return}
+  const lab=$('ctBizLab'),sp=lab&&lab.querySelector('span'),old=sp&&sp.textContent;if(sp)sp.textContent='읽는 중…';if(lab)lab.classList.add('busy');
+  try{const r=await call('ctOcr',TOKEN,mime,await ctB64(file));const got=ctParseBiz(r.text||''),keys=Object.keys(got);
+    if(!keys.length){toast('글자를 못 읽었어요. 더 선명한 사진으로 다시 올리거나 직접 입력해 주세요.');return}
+    const cur=k=>{const e=$('ct_'+k);return String(e?e.value:f[k]||'').trim()};
+    const diff=keys.filter(k=>cur(k)&&cur(k)!==got[k]);
+    if(diff.length&&!confirm(`이미 입력된 ${diff.map(k=>CT_FL[k]).join(', ')}을(를) 사업자등록증 내용으로 바꿀까요?`))return;
+    keys.forEach(k=>{f[k]=got[k];const e=$('ct_'+k);if(e){e.value=got[k];e.classList.add('ctfilled')}});
+    redraw();toast(`${keys.length}칸을 채웠어요. 노란 칸이 맞는지 확인해 주세요.`);
+  }catch(e){toast(e.message)}finally{if(sp)sp.textContent=old;if(lab)lab.classList.remove('busy')}
 }
 async function ctUploadSigned(c,file,b,m){
   if(!file)return;if(file.size>15*1024*1024){toast('15MB 이하 파일만 올릴 수 있어요');return}
