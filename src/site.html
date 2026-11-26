@@ -573,7 +573,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='4.2';
+const APP_VER='4.3';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -1621,10 +1621,12 @@ async function rpPreview(R,mode){
 /* ═══════ 3. 사건 자료함 ═══════
    사건 하나 = 드라이브 폴더 하나(칸 12개). 파일은 드라이브의 칸 폴더에 직접 넣고, 여기서는 칸별 목록·받기·옮기기·지우기만 함.
    전체 다운로드는 드라이브 폴더를 열어 "다운로드"(드라이브가 zip으로 묶어 줌). */
-let CS=null;const CS_OPEN={};
+let CS=null;const CS_OPEN={},CS_CACHE={};
 function csSize(b){b=Number(b)||0;return b>=1073741824?(b/1073741824).toFixed(2)+'GB':b>=1048576?(b/1048576).toFixed(1)+'MB':b>=1024?Math.round(b/1024)+'KB':b+'B'}
 async function csLoad(force){if(CS&&!force)return;const r=await call('rsInit',TOKEN);CS=Object.assign(CS||{},{cases:r.cases||[],slots:r.slots||[]});}
-async function csLoadFiles(id){const r=await call('rsFiles',TOKEN,id);CS.cur=r.case;CS.files=r.files;CS.folderUrl=r.folderUrl;
+/* 한 번 연 사건은 기억해 두고 다시 누르면 바로 보여 줌 (뒤에서 새 목록 받아 바뀐 게 있으면 다시 그림) */
+async function csLoadFiles(id){const r=await call('rsFiles',TOKEN,id);CS_CACHE[id]={cur:r.case,files:r.files,folderUrl:r.folderUrl};
+  if(!CS.cur||CS.cur.id===id){CS.cur=r.case;CS.files=r.files;CS.folderUrl=r.folderUrl;CS.loading=false}   // 그 사이 다른 사건을 눌렀으면 화면은 그대로
   const s={id:r.case.id,name:r.case.name,cname:r.case.cname,date:r.case.date,kind:r.case.kind,updated:r.case.updated,count:r.case.count,bytes:r.case.bytes,filled:r.case.filled,contracts:(r.case.contracts||[]).length};
   const i=CS.cases.findIndex(x=>x.id===s.id);if(i>=0)CS.cases[i]=s;else CS.cases.unshift(s);}
 async function csView(m,head){
@@ -1643,7 +1645,16 @@ async function csView(m,head){
       <li>잘못 들어간 파일은 ↔ 로 칸을 옮기고, 모아서 받을 땐 [드라이브에서 열기]에서 폴더째 다운로드해요.</li></ol></div>`}</div></div>`;
   const qi=$('csQ');qi.oninput=()=>{CS.q=qi.value;clearTimeout(csView._t);csView._t=setTimeout(()=>{re();const n=$('csQ');n.focus();n.setSelectionRange(n.value.length,n.value.length)},250)};
   $('csNewBtn').onclick=()=>{CS.cur=null;CS.newForm={};re()};
-  m.querySelectorAll('[data-cs]').forEach(el=>el.onclick=async()=>{CS.newForm=null;toast('불러오는 중…');try{await csLoadFiles(el.dataset.cs);re()}catch(e){toast(e.message)}});
+  // 누르자마자 그 사건 화면으로 (처음이면 칸마다 '불러오는 중', 전에 열었던 사건이면 기억해 둔 목록) → 서버 답이 오면 다시 그림
+  m.querySelectorAll('[data-cs]').forEach(el=>el.onclick=async()=>{CS.newForm=null;const id=el.dataset.cs,c=CS_CACHE[id];
+    if(c){CS.cur=c.cur;CS.files=c.files;CS.folderUrl=c.folderUrl;CS.loading=false}
+    else{CS.cur=Object.assign({},CS.cases.find(x=>x.id===id),{contracts:[],log:[]});CS.files=null;CS.loading=true}
+    re();
+    try{const before=c&&JSON.stringify([c.cur,c.files]);await csLoadFiles(id);
+      if(!CS.cur||CS.cur.id!==id)return;
+      if(before&&before===JSON.stringify([CS.cur,CS.files]))return;   // 바뀐 게 없으면 그대로
+      const a=document.activeElement;if(c&&a&&a.closest&&a.closest('#csRight')&&/^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName))return;   // 입력 중이면 안 건드림
+      re()}catch(e){if(CS.cur&&CS.cur.id===id&&CS.loading){CS.loading=false;CS.cur=null;re()}toast(e.message)}});
   if(CS.newForm&&!k){const f=$('csNewF'),el=n=>f.querySelector(`[name=${n}]`);let touched=false;
     // 폴더 이름은 사건일 + 고객사명으로 자동 (예: 261126.(주)고객사). 직접 고치면 그대로 둠
     const auto=()=>{if(touched)return;const d=(el('date').value||ctToday()).replace(/-/g,'').slice(2);el('name').value=`${d}.${(el('cname').value||'').trim()}`.replace(/\.$/,'')};
@@ -1655,7 +1666,7 @@ async function csView(m,head){
         if(el('ct').value)await call('rsSave',TOKEN,r.case.id,{contracts:[el('ct').value]});
         CS.newForm=null;await csLoadFiles(r.case.id);toast('사건 폴더를 만들었어요 · 드라이브에서 칸 폴더에 파일을 넣어 주세요');re()}catch(err){toast(err.message)}};
     $('csNewCancel').onclick=()=>{CS.newForm=null;re()};}
-  if(k)csBind(m,re);
+  if(k&&!CS.loading)csBind(m,re);
 }
 function csNewForm(){const cs=csAllContracts();return `<div class="card"><h3 style="margin:0 0 10px">새 사건</h3><form id="csNewF" class="ctform"><div class="ctrow">
   <label class="wide">계약서에서 가져오기 (선택)<select name="ct"><option value="">선택 안 함</option>${cs.map(x=>`<option value="${esc(x.id)}">${esc(x.id)} · ${esc(x.sec==='ind'?(ctCase(x.caseName)||'법인_개인'):(x.cname||''))}</option>`).join('')}</select></label>
@@ -1665,7 +1676,10 @@ function csNewForm(){const cs=csAllContracts();return `<div class="card"><h3 sty
   <div style="display:flex;gap:8px;margin-top:12px"><button class="btn">사건 만들기</button><button type="button" class="btn sec" id="csNewCancel">취소</button></div></form>
   <p class="muted" style="font-size:12.5px;margin:10px 0 6px">[사건 만들기]를 누르면 드라이브 'KD 사건자료'에 아래 폴더가 자동으로 생겨요. 폴더를 따로 만들 필요 없어요.</p><div class="cs-pre">${(CS.slots||[]).map(n=>`<span>📁 ${esc(n)}</span>`).join('')}</div></div>`}
 function csAllContracts(){return ((CT&&CT.contracts)||[])}
-function csDetail(k){const F=CS.files||{},linked=(k.contracts||[]);
+function csDetail(k){
+  if(CS.loading)return `<div class="card"><div class="cs-head"><div><h2>${esc(k.name||'')}</h2><p>${esc(k.id||'')} · 드라이브에서 자료를 불러오는 중…</p></div></div>
+    <div class="cs-slots" style="margin-top:12px">${CS.slots.map(n=>`<div class="cs-slot"><h4>📁 ${esc(n)} <em class="no">불러오는 중…</em></h4></div>`).join('')}</div></div>`;
+  const F=CS.files||{},linked=(k.contracts||[]);
   const cs=csAllContracts(),lab=x=>`${x.id} · ${x.sec==='ind'?(ctCase(x.caseName)||'법인_개인'):(x.cname||'')}`;
   return `<div class="card"><div class="cs-head"><div><h2>${esc(k.name)}</h2><p>${esc(k.id)} · 자료 ${k.count||0}개 · ${csSize(k.bytes)} · ${k.filled||0}/12칸 · 수정 ${esc(k.updated||'')}</p></div>
     <div class="cs-acts"><a class="btn" style="background:#0f766e" href="${esc(CS.folderUrl)}" target="_blank" rel="noopener">📂 드라이브에서 열기 · 전체 다운로드</a>
