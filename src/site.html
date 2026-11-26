@@ -459,6 +459,12 @@ tr.click{cursor:pointer}
 .cs-pbar{height:8px;border-radius:99px;background:#e5e7eb;overflow:hidden;margin-bottom:4px}.cs-pbar i{display:block;height:100%;background:var(--brand);transition:width .2s}
 .ct-casenote{font-size:12.5px;line-height:1.6;color:#334155;background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:8px 10px}.ct-casenote a{color:#0f766e;font-weight:700;cursor:pointer;text-decoration:underline}.ct-casenote .btn{display:block;width:100%;margin-top:8px;padding:7px 10px;font-size:13px}
 .ct-2line{display:flex;flex-direction:column;align-items:center;line-height:1.25}.ct-2line .ct-sub{font-size:11.5px;font-weight:500;opacity:.9;margin-top:2px}
+.rpcase{border:1px solid #99f6e4;background:#f0fdfa;border-radius:12px;padding:10px 12px;margin:12px 0}.rpcase:empty{display:none}
+.rpcase-h{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13.5px}.rpcase-h select{width:auto;max-width:100%;margin:0;padding:6px 8px;font-size:13px}
+.rpcase-list{margin:8px 0;max-height:260px;overflow:auto;border-top:1px dashed #99f6e4}
+.rpcase-row,.ctform .rpcase-row{display:flex;gap:8px;align-items:center;font-size:12.5px;padding:5px 0;border-bottom:1px dashed #ccfbf1;font-weight:400;color:var(--ink)}.rpcase-row input[type=checkbox]{width:auto;margin:0}
+.rpcase-row .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rpcase-row .s{color:var(--sub);white-space:nowrap}.rpcase-row select{width:auto;margin:0;padding:3px 6px;font-size:12px}
+@media (max-width:700px){.rpcase-row,.ctform .rpcase-row{flex-wrap:wrap}.rpcase-row .s{flex-basis:100%;order:3;padding-left:22px}}
 </style>
 <style>th.th2l{white-space:pre-line}@media (min-width:701px){th.dcol,td.dcol{display:none}}#segK{flex-wrap:wrap}</style><style>
 .bellw{position:relative}.bell{position:relative;border:1px solid var(--line);background:#fff;border-radius:10px;width:38px;height:33px;cursor:pointer;display:grid;place-items:center;padding:0}
@@ -581,7 +587,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='5.0';
+const APP_VER='5.1';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -1375,8 +1381,8 @@ function rpListView(b,m,head){
   b.innerHTML=`<div class="card ctlist"><div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><button class="btn" id="rpNew">+ 새 보고서</button></div>
     ${RPL.length?`<div style="overflow-x:auto"><table><thead><tr><th>보고서 번호</th><th>고객사</th><th>회사</th><th>작성일</th><th>작성자</th><th>버전</th><th>PDF</th><th>수정</th></tr></thead><tbody>
     ${RPL.map(x=>`<tr class="go" data-id="${esc(x.id)}"><td><b>${esc(x.id)}</b></td><td>${esc(x.cname)}</td><td>${esc(x.company)}</td><td>${esc(x.date)}</td><td>${esc(x.writer)}</td><td>v${x.ver}</td><td>${x.files||0}</td><td>${esc(x.updated)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="muted">아직 저장된 보고서가 없어요.</div>'}</div>`;
-  $('rpNew').onclick=()=>{RP=rpBlank();RP_SUB='new';rpView(m,head)};
-  b.querySelectorAll('tr[data-id]').forEach(tr=>tr.onclick=async()=>{try{const r=await call('rpGet',TOKEN,tr.dataset.id);RP=r.report;RP_SUB='new';toast('불러오는 중…');await rpImgs(rpAllImgs(RP.f));rpView(m,head)}catch(e){toast(e.message)}});
+  $('rpNew').onclick=()=>{RP=rpBlank();RP_CASE={id:'',items:null,busy:false};RP_SUB='new';rpView(m,head)};
+  b.querySelectorAll('tr[data-id]').forEach(tr=>tr.onclick=async()=>{try{const r=await call('rpGet',TOKEN,tr.dataset.id);RP=r.report;RP_CASE={id:'',items:null,busy:false};RP_SUB='new';toast('불러오는 중…');await rpImgs(rpAllImgs(RP.f));rpView(m,head)}catch(e){toast(e.message)}});
 }
 function rpLogoView(b,m,head){
   b.innerHTML=`<div class="card"><h3 style="margin:0 0 6px">보고서 로고</h3><p class="muted" style="font-size:13px;margin:0 0 10px">슬라이드 왼쪽 위에 들어가는 회사 로고예요. 배경이 투명한 PNG(1MB 이하)가 좋아요. 없으면 글자 로고로 들어가요.</p>
@@ -1387,6 +1393,46 @@ function rpLogoView(b,m,head){
     const fr=new FileReader();fr.onload=async()=>{try{await call('rpLogo',TOKEN,inp.dataset.logo,fr.result);CT.seals['logo_'+inp.dataset.logo]=fr.result;toast('로고를 등록했어요');rpView(m,head)}catch(e){toast(e.message)}};fr.readAsDataURL(file);});
 }
 function rpTextLogo(k){return `<div class="rplogo"><span>${k==='KD'?'KD':'KDRC'}</span><b>${k==='KD'?'한국데이터':'한국<br>데이터복구센터'}</b></div>`}
+
+/* 4번 결과보고서 ← 3번 사건 자료함: 사건 칸의 사진(JPG·PNG 등)을 보고서 사진 칸으로, 해커 메모장 .txt 는 랜섬 노트 글로 가져오기.
+   칸별 기본 자리: 3 감염파일→로그 화면 사진, 4 해커 메모장·6 해커 접촉내역→랜섬 노트 캡처, 7 해커 비용지불→송금 내역 캡처 (나머지는 '안 넣음', 골라서 넣을 수 있음) */
+let RP_CASE={id:'',items:null,busy:false};
+const RP_CASE_TO={hostImgs:'로그 화면 사진',noteImgs:'랜섬 노트 캡처',payImgs:'송금 내역 캡처',note:'랜섬 노트 내용(글)'};
+function rpCaseDefault(slot,isTxt){if(isTxt)return slot===4?'note':'';return slot===3?'hostImgs':(slot===4||slot===6)?'noteImgs':slot===7?'payImgs':''}
+function rpCaseNorm(s){return String(s||'').replace(/주식회사|㈜|\(주\)|\s+/g,'')}
+async function rpCaseBox(r,redraw){
+  const el=$('rpCaseBox');if(!el)return;
+  if(!CS||!CS.cases){el.innerHTML='<span class="muted">3번 사건 목록을 불러오는 중…</span>';try{await csLoad(true)}catch(e){el.innerHTML=`<span class="muted">사건 목록을 못 불러왔어요: ${esc(e.message)}</span>`;return}if(!el.isConnected)return}
+  const cases=CS.cases||[];
+  if(!RP_CASE.id){const n=rpCaseNorm(r.cname);const hit=(r.caseId&&cases.find(x=>x.id===r.caseId))||(n&&cases.find(x=>rpCaseNorm(x.cname)===n));if(hit)RP_CASE.id=hit.id}
+  const it=RP_CASE.items;
+  el.innerHTML=`<div class="rpcase-h"><b>📁 3번 사건 자료에서 가져오기</b><select id="rpCaseSel"><option value="">사건 고르기</option>${cases.map(x=>`<option value="${esc(x.id)}"${x.id===RP_CASE.id?' selected':''}>${esc(x.name)}</option>`).join('')}</select>
+      <button type="button" class="btn sec rpsm" id="rpCaseFind"${RP_CASE.id?'':' disabled'}>사진·메모 찾기</button></div>
+    ${it?(it.length?`<div class="rpcase-list">${it.map((x,i)=>`<label class="rpcase-row"><input type="checkbox" data-ci="${i}"${x.on?' checked':''}><span class="n" title="${esc(x.path+x.name)}">${esc(x.name)}</span><span class="s">${esc(x.slotName)} · ${csSize(x.size)}</span>
+        <select data-ct="${i}"><option value="">안 넣음</option>${Object.entries(RP_CASE_TO).filter(([k])=>x.txt?k==='note':k!=='note').map(([k,l])=>`<option value="${k}"${x.to===k?' selected':''}>${l}</option>`).join('')}</select></label>`).join('')}</div>
+      <button type="button" class="btn rpsm" id="rpCaseGo"${RP_CASE.busy?' disabled':''}>${RP_CASE.busy?'가져오는 중…':'고른 것 보고서에 넣기'}</button>`
+      :'<div class="muted" style="font-size:12.5px;margin-top:6px">이 사건 칸에는 넣을 사진(JPG·PNG)이나 메모장(.txt)이 없어요.</div>'):''}`;
+  $('rpCaseSel').onchange=e=>{RP_CASE={id:e.target.value,items:null,busy:false};rpCaseBox(r,redraw)};
+  $('rpCaseFind').onclick=async()=>{const id=RP_CASE.id;if(!id)return;toast('사건 자료를 찾는 중…');
+    try{const f=await call('rsFiles',TOKEN,id);if(RP_CASE.id!==id)return;const out=[];
+      Object.keys(f.files||{}).forEach(s=>(f.files[s]||[]).forEach(x=>{const nm=String(x.name).toLowerCase(),img=/^image\/(jpe?g|png|gif|webp|bmp)$/.test(x.mime||'')||/\.(jpe?g|png|gif|webp|bmp)$/.test(nm),txt=/\.txt$/.test(nm);
+        if(!img&&!txt)return;const to=rpCaseDefault(+s,txt);out.push({id:x.id,name:x.name,path:x.path||'',size:x.size||0,slot:+s,slotName:(CS.slots||[])[+s]||'',txt,to,on:!!to})}));
+      if(!r.caseId){r.caseId=id}if(!r.cname&&f.case&&f.case.cname)r.cname=f.case.cname;if(!r.incDate&&f.case&&f.case.date)r.incDate=f.case.date;
+      RP_CASE.items=out;rpCaseBox(r,redraw);toast(out.length?`가져올 수 있는 자료 ${out.length}개를 찾았어요`:'넣을 사진·메모가 없어요')}catch(e){toast(e.message)}};
+  el.querySelectorAll('[data-ci]').forEach(c=>c.onchange=()=>{RP_CASE.items[+c.dataset.ci].on=c.checked});
+  el.querySelectorAll('[data-ct]').forEach(s=>s.onchange=()=>{const x=RP_CASE.items[+s.dataset.ct];x.to=s.value;x.on=!!s.value;rpCaseBox(r,redraw)});
+  const go=$('rpCaseGo');if(go)go.onclick=async()=>{const pick=RP_CASE.items.filter(x=>x.on&&x.to);if(!pick.length){toast('넣을 것을 골라 주세요');return}
+    RP_CASE.busy=true;RP_BUSY++;rpCaseBox(r,redraw);let ok=0;const fail=[];
+    for(const x of pick){try{
+        if(x.size>30*1024*1024)throw new Error('30MB가 넘어요');
+        const d=await call('rsFile',TOKEN,x.id),bin=atob(d.b64),u=new Uint8Array(bin.length);for(let j=0;j<bin.length;j++)u[j]=bin.charCodeAt(j);
+        if(x.to==='note'){const t=new TextDecoder('utf-8').decode(u).trim();r.note=r.note?r.note+'\n\n'+t:t}
+        else{const url=await rpShrink(new Blob([u],{type:d.mime||'image/jpeg'}));const res=await call('rpImg',TOKEN,'image/jpeg',url.split(',')[1]);RP_IMG[res.fid]=url;r[x.to].push(res.fid)}
+        ok++;x.on=false}catch(e){fail.push(`${x.name} — ${e.message}`)}}
+    RP_CASE.busy=false;RP_BUSY--;
+    if(fail.length)alert(`${ok}개를 넣었고 ${fail.length}개는 못 넣었어요.\n\n${fail.slice(0,10).join('\n')}`);else toast(`${ok}개를 보고서에 넣었어요 · 저장해야 보고서에 남아요`);
+    if(RP&&RP.f===r)redraw()};
+}
 
 function rpFormView(b,m,head){
   const R=RP,r=R.f;
@@ -1409,6 +1455,7 @@ function rpFormView(b,m,head){
       ${I('cname','고객사명 *',{ph:'예: 주식회사 OO'})}${I('title','보고서 제목')}
       ${I('date','작성일 *',{type:'date'})}${I('writer','작성자 *',{ph:'예: 김영준'})}
       <label class="wide">보고서 디자인 <span class="muted" style="font-weight:400">미리보기에서 바로 확인할 수 있어요</span><select data-rp="theme">${Object.entries(RP_THEMES).map(([k,t])=>`<option value="${k}"${(r.theme||'D')===k?' selected':''}>${esc(t.name)}</option>`).join('')}</select></label></div>
+    <div class="rpcase" id="rpCaseBox"></div>
     <h3>1. 사건 개요</h3>
     <div class="ctrow">${I('incDate','사건 발생 일자',{type:'date'})}${I('scope','랜섬웨어 감염 범위',{ph:'예: 가상서버 포함 약 30대'})}
       ${I('ext','감염 확장자',{ph:"예: '.locked'"})}${I('demand','최초 요구액',{ph:'예: 총 5 BTC'})}
@@ -1459,6 +1506,7 @@ function rpFormView(b,m,head){
     const el=$('rpStat');if(el)el.innerHTML=S.map(([l,ok])=>`<div>${ok?'<span class="ctok">✓</span>':'<span class="muted">○</span>'} ${l}</div>`).join('');};
   stat();
   const f=$('rpForm'),redraw=()=>rpFormView(b,m,head);
+  rpCaseBox(r,redraw);
   f.addEventListener('input',e=>{const t=e.target;
     if(t.dataset.rp){r[t.dataset.rp]=t.value;
       if(t.dataset.rp==='contractId'&&t.value){const x=cts.find(c=>c.id===t.value);if(x){r.cname=x.cname||r.cname;r.company=x.company||r.company;redraw();return;}}}
@@ -1482,7 +1530,7 @@ function rpFormView(b,m,head){
     else if(t.id==='rpAddHost'){r.hosts.push({name:'',ip:''});redraw();}
     else if(t.dataset.rmhost){r.hosts.splice(+t.dataset.rmhost,1);if(!r.hosts.length)r.hosts.push({name:'',ip:''});redraw();}
     else if(t.dataset.rmimg){const [k,i]=t.dataset.rmimg.split(':');r[k].splice(+i,1);redraw();}});
-  $('rpReset').onclick=()=>{if(confirm('지금 화면을 비우고 새 보고서를 쓸까요? (저장 안 한 내용은 사라져요)')){RP=rpBlank();rpView(m,head);}};
+  $('rpReset').onclick=()=>{if(confirm('지금 화면을 비우고 새 보고서를 쓸까요? (저장 안 한 내용은 사라져요)')){RP=rpBlank();RP_CASE={id:'',items:null,busy:false};rpView(m,head);}};
   $('rpSave').onclick=()=>rpSaveNow(m,head);
   $('rpPrev').onclick=()=>rpPreview(R,'view');
   $('rpPdf').onclick=()=>{if(RP_BUSY){toast('사진을 올리는 중이에요');return}rpPreview(R,'pdf')};
@@ -1764,11 +1812,11 @@ function csDetail(k){
         <select id="csLink"><option value="">+ 계약서 연결 (2번·0번)</option>${cs.filter(x=>!linked.includes(x.id)).map(x=>`<option value="${esc(x.id)}">${esc(lab(x))}</option>`).join('')}</select>
         <button class="btn sec" id="csSaveInfo" style="padding:6px 12px">정보 저장</button></div></div>
     <p class="cs-tip">📂 <b>파일을 칸에 끌어다 놓으면 그 칸 폴더로 바로 올라가요.</b> 칸 이름(📁 … 열기 ↗)을 누르면 드라이브에서 그 칸 폴더가 열려요. 잘못 넣은 파일은 ↔ 로 옮겨요.</p>
-    <div class="cs-slots">${CS.slots.map((name,i)=>{const fs=F[i]||[],sz=fs.reduce((a,x)=>a+(x.size||0),0),open=CS_OPEN[i],show=open?fs:fs.slice(0,6);
+    <div class="cs-slots">${CS.slots.map((name,i)=>{const fs=F[i]||[],sz=fs.reduce((a,x)=>a+(x.size||0),0),open=CS_OPEN[i],show=open?fs:fs.slice(0,3);
       return `<div class="cs-slot${fs.length?'':' empty'}" data-slot="${i}"><h4>${k.slots&&k.slots[i]?`<a class="cs-open" href="https://drive.google.com/drive/folders/${esc(k.slots[i])}" target="_blank" rel="noopener" title="드라이브에서 이 칸 폴더 열기">📁 ${esc(name)} <small>열기 ↗</small></a>`:`📁 ${esc(name)}`} ${fs.length?`<em class="ok">${fs.length}개 · ${csSize(sz)}</em>`:'<em class="no">비어 있음</em>'}</h4>
         ${show.map(f=>`<div class="cs-f"><span class="n" title="${esc(f.path+f.name)}">${f.path?`<small>${esc(f.path)}</small>`:''}${esc(f.name)}</span><span class="s">${csSize(f.size)}</span>
           <a data-get="${esc(f.id)}" data-fn="${esc(f.name)}" data-sz="${f.size||0}" title="받기">⬇</a><a data-mv="${esc(f.id)}" data-from="${i}" title="다른 칸으로 옮기기">↔</a><a data-del="${esc(f.id)}" data-fn="${esc(f.name)}" title="휴지통으로">×</a></div>`).join('')}
-        ${fs.length>6?`<a class="cs-more" data-more="${i}">${open?'접기':`+ ${fs.length-6}개 더 보기`}</a>`:''}
+        ${fs.length>3?`<a class="cs-more" data-more="${i}">${open?'접기':`+ ${fs.length-3}개 더 보기`}</a>`:''}
         </div>`}).join('')}</div>
     <div class="ctlog" style="margin-top:12px">${(k.log||[]).slice(-8).reverse().map(l=>`<div>${esc(l.at)} · ${esc(l.by)} · ${esc(l.action)}${l.memo?' — '+esc(l.memo):''}</div>`).join('')}</div></div>`;}
 function csBind(m,re){const k=CS.cur;
@@ -1778,7 +1826,7 @@ function csBind(m,re){const k=CS.cur;
   $('csZip').onclick=()=>csZipAll(k);
   $('csRefresh').onclick=async()=>{toast('새로고침…');try{await csLoadFiles(k.id);re()}catch(e){toast(e.message)}};
   $('csToRp').onclick=()=>{const first=(k.contracts||[]).find(id=>{const x=csAllContracts().find(c=>c.id===id);return x&&x.sec!=='ind'});
-    ctSetMode('rep');RP=rpBlank();Object.assign(RP.f,{cname:k.cname||'',incDate:k.date||'',contractId:first||''});RP_SUB='new';show('contract');toast('결과보고서를 새로 시작했어요 · 고객사명이 채워졌어요')};
+    ctSetMode('rep');RP=rpBlank();RP_CASE={id:k.id,items:null,busy:false};Object.assign(RP.f,{cname:k.cname||'',incDate:k.date||'',contractId:first||'',caseId:k.id});RP_SUB='new';show('contract');toast('결과보고서를 새로 시작했어요 · 고객사명이 채워졌어요')};
   // 칸에 파일·폴더를 끌어다 놓으면 그 칸 폴더로 바로 올림 (버튼·확인창 없음). 칸 밖에 놓아도 브라우저가 파일을 열지 않게 막음
   const grid=m.querySelector('.cs-grid');if(grid){grid.ondragover=e=>e.preventDefault();grid.ondrop=e=>e.preventDefault();}
   m.querySelectorAll('.cs-slot').forEach(sl=>{const i=+sl.dataset.slot;
@@ -3399,8 +3447,13 @@ async function refreshData(){
     toast(same?'바뀐 자료가 없어요 (마지막 업데이트: '+(DATA.updated||'-')+')':'최신 자료로 바꿨어요');
   }catch(e){toast('자료를 받지 못했어요: '+e.message)}
 }
-/* 업데이트: GitHub의 화면 파일(src/site.html)을 확인해서 새 버전이면 바로 바꿈 */
+/* 업데이트: GitHub의 화면 파일(src/site.html)을 10분마다(그리고 화면으로 돌아올 때) 확인 → 새 버전이면
+   업데이트 창을 맨 앞에 띄우고 10초 뒤 자동으로 바꿈 (KD마케팅업무도구처럼).
+   계약서·보고서·비용을 쓰는 중이면 날아가지 않게 자동으로 넘기지 않고 [지금 업데이트]를 누를 때까지 기다림 */
+const UPD={nv:'',snooze:0,last:0,t:null,typed:false,title:'',blink:null};
+document.addEventListener('input',e=>{if(e.target&&e.target.closest&&e.target.closest('#main'))UPD.typed=true},true);
 async function checkUpdate(manual){
+  UPD.last=Date.now();
   try{
     const r=await fetch('src/site.html?v='+Date.now(),{cache:'no-store'});
     if(!r.ok)throw new Error('화면 파일을 찾지 못했어요');
@@ -3409,15 +3462,44 @@ async function checkUpdate(manual){
     let old=null;try{old=localStorage.getItem('cd_html');localStorage.setItem('cd_html',html)}catch(e){}
     // 지금 보고 있는 화면의 버전(APP_VER)과 GitHub 최신 화면의 버전을 비교 (버전이 없으면 저장본과 비교)
     if(nv?nv===APP_VER:old===html){if(manual)toast(`지금이 최신 화면이에요 (v${APP_VER})`);return;}
-    if(manual){try{sessionStorage.setItem('cd_upd_from',APP_VER)}catch(e){}location.reload();}else newVersionBar(nv);
+    if(manual)updGo();else updFront(nv);
   }catch(e){if(manual)toast('업데이트 확인 실패: '+e.message)}
 }
-function newVersionBar(nv){   // 화면이 새로 바뀌었으면 위에 안내 띄우기
-  if(document.getElementById('nvb'))return;
-  const d=document.createElement('div');d.id='nvb';
-  d.style.cssText='position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:70;background:#0f172a;color:#fff;border-radius:12px;padding:10px 12px 10px 16px;font-size:14px;display:flex;gap:10px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.2)';
-  d.innerHTML=(nv?`새 화면 v${nv}이 나왔어요`:'새 화면이 나왔어요')+' <button class="btn" style="padding:6px 12px">새로고침</button>';
-  d.querySelector('button').onclick=()=>location.reload();document.body.appendChild(d);
+function updGo(){try{sessionStorage.setItem('cd_upd_from',APP_VER)}catch(e){}location.reload()}
+function updBusy(){   // 지금 바로 새로고침하면 쓰던 내용이 날아갈 수 있으면 그 이유
+  if(typeof CDIRTY!=='undefined'&&CDIRTY)return '저장하지 않은 비용 내용이 있어요';
+  if((typeof RP_BUSY!=='undefined'&&RP_BUSY>0)||(typeof CS_BUSY!=='undefined'&&CS_BUSY)||document.getElementById('csUpBox'))return '파일을 올리는 중이에요';
+  if(UPD.typed&&TAB==='contract'&&typeof CT_MODE!=='undefined'&&((CT_MODE==='rep'&&RP_SUB==='new')||(CT_MODE!=='rep'&&CT_MODE!=='case'&&CT&&CT.sub==='new')))return '쓰는 중인 계약서·보고서가 있어요';
+  const a=document.activeElement;if(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&a.closest('#main'))return '입력하는 중이에요';
+  return '';
+}
+function updTitle(on){   // 다른 창을 보고 있어도 알아보게: 탭 제목 깜빡이기
+  clearInterval(UPD.blink);if(!UPD.title)UPD.title=document.title;
+  if(!on){document.title=UPD.title;return}
+  let f=false;UPD.blink=setInterval(()=>{f=!f;document.title=f?'🔄 새 버전이 나왔어요':UPD.title},1000);
+}
+function updFront(nv){
+  if(Date.now()<UPD.snooze||document.getElementById('nvb'))return;UPD.nv=nv;
+  // 창을 맨 앞으로: 창에 포커스 + 탭 제목 깜빡임 + (알림을 허용해 둔 PC면) 윈도우 알림 → 누르면 이 창이 앞으로
+  try{window.focus()}catch(e){}updTitle(true);
+  try{if('Notification' in window&&Notification.permission==='granted'&&(document.hidden||!document.hasFocus())){
+    const n=new Notification('한국데이터 매출 대시보드',{body:`새 버전 ${nv?'v'+nv:''}이 나왔어요 · 눌러서 업데이트`,tag:'cd-upd',requireInteraction:true});
+    n.onclick=()=>{try{window.focus()}catch(e){}n.close()}}}catch(e){}
+  const d=document.createElement('div');d.id='nvb';d.className='modal';d.style.zIndex='9999';
+  d.innerHTML=`<div class="login-card" style="text-align:center;max-width:340px"><div style="font-size:32px;line-height:1">🔄</div>
+    <h3 style="margin:10px 0 6px;color:var(--ink)">새 버전 ${nv?'v'+esc(nv):''}이 나왔어요</h3>
+    <p id="nvbMsg" style="color:var(--sub);font-size:14px;line-height:1.6;margin:0 0 14px"></p>
+    <button class="btn fld-btn" id="nvbGo">지금 업데이트</button>
+    <button class="btn-ghost" id="nvbLater" style="margin-top:8px;width:100%">나중에 (30분 뒤 다시 알림)</button></div>`;
+  document.body.appendChild(d);
+  let left=10;
+  const draw=()=>{const busy=updBusy(),m=$('nvbMsg');if(!m)return busy;
+    m.innerHTML=busy?`${busy}.<br>저장한 뒤 <b>[지금 업데이트]</b>를 눌러 주세요.`:`<b style="color:var(--ink);font-size:18px">${left}초</b> 뒤 자동으로 업데이트해요`;return busy};
+  draw();
+  $('nvbGo').onclick=updGo;
+  $('nvbLater').onclick=()=>{clearInterval(UPD.t);UPD.snooze=Date.now()+30*60000;d.remove();updTitle(false)};
+  clearInterval(UPD.t);UPD.t=setInterval(()=>{if(!document.getElementById('nvb')){clearInterval(UPD.t);return}
+    if(draw()){left=10;return}if(--left<=0){clearInterval(UPD.t);updGo();return}draw()},1000);
 }
 function alertBox(html){
   const d=document.createElement('div');d.className='modal';
@@ -3433,7 +3515,8 @@ initLogin();
   if(t&&me){TOKEN=t;ME=me;startApp();}   // 로그인 상태면 서버 확인을 기다리지 않고 바로 시작 (만료되면 자동 로그아웃)
   // 다음 접속을 빠르게: 최신 화면을 미리 받아 둠 (GitHub 주소에서 열었을 때)
   // GitHub에 올라온 최신 화면(src/site.html)을 미리 받아 두고, 바뀌었으면 안내
-  if(!IN_GAS)setTimeout(()=>checkUpdate(false),2000);
+  if(!IN_GAS){setTimeout(()=>checkUpdate(false),2000);setInterval(()=>checkUpdate(false),10*60000);   // 켜 둔 동안 10분마다 새 버전 확인
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-UPD.last>2*60000)checkUpdate(false)});}
 })();
 </script>
 </body>
