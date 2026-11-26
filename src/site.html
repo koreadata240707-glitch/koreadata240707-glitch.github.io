@@ -199,6 +199,86 @@ tr.click{cursor:pointer}
   .who{display:none}
 }
 .avgp{display:block;font-size:11px;color:#2563eb;margin-top:2px;white-space:nowrap}.avgp.none{color:#9aa1ab}
+/* 계약서 (관리자) */
+.ctsub{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.ctsub button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;color:var(--sub);cursor:pointer}
+.ctsub button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.ctgrid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;align-items:start}
+.ctform h3{font-size:15px;margin:18px 0 10px;padding-top:14px;border-top:1px solid var(--line)}
+.ctform h3:first-child{margin-top:0;padding-top:0;border-top:0}
+.ctrow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ctrow.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.ctform label{display:block;font-size:12px;color:var(--sub);font-weight:600}
+.ctform label.wide{grid-column:1/-1}
+.ctform input,.ctform select,.ctform textarea{width:100%;margin-top:4px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px;color:var(--ink);background:#fff}
+.ctform textarea{min-height:76px;resize:vertical;line-height:1.5}
+.ctform input.num{text-align:right}
+.ctform input:disabled,.ctform select:disabled,.ctform textarea:disabled{background:#f8fafc;color:#475569}
+.ctrates{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.ctrates button{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 11px;font-size:13px;font-weight:700;cursor:pointer}
+.ctrates button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.ctside{position:sticky;top:120px;display:flex;flex-direction:column;gap:12px}
+.ctcalc table{width:100%;border-collapse:collapse;font-size:13px}
+.ctcalc td{padding:6px 0;border-bottom:1px dashed var(--line)}
+.ctcalc td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.ctcalc tr.tot td{border-bottom:0;font-size:16px;font-weight:800;color:var(--brand);padding-top:10px}
+.ctcalc .muted{font-weight:400}
+.ctbtns{display:flex;flex-direction:column;gap:8px}
+.ctbtns .btn{width:100%;justify-content:center}
+.ctst{display:inline-block;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:700;color:#fff;white-space:nowrap}
+.ctflow{display:flex;gap:4px;flex-wrap:wrap;font-size:11px;margin:8px 0}
+.ctflow span{padding:3px 7px;border-radius:7px;background:#f1f5f9;color:#94a3b8;font-weight:600}
+.ctflow span.on{background:var(--brand-soft);color:var(--brand)}
+.ctflow span.done{background:#dcfce7;color:#166534}
+.ctchk{font-size:13px;line-height:1.9}
+.ctchk label{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--ink);font-weight:500}
+.ctlog{font-size:12px;color:var(--sub);max-height:180px;overflow:auto;line-height:1.7}
+.ctwarn{background:#fffbeb;border:1px solid #fde68a;color:#92400e;border-radius:10px;padding:9px 11px;font-size:12.5px;line-height:1.6}
+.ctok{color:var(--good);font-weight:700}.ctbad{color:var(--bad);font-weight:700}
+.ctlist .cgrp{margin-bottom:14px}
+.ctlist .cgrp h4{margin:0 0 6px;font-size:14px}
+.ctlist table{width:100%;border-collapse:collapse;font-size:13px}
+.ctlist th,.ctlist td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.ctlist td.r{text-align:right}
+.ctlist tr.go{cursor:pointer}.ctlist tr.go:hover td{background:#f8fafc}
+.ctfiles a{color:var(--brand);cursor:pointer;text-decoration:underline}
+/* 미리보기 */
+.ctmodal{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:80;display:flex;flex-direction:column}
+.ctmbar{background:#fff;padding:10px 14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.ctmbar b{flex:1;min-width:160px;font-size:14px}
+.ctmbody{flex:1;overflow:auto;padding:18px 12px;display:flex;gap:16px}
+.ctpages{flex:1;display:flex;flex-direction:column;align-items:center;gap:14px;min-width:0}
+.ctpwrap{background:#fff;box-shadow:0 4px 20px rgba(0,0,0,.25);overflow:hidden;flex:none}
+.ctpwrap .ctpage{transform-origin:0 0}
+.ctcheck{width:290px;flex:none;background:#fff;border-radius:12px;padding:14px;font-size:13px;line-height:1.75;align-self:flex-start;position:sticky;top:0}
+.ctcheck h4{margin:0 0 6px;font-size:14px}
+.ctedit{flex:1;overflow:auto;background:#e2e8f0;padding:18px 12px}
+.ctedit .ctcol{background:#fff;margin:0 auto;padding:40px 44px;box-shadow:0 4px 20px rgba(0,0,0,.2);outline:none;box-sizing:content-box}
+.ctedit .ctf{background:#dbeafe;border-radius:3px;padding:0 2px;color:#1e3a8a}
+.ctedit .ctf[data-empty]::before{content:'«' attr(data-l) '»';color:#64748b}
+.ctedit [data-ct],.ctedit [data-sp]{outline:2px dashed #93c5fd;outline-offset:2px}
+.ctedit div[data-ct=gen]::before{content:'[비용 계산표가 여기에 자동으로 들어가요]';display:block;color:#2563eb;font-size:12px;padding:6px}
+.ctedit div[data-sp]::before{content:'[특약사항이 여기에 자동으로 들어가요]';display:block;color:#2563eb;font-size:12px;padding:6px}
+/* A4 페이지 (PDF·인쇄용) */
+#ctHost{position:fixed;left:-12000px;top:0;width:800px;pointer-events:none}
+.ctpage{position:relative;width:794px;height:1123px;background:#fff;overflow:hidden;color:#000;box-sizing:border-box}
+.ctpage .ctin{position:absolute;overflow:visible}
+.ctcol table,.ctin table{width:auto}.ctcol th,.ctcol td,.ctin th,.ctin td{white-space:normal}  /* 대시보드 기본 표 스타일(폭 100%·줄바꿈 금지)이 계약서 표에 새지 않게 */
+.ctpage .ctno{position:absolute;right:30px;font:8.5pt "맑은 고딕","Malgun Gothic",Pretendard,sans-serif;color:#555}
+.ctpage .ctwm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:5}
+.ctpage .ctwm span{transform:rotate(-30deg);font:700 54px "맑은 고딕","Malgun Gothic",Pretendard,sans-serif;color:rgba(220,38,38,.13);white-space:nowrap;border:6px solid rgba(220,38,38,.13);padding:6px 26px;border-radius:14px}
+.ctin-seal{position:relative;display:inline-block}
+.ctin-seal img{position:absolute;width:62px;height:62px;left:-23px;top:-41px;opacity:.9;z-index:3}
+.ctcol{position:relative}
+.ctcol p,.ctin p{line-height:var(--ctlh,1.33)}  /* 워드 "1줄" 간격 (양식마다 보정값) */
+.ctcol .ctf{white-space:pre-wrap}
+@media (max-width:900px){.ctgrid{grid-template-columns:1fr}.ctside{position:static}.ctcheck{display:none}.ctrow.c3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* 상단 큰 구분 */
+.secsw{max-width:1600px;margin:0 auto;padding:4px 12px 6px;display:flex;gap:8px}
+.secsw[hidden]{display:none}
+.secsw button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 18px;font-size:15px;font-weight:700;color:var(--sub);cursor:pointer;white-space:nowrap}
+.secsw button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+@media (max-width:700px){.secsw{padding:4px 8px 6px;gap:6px}.secsw button{flex:1;padding:8px 6px;font-size:14px}}
 </style>
 <style>th.th2l{white-space:pre-line}@media (min-width:701px){th.dcol,td.dcol{display:none}}#segK{flex-wrap:wrap}</style><style>
 .bellw{position:relative}.bell{position:relative;border:1px solid var(--line);background:#fff;border-radius:10px;width:38px;height:33px;cursor:pointer;display:grid;place-items:center;padding:0}
@@ -312,6 +392,7 @@ tr.click{cursor:pointer}
       <button class="btn-ghost" onclick="logout()">로그아웃</button>
       </span>
     </div>
+    <div class="secsw" id="secsw" hidden><button data-s="sales">1. 매출 대시보드</button><button data-s="contract">2. 계약서</button></div>
     <nav id="nav"></nav>
   </header>
   <main id="main"><div class="loading"><div class="spin"></div>불러오는 중…</div></main>
@@ -320,7 +401,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='2.8';
+const APP_VER='2.9';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -359,6 +440,7 @@ const TABS = [
   {id:'ads', label:'광고', need:'광고 데이터 있음'},
   {id:'costs', label:'원가·마진', admin:true},
   {id:'warranty', label:'보증·교환'},
+  {id:'contract', label:'계약서', admin:true},
   {id:'staff', label:'직원 관리', admin:true},
 ];
 let TOKEN = null, ME = null, DATA = null, TAB = 'home', charts = {};
@@ -457,12 +539,505 @@ function logout(silent){
   $('login').classList.remove('hidden');
 }
 
+/* ═══════════════════════ 계약서 (관리자 전용) ═══════════════════════
+   견적(기준 금액 × 요율 + 출장비 + 추가 작업비 → 부가세 → 최종 금액)을 회사 계약서 양식에 자동으로 넣고
+   A4 미리보기 · PDF · 인쇄 · 이력/버전 · 검토·승인 · 서명본 보관까지 합니다. 실제 송금 기능은 없습니다. */
+const CT_RATES=[38,41,43,45,48,50,52];
+const CT_TYPES={pay:'랜섬웨어 위탁 결제 대행 계약서',rec:'데이터 복구 용역 계약서',nda:'비밀유지계약서'};
+const CT_TSHORT={pay:'결제 대행',rec:'복구 용역',nda:'비밀유지'};
+const CT_CO={KD:'주식회사 한국데이터',KDRC:'㈜한국데이터복구센터'};
+const CT_CODE={pay:'P',rec:'R',nda:'N'};
+const CT_FLOW=['작성중','검토요청','승인','발행','체결'];
+const CT_STC={작성중:'#64748b',검토요청:'#d97706',승인:'#2563eb',발행:'#7c3aed',체결:'#16a34a',취소:'#94a3b8'};
+const CT_FL={cname:'고객사명',bizno:'사업자등록번호',ceo:'대표자명',addr:'사업장 주소',biztype:'업태',bizitem:'종목',mgr:'담당자명(직책)',tel:'연락처',email:'Email',rep:'대표번호',
+  our_mgr:'우리 담당자',our_tel:'우리 연락처',our_email:'우리 Email',date:'계약일',recDate:'복구 계약일',ndaFrom:'계약기간 시작',ndaTo:'계약기간 끝',total:'최종 계약 금액'};
+const CT_NEED=['cname','bizno','ceo','addr','date'];
+const CT_PW=794,CT_PH=1123;   // A4 (96dpi)
+let CT=null;                  // {templates, seals, contracts, cur, sub, tplCache}
+
+/* ---------- 계산 (화면과 PDF 가 같은 함수를 씀) ---------- */
+function ctInt(v){v=Number(String(v==null?'':v).replace(/[^\d.-]/g,''));return isFinite(v)?Math.round(v):0}
+function ctCalc(f){
+  const base=ctInt(f.base),rate=Number(f.rate)||0,days=ctInt(f.tripDays),unit=ctInt(f.tripUnit),extra=ctInt(f.extra);
+  const svc=Math.round(base*rate/100),trip=days*unit,pay=f.type==='pay';
+  const lines=[{k:'base',name:pay?'해커비':'기준 금액',qty:'1',unit:base,amt:base,basis:'기준 금액'},
+    {k:'svc',name:pay?'결제대행수수료':'서비스 비용',qty:rate+'%',unit:svc,amt:svc,basis:`기준 금액 × ${rate}%`}];
+  if(trip)lines.push({k:'trip',name:'출장비',qty:days+'일',unit:unit,amt:trip,basis:`${days}일 × ${won(unit)}원`});
+  if(extra)lines.push({k:'extra',name:'추가 작업비',qty:'1',unit:extra,amt:extra,basis:'추가 작업'});
+  lines.forEach(l=>{l.vat=Math.round(l.amt/10);l.total=l.amt+l.vat});
+  const supply=lines.reduce((s,l)=>s+l.amt,0),vat=lines.reduce((s,l)=>s+l.vat,0);
+  return {base,rate,svc,days,unit,trip,extra,lines,supply,vat,total:supply+vat};
+}
+function ctKDate(d){const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(d||'');return m?`${m[1]}년 ${+m[2]}월 ${+m[3]}일`:''}
+function ctToday(){const d=new Date(Date.now()+9*3600e3);return d.toISOString().slice(0,10)}
+function ctAddYear(d){const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(d||'');if(!m)return '';const x=new Date(Date.UTC(+m[1]+1,+m[2]-1,+m[3]-1));return x.toISOString().slice(0,10)}
+function ctValues(c){
+  const f=c.f,k=ctCalc(f);
+  const v={};Object.keys(CT_FL).forEach(x=>v[x]=String(f[x]||'').trim());
+  v.date=ctKDate(f.date);v.recDate=ctKDate(f.recDate||f.date);v.ndaFrom=ctKDate(f.ndaFrom||f.date);v.ndaTo=ctKDate(f.ndaTo);
+  v.total=k.total?won(k.total):'';
+  return v;
+}
+function ctFileName(c){
+  const cn=String(c.f.cname||'고객사').replace(/[\\/:*?"<>|\s]+/g,'_').replace(/^_|_$/g,'');
+  return `${c.company}_계약서_${cn}_${(c.f.date||'').replace(/-/g,'')}_${c.id||'미저장'}.pdf`;
+}
+
+/* ---------- 양식 → A4 페이지 ---------- */
+/* 워드의 줄 간격 %는 글꼴 기본 줄 높이 기준이라 브라우저(글자 크기 기준)보다 넓음 → 원본과 같은 쪽 나눔이 되도록 보정 */
+function ctLH(s,k){k=Number(k)||1;return String(s||'').replace(/line-height:\s*([\d.]+)%/g,(m,x)=>`line-height:${(x*k).toFixed(1)}%`)}
+function ctFontCss(css,k){return ctLH(css,k).replace(/font-family:\s*"맑은 고딕"/g,'font-family:"맑은 고딕","Malgun Gothic",Pretendard,"Apple SD Gothic Neo",sans-serif')}
+function ctPx(v){const m=/([\d.]+)\s*(pt|cm|mm|in|px)?/.exec(v||'0');return parseFloat(m[1])*({pt:96/72,cm:96/2.54,mm:96/25.4,in:96,px:1}[m[2]||'px'])}
+function ctMargins(s){const a=String(s||'2cm').trim().split(/\s+/).map(ctPx);
+  return a.length===1?[a[0],a[0],a[0],a[0]]:a.length===2?[a[0],a[1],a[0],a[1]]:a.length===3?[a[0],a[1],a[2],a[1]]:a}
+async function ctTpl(key,ver){
+  const t=CT.templates[key];if(!t)throw new Error('양식이 없어요: '+key);
+  if(!ver||ver===t.ver)return t;
+  CT.tplCache=CT.tplCache||{};const ck=key+'#'+ver;
+  if(!CT.tplCache[ck])CT.tplCache[ck]=await call('ctTplGet',TOKEN,key,ver);
+  return CT.tplCache[ck];
+}
+function ctCellSet(td,text){
+  const p=td.querySelector('p')||td,sp=p.querySelector('span');
+  const n=sp?sp.cloneNode(false):document.createElement('span');n.style.background='';n.textContent=text;p.innerHTML='';p.appendChild(n);
+}
+function ctCirc(i){return '①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮'[i]||`(${i+1})`}
+/* 칸 채우기: 고객 정보·금액·비용 계산표·특약사항·직인 */
+function ctFill(col,c,vals,k,opt){
+  col.querySelectorAll('[data-f]').forEach(e=>{const v=vals[e.dataset.f];
+    // 바로 앞 글자가 붙어 있으면(예: "연락처:", "금") 한 칸 띄움. 따옴표·괄호 뒤는 그대로
+    const blk=e.closest('p,td,li')||col,rg=document.createRange();rg.setStart(blk,0);rg.setEndBefore(e);
+    const before=rg.toString().replace(/ /g,' ');
+    const gap=v&&before&&!/[\s“"‘'(\[]$/.test(before)?' ':'';
+    e.textContent=v?gap+v:' '.repeat(e.dataset.f==='cname'?18:10)});
+  const tb=col.querySelector('table[data-ct=pay]');
+  if(tb){const it=tb.querySelector('tr[data-row=item]'),sum=tb.querySelector('tr[data-row=sum]');
+    if(it&&sum){k.lines.forEach(l=>{const r=it.cloneNode(true);r.removeAttribute('data-row');const td=[...r.cells];
+        [l.name,l.qty,won(l.unit),won(l.vat),won(l.total)].forEach((x,i)=>td[i]&&ctCellSet(td[i],x));sum.before(r);});
+      it.remove();const sc=[...sum.cells];const tail=[won(k.supply),won(k.vat),won(k.total)];
+      for(let i=0;i<3;i++){const td=sc[sc.length-3+i];if(td)ctCellSet(td,tail[i]);}
+      sum.setAttribute('data-sum',k.total);}}
+  col.querySelectorAll('div[data-ct=gen]').forEach(d=>{
+    const cell='border:solid windowtext 1.0pt;padding:2.5pt 6pt;font-size:10pt;line-height:140%';
+    d.innerHTML=`<p class=MsoNormal style="margin:8pt 0 4pt;font-size:10pt;font-weight:bold">[비용 계산표]</p>
+      <table class=MsoTableGrid style="border-collapse:collapse;width:100%;font-family:inherit" data-sum="${k.total}">
+      <tr>${['항목','산정 기준','공급가액(원)','부가세(원)','합계(원)'].map(h=>`<td style="${cell};background:#f2f2f2;text-align:center;font-weight:bold">${h}</td>`).join('')}</tr>
+      ${k.lines.map(l=>`<tr><td style="${cell}">${esc(l.name)}</td><td style="${cell}">${esc(l.k==='base'?'-':l.basis)}</td><td style="${cell};text-align:right">${won(l.amt)}</td><td style="${cell};text-align:right">${won(l.vat)}</td><td style="${cell};text-align:right">${won(l.total)}</td></tr>`).join('')}
+      <tr><td style="${cell};font-weight:bold" colspan=2>합계 (최종 계약 금액, 부가세 포함)</td><td style="${cell};text-align:right;font-weight:bold">${won(k.supply)}</td><td style="${cell};text-align:right;font-weight:bold">${won(k.vat)}</td><td style="${cell};text-align:right;font-weight:bold">${won(k.total)}</td></tr></table>`;
+  });
+  const lines=String(c.f.special||'').split(/\n+/).map(s=>s.trim()).filter(Boolean);
+  col.querySelectorAll('div[data-sp]').forEach(d=>{
+    d.innerHTML='';if(!lines.length)return;
+    if(d.dataset.sp==='nda'){const prev=d.previousElementSibling;
+      lines.forEach((s,i)=>{const p=(prev||document.createElement('p')).cloneNode(false);p.textContent=`${ctCirc(i+2)} ${s}`;d.appendChild(p);});return;}
+    const head=[...col.querySelectorAll('p')].find(p=>/^\s*제\s*\d+\s*조/.test(p.textContent)),item=col.querySelector('p.MsoListParagraph');
+    const h=(head||document.createElement('p')).cloneNode(false);h.textContent='[특약사항]';d.appendChild(h);
+    lines.forEach((s,i)=>{const p=(item||document.createElement('p')).cloneNode(false);p.textContent=`(${i+1}) ${s}`;d.appendChild(p);});
+    const sp=document.createElement('p');sp.innerHTML='&nbsp;';d.appendChild(sp);
+  });
+  if(opt&&opt.seal){const img=CT.seals[c.company];const box=col.querySelector('[data-seal]');
+    if(img&&box){const p=[...box.querySelectorAll('p')].filter(p=>/\(\s*인\s*\)/.test(p.textContent)).pop();
+      if(p){// 문단 끝의 "(인)" 의 '인' 글자 바로 앞에 직인을 겹쳐 놓음 ('날인'의 인이 아니라)
+        const w=document.createTreeWalker(p,NodeFilter.SHOW_TEXT);const ns=[];let n;while((n=w.nextNode()))ns.push(n);
+        const all=ns.map(x=>x.data).join(''),m=/\(\s*(인)\s*\)[^()]*$/.exec(all);
+        if(m){let at=m.index+m[0].indexOf('인'),pos=0;
+          for(const x of ns){if(at<pos+x.data.length){const rest=x.splitText(at-pos);
+            const s=document.createElement('span');s.className='ctin-seal';s.innerHTML=`<img alt="직인" src="${img}">`;rest.parentNode.insertBefore(s,rest);break;}pos+=x.data.length;}}}}}
+}
+/* 본문을 A4 페이지로 나눔. 원본 양식의 섹션(페이지 묶음)·여백을 그대로 따름 */
+async function ctBuild(c,opt){
+  opt=opt||{};
+  const key=c.company+'_'+c.type,t=await ctTpl(key,c.tplVer);
+  let host=document.getElementById('ctHost');if(!host){host=document.createElement('div');host.id='ctHost';document.body.appendChild(host);}
+  const lh=Number(t.lh)||1;
+  host.innerHTML=`<style>${ctFontCss(t.css,lh)}</style>`;
+  host.style.setProperty('--ctlh',lh);
+  const vals=ctValues(c),k=ctCalc(c.f),pages=[];
+  for(const s of (c.body||t.sections)){
+    const [mt,mr,mb,ml]=ctMargins(s.margin),W=CT_PW-ml-mr,H=CT_PH-mt-mb;
+    const col=document.createElement('div');col.className=`ctcol tpl-${key}`;col.style.width=W+'px';col.innerHTML=ctLH(s.html,lh);host.appendChild(col);
+    ctFill(col,c,vals,k,opt);
+    const top0=col.getBoundingClientRect().top;
+    const blocks=[...col.children].map(b=>{const r=b.getBoundingClientRect(),cs=getComputedStyle(b);
+      return {b,top:r.top-top0-(parseFloat(cs.marginTop)||0),bot:r.bottom-top0+(parseFloat(cs.marginBottom)||0)}});
+    /* 쪽 나누기: 원본 워드에서 다음 쪽에 있던 덩어리(data-wp)는 새 쪽에서 시작(원본과 같은 쪽 구성).
+       내용이 늘어 한 번 넘치면 그 뒤로는 원본 쪽 나눔 대신 자연스럽게 이어 씀. 조항 제목은 쪽 끝에 혼자 두지 않음 */
+    const isHead=b=>/^\s*(제\s*\d+\s*조|\[특약사항\]|\[\s*“?[갑을]”?\s*회사정보\])/.test(b.textContent||'');
+    const pos=new Map(blocks.map(x=>[x.b,x]));
+    let cur=null,start=0,wp=0,flow=false;
+    const newPage=()=>{const pg=document.createElement('div');pg.className='ctpage';pg.style.setProperty('--ctlh',lh);
+      const inner=document.createElement('div');inner.className=`ctin tpl-${key}`;
+      inner.style.cssText=`top:${mt}px;left:${ml}px;width:${W}px;height:${H}px`;
+      pg.appendChild(inner);host.appendChild(pg);cur={pg,inner,H};pages.push(cur);};
+    for(const x of blocks){
+      const w=Number(x.b.getAttribute('data-wp'))||0,boundary=w>wp&&wp>0;if(w)wp=Math.max(wp,w);
+      const over=cur&&x.bot-start>H&&cur.inner.children.length;
+      if(!cur||(boundary&&!flow)||over){
+        const prev=cur;newPage();start=x.top;
+        if(over){flow=true;
+          const last=prev.inner.lastElementChild;
+          if(last&&prev.inner.children.length>1&&isHead(last)){cur.inner.appendChild(last);start=pos.get(last).top;}}
+      }
+      cur.inner.appendChild(x.b);
+    }
+    col.remove();
+  }
+  pages.forEach((p,i)=>{
+    if(i===0&&c.id){const n=document.createElement('div');n.className='ctno';n.style.top='14px';n.textContent='계약번호: '+c.id;p.pg.appendChild(n);}
+    if(opt.draft){const w=document.createElement('div');w.className='ctwm';w.innerHTML='<span>검토용 초안 · 발행 전</span>';p.pg.appendChild(w);}
+  });
+  return {host,pages:pages.map(p=>p.pg),checks:ctChecks(c,t,pages,vals,k,opt)};
+}
+/* 필수 검증: 금액 일치 · 고객 정보 · 조항/페이지 누락 · 넘침 · 글꼴 */
+function ctChecks(c,t,pages,vals,k,opt){
+  const out=[],add=(ok,msg)=>out.push({ok,msg});
+  const txt=pages.map(p=>p.pg.textContent).join('\n');
+  if(c.type!=='nda'){
+    const sumEl=pages.map(p=>p.pg.querySelector('[data-sum]')).find(Boolean);
+    const totEl=pages.map(p=>p.pg.querySelector('[data-f=total]')).find(Boolean);
+    const okSum=sumEl&&Number(sumEl.getAttribute('data-sum'))===k.total&&sumEl.textContent.includes(won(k.total));
+    const okTot=totEl&&totEl.textContent.replace(/[^\d]/g,'')===String(k.total);
+    const okParts=[k.supply,k.vat].every(n=>txt.includes(won(n)));
+    add(!!(okSum&&okTot&&okParts&&k.total>0),`금액 일치: 화면 ${won(k.total)}원 = 계약서 표·본문 ${totEl?totEl.textContent.trim():'없음'}원`);
+  }
+  const miss=CT_NEED.filter(x=>!vals[x]);
+  add(!miss.length,miss.length?`비어 있는 고객 정보: ${miss.map(x=>CT_FL[x]).join(', ')}`:'고객사 정보 자동 입력 확인 (회사명·사업자번호·대표자·주소·계약일)');
+  const heads=el=>[...el.querySelectorAll('p')].filter(p=>/^\s*제\s*\d+\s*조/.test(p.textContent)).length;
+  const tmp=document.createElement('div');tmp.innerHTML=(c.body||t.sections).map(s=>s.html).join('');
+  const want=heads(tmp),got=pages.reduce((s,p)=>s+heads(p.pg),0);
+  add(want===got&&want>0,`계약 조항 ${got}/${want}개 포함 · ${pages.length}쪽`);
+  const over=pages.map((p,i)=>{const top=p.inner.getBoundingClientRect().top;
+    const bot=[...p.inner.children].filter(b=>(b.textContent||'').replace(/ /g,' ').trim()).reduce((m,b)=>Math.max(m,b.getBoundingClientRect().bottom-top),0);
+    return bot>p.H+2?i+1:0}).filter(Boolean);
+  add(!over.length,over.length?`${over.join(', ')}쪽 내용이 아래로 넘쳐요 (본문 직접 수정으로 줄여 주세요)`:'페이지 넘침 없음 (A4)');
+  const font=document.fonts&&document.fonts.check?(document.fonts.check('12px "Malgun Gothic"')||document.fonts.check('12px Pretendard')):true;
+  add(font,font?'한글 글꼴 확인 (맑은 고딕/Pretendard)':'한글 글꼴을 못 찾았어요');
+  if(opt.seal&&!CT.seals[c.company])add(false,'직인 이미지가 등록되지 않았어요 (양식·직인 관리)');
+  return out;
+}
+
+/* ---------- PDF · 인쇄 ---------- */
+function ctScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('PDF 도구를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.'));document.head.appendChild(s)})}
+async function ctLibs(){
+  if(!window.html2canvas)await ctScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+  if(!(window.jspdf&&window.jspdf.jsPDF))await ctScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+}
+async function ctPdf(c,pages,prog){
+  await ctLibs();if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+  const pdf=new window.jspdf.jsPDF({unit:'mm',format:'a4',orientation:'portrait',compress:true});
+  for(let i=0;i<pages.length;i++){
+    if(prog)prog(i+1,pages.length);
+    const cv=await html2canvas(pages[i],{scale:2,backgroundColor:'#ffffff',logging:false,useCORS:true,width:CT_PW,height:CT_PH,windowWidth:CT_PW});
+    if(i)pdf.addPage('a4','portrait');
+    pdf.addImage(cv.toDataURL('image/jpeg',0.9),'JPEG',0,0,210,297,undefined,'FAST');
+  }
+  pdf.setProperties({title:`${CT_TYPES[c.type]} ${c.id||''}`,subject:c.f.cname||'',creator:'한국데이터 대시보드'});
+  return pdf.output('blob');
+}
+function ctSaveBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)}
+function ctB64(blob){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=rej;r.readAsDataURL(blob)})}
+function ctPrint(built){
+  const css=[...built.host.querySelectorAll('style')].map(s=>s.textContent).join('\n');
+  const own=[...document.querySelectorAll('style')].map(s=>s.textContent).join('\n').match(/\.ctpage[^{]*\{[^}]*\}|\.ctin[^{]*\{[^}]*\}|\.ctin-seal[^{]*\{[^}]*\}/g)||[];
+  const f=document.createElement('iframe');f.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0';document.body.appendChild(f);
+  f.srcdoc=`<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"><style>@page{size:A4;margin:0}html,body{margin:0}${own.join('\n')}${css}.ctpage{page-break-after:always;break-after:page}.ctpage:last-child{page-break-after:auto}</style></head><body>${built.pages.map(p=>p.outerHTML).join('')}</body></html>`;
+  f.onload=()=>setTimeout(()=>{f.contentWindow.focus();f.contentWindow.print();setTimeout(()=>f.remove(),60000)},500);
+}
+
+/* ---------- 서버 ---------- */
+async function ctLoad(force){
+  if(CT&&!force)return;
+  const r=await call('ctInit',TOKEN);
+  CT=Object.assign(CT||{sub:'new'},{templates:r.templates||{},seals:r.seals||{},contracts:r.contracts||[],tplHist:r.tplHist||{}});
+}
+function ctBlank(prev){
+  const d=ctToday();
+  const f={type:'pay',company:'KD',date:d,recDate:d,ndaFrom:d,ndaTo:ctAddYear(d),rate:45,base:'',tripDays:'',tripUnit:'',extra:'',special:'',
+    our_mgr:ME&&ME.name||'',our_tel:'',our_email:''};
+  if(prev)['cname','bizno','ceo','addr','biztype','bizitem','mgr','tel','email','rep','our_mgr','our_tel','our_email','company'].forEach(x=>f[x]=prev.f[x]||f[x]);
+  return {id:'',company:f.company,type:f.type,status:'작성중',ver:0,f,body:null,tplVer:0,approval:{},files:[],log:[],versions:[]};
+}
+function ctIsFinal(c){return ['승인','발행','체결'].includes(c.status)}
+
+/* ---------- 화면 ---------- */
+async function renderContract(m,head){
+  if(head!==undefined)renderContract._head=head;head=renderContract._head||'';
+  if(!CT||!CT.templates||!Object.keys(CT.templates).length){
+    m.innerHTML=head+'<div class="loading"><div class="spin"></div>불러오는 중…</div>';
+    try{await ctLoad(true)}catch(e){m.innerHTML=head+`<div class="banner err">${esc(e.message)}</div>`;return}
+  }
+  if(!CT.cur)CT.cur=ctBlank();
+  const sub=CT.sub||'new';
+  const nav=`<div class="ctsub">${[['new',CT.cur.id?'계약서 작성 · '+CT.cur.id:'새 계약서'],['list','계약 이력 ('+CT.contracts.length+')'],['tpl','양식·직인 관리']].map(([k,l])=>`<button data-cs="${k}" class="${k===sub?'on':''}">${esc(l)}</button>`).join('')}</div>`;
+  const noTpl=!Object.keys(CT.templates).length?`<div class="banner err">아직 계약서 양식이 서버에 없어요. [양식·직인 관리]에서 원본 양식을 올려 주세요.</div>`:'';
+  m.innerHTML=head+nav+noTpl+`<div id="ctBody"></div>`;
+  m.querySelector('.ctsub').onclick=e=>{const k=e.target.closest('[data-cs]');if(!k)return;CT.sub=k.dataset.cs;renderContract(m)};
+  const b=$('ctBody');
+  if(sub==='list')ctListView(b,m);else if(sub==='tpl')ctTplView(b,m);else ctFormView(b,m);
+}
+function ctIn(id,label,val,o){o=o||{};return `<label class="${o.wide?'wide':''}">${label}<input id="ct_${id}" value="${esc(val==null?'':val)}"${o.num?' class="num" inputmode="numeric"':''}${o.type?` type="${o.type}"`:''}${o.ph?` placeholder="${esc(o.ph)}"`:''}></label>`}
+function ctFormView(b,m){
+  const c=CT.cur,f=c.f,lock=c.status==='체결'||c.status==='취소',nda=c.type==='nda';
+  const vs=(c.versions||[]).slice().reverse();
+  b.innerHTML=`<div class="ctgrid"><div class="card ctform" id="ctForm">
+    <h3>계약 구분</h3>
+    <div class="ctrow"><label>계약 회사(을)<select id="ct_company">${Object.entries(CT_CO).map(([k,v])=>`<option value="${k}"${c.company===k?' selected':''}>${v}</option>`).join('')}</select></label>
+      <label>계약서 종류<select id="ct_type">${Object.entries(CT_TYPES).map(([k,v])=>`<option value="${k}"${c.type===k?' selected':''}>${v}</option>`).join('')}</select></label></div>
+    <h3>고객사(갑) 정보</h3>
+    <div class="ctrow">${ctIn('cname','고객사명 *',f.cname,{ph:'예: 주식회사 OO'})}${ctIn('bizno','사업자등록번호 *',f.bizno,{ph:'000-00-00000 / 법인번호'})}
+      ${ctIn('ceo','대표자명 *',f.ceo)}${ctIn('rep','대표번호',f.rep)}
+      ${ctIn('addr','사업장 주소 *',f.addr,{wide:1})}
+      ${ctIn('biztype','업태',f.biztype)}${ctIn('bizitem','종목',f.bizitem)}
+      ${ctIn('mgr','담당자명(직책)',f.mgr)}${ctIn('tel','연락처',f.tel)}${ctIn('email','Email',f.email,{wide:1})}</div>
+    <h3>계약 정보</h3>
+    <div class="ctrow c3">${ctIn('date','계약일 *',f.date,{type:'date'})}<label>계약번호<input value="${esc(c.id||'저장하면 자동으로 붙어요')}" disabled></label><label>양식 버전<input value="${c.tplVer?'v'+c.tplVer:'최신 v'+((CT.templates[c.company+'_'+c.type]||{}).ver||'-')}" disabled></label>
+      ${nda?ctIn('recDate','복구 계약 체결일',f.recDate,{type:'date'})+ctIn('ndaFrom','계약기간 시작',f.ndaFrom,{type:'date'})+ctIn('ndaTo','계약기간 끝',f.ndaTo,{type:'date'}):''}
+      ${nda?'':ctIn('our_mgr','우리 담당자(직책)',f.our_mgr)+ctIn('our_tel','우리 연락처',f.our_tel)+ctIn('our_email','우리 Email',f.our_email)}</div>
+    ${nda?'':`<h3>비용 (자동 견적)</h3>
+    <div class="ctrow">${ctIn('base',c.type==='pay'?'기준 금액 (해커비, 원) *':'기준 금액 (원) *',f.base?won(f.base):'',{num:1,ph:'0'})}
+      <label>적용 요율<div class="ctrates" id="ctRates">${CT_RATES.map(r=>`<button type="button" data-r="${r}" class="${Number(f.rate)===r?'on':''}">${r}%</button>`).join('')}</div></label>
+      ${ctIn('tripDays','출장 일수',f.tripDays,{num:1,ph:'0'})}${ctIn('tripUnit','출장 1일 단가 (원)',f.tripUnit?won(f.tripUnit):'',{num:1,ph:'0'})}
+      ${ctIn('extra','추가 작업비 (원)',f.extra?won(f.extra):'',{num:1,ph:'0'})}</div>`}
+    <h3>특약사항 <span class="muted" style="font-weight:400;font-size:12px">한 줄에 하나씩 · 계약서에 번호를 붙여 들어가요</span></h3>
+    <label class="wide"><textarea id="ct_special" placeholder="예: 복호화 키 수령 후 3일 이내 원격 지원을 제공한다.">${esc(f.special||'')}</textarea></label>
+    ${c.body?`<div class="ctwarn" style="margin-top:10px">이 계약서는 본문을 직접 고친 버전이에요. 양식이 바뀌어도 이 본문을 그대로 써요. <a href="#" id="ctBodyReset">양식 본문으로 되돌리기</a></div>`:''}
+    </div>
+    <div class="ctside">
+      <div class="card ctcalc" id="ctCalc"></div>
+      <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b>진행 상태</b><span class="ctst" style="background:${CT_STC[c.status]||'#64748b'}">${esc(c.status)}</span></div>
+        <div class="ctflow">${CT_FLOW.map(s=>{const i=CT_FLOW.indexOf(c.status),j=CT_FLOW.indexOf(s);return `<span class="${j<i?'done':j===i?'on':''}">${s}</span>`}).join('')}</div>
+        <div id="ctAppr"></div></div>
+      <div class="card ctbtns">
+        <button class="btn" id="ctSave"${lock?' disabled':''}>저장 (새 버전 v${(c.ver||0)+1})</button>
+        <button class="btn sec" id="ctPrev">전체 페이지 미리보기</button>
+        <button class="btn" id="ctPdf" style="background:#0f766e">PDF 계약서 생성</button>
+        <button class="btn sec" id="ctPrint">인쇄</button>
+        <button class="btn sec" id="ctEditBody"${lock?' disabled':''}>계약서 본문 직접 수정</button>
+        <button class="btn sec" id="ctNew">새 계약서 (같은 고객으로)</button>
+        <div class="muted" style="font-size:12px;line-height:1.6">PDF 파일명: ${esc(ctFileName(c))}</div>
+      </div>
+      ${c.id?`<div class="card"><b>파일</b><div class="ctfiles" style="font-size:13px;line-height:1.9;margin-top:6px">${(c.files||[]).length?(c.files||[]).slice().reverse().map(x=>`<div>${x.kind==='signed'?'✍️ 서명본':x.kind==='pdf'?'📄 발행본':'📝 초안'} v${x.ver||'-'} · <a data-fid="${esc(x.fid)}" data-fn="${esc(x.name)}">${esc(x.name)}</a> <span class="muted">${esc(x.at||'')}</span></div>`).join(''):'<span class="muted">아직 없어요</span>'}</div>
+        <label class="btn sec" style="margin-top:8px;display:flex;justify-content:center;cursor:pointer">서명 완료된 계약서 올리기<input type="file" id="ctSigned" accept=".pdf,.jpg,.jpeg,.png" hidden></label></div>
+      <div class="card"><b>버전 (${vs.length})</b><div class="ctlog" style="margin-top:6px">${vs.map(v=>`<div>v${v.ver} · ${esc(v.at)} · ${esc(v.by)}${v.body?' · 본문 수정':''}${v.ver!==c.ver?` · <a href="#" data-vv="${v.ver}">이 버전 보기</a>`:' · <b>지금</b>'}</div>`).join('')}</div>
+        <b style="display:block;margin-top:10px">기록</b><div class="ctlog">${(c.log||[]).slice().reverse().map(l=>`<div>${esc(l.at)} · ${esc(l.by)} · ${esc(l.action)}${l.memo?' — '+esc(l.memo):''}</div>`).join('')||'-'}</div></div>`:''}
+    </div></div>`;
+  const read=()=>{const g=id=>{const e=$('ct_'+id);return e?e.value:undefined};
+    ['cname','bizno','ceo','rep','addr','biztype','bizitem','mgr','tel','email','date','recDate','ndaFrom','ndaTo','our_mgr','our_tel','our_email','special'].forEach(x=>{const v=g(x);if(v!==undefined)f[x]=v});
+    ['base','tripDays','tripUnit','extra'].forEach(x=>{const v=g(x);if(v!==undefined)f[x]=ctInt(v)||''});};
+  const drawCalc=()=>{read();const el=$('ctCalc');
+    if(nda){el.innerHTML='<b>비용</b><p class="muted" style="font-size:13px;line-height:1.6;margin:6px 0 0">비밀유지계약서에는 금액이 들어가지 않아요.</p>';return;}
+    const k=ctCalc(f);
+    el.innerHTML=`<b>자동 견적</b><table style="margin-top:6px">
+      <tr><td>기준 금액</td><td>${won(k.base)}</td></tr>
+      <tr><td>서비스 비용 <span class="muted">${k.rate}%</span></td><td>${won(k.svc)}</td></tr>
+      <tr><td>출장비 <span class="muted">${k.days}일 × ${won(k.unit)}</span></td><td>${won(k.trip)}</td></tr>
+      <tr><td>추가 작업비</td><td>${won(k.extra)}</td></tr>
+      <tr><td><b>공급가액</b></td><td>${won(k.supply)}</td></tr>
+      <tr><td>부가세 <span class="muted">10%</span></td><td>${won(k.vat)}</td></tr>
+      <tr class="tot"><td>최종 계약 금액</td><td>${won(k.total)}원</td></tr></table>`;};
+  drawCalc();ctApprView(c,m);
+  const form=$('ctForm');
+  if(lock)form.querySelectorAll('input,select,textarea,button').forEach(x=>x.disabled=true);
+  form.addEventListener('input',e=>{if(e.target.classList.contains('num')){const p=e.target.selectionStart,l=e.target.value.length;const n=ctInt(e.target.value);
+      if(e.target.id!=='ct_tripDays'){e.target.value=n?won(n):'';try{const d=e.target.value.length-l;e.target.setSelectionRange(p+d,p+d)}catch(_){}}}
+    if(e.target.id==='ct_date'&&c.type==='nda'){}drawCalc();});
+  ['ct_company','ct_type'].forEach(id=>{const s=$(id);if(s)s.onchange=()=>{read();c.company=f.company=$('ct_company').value;c.type=f.type=$('ct_type').value;
+    if(c.id&&!confirm('이미 저장된 계약서의 회사·종류를 바꾸면 새 계약번호로 따로 저장돼요. 바꿀까요?')){s.value=s.id==='ct_company'?c.id.split('-')[0]:Object.keys(CT_CODE).find(k=>CT_CODE[k]===c.id.split('-')[1]);return;}
+    if(c.id){c.id='';c.ver=0;c.versions=[];c.files=[];c.log=[];c.status='작성중';c.approval={};}c.body=null;c.tplVer=0;ctFormView(b,m)}});
+  const rates=$('ctRates');if(rates)rates.onclick=e=>{const r=e.target.closest('[data-r]');if(!r||lock)return;f.rate=Number(r.dataset.r);rates.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===r));drawCalc();};
+  $('ctSave').onclick=()=>ctSaveNow(b,m);
+  $('ctPrev').onclick=()=>{read();ctPreview(c,'view')};
+  $('ctPdf').onclick=()=>{read();ctPreview(c,'pdf')};
+  $('ctPrint').onclick=()=>{read();ctPreview(c,'print')};
+  $('ctEditBody').onclick=()=>{read();ctEditor('contract',c,b,m)};
+  $('ctNew').onclick=()=>{read();if(!confirm('같은 고객 정보로 새 계약서를 만들까요? (지금 화면의 저장 안 한 내용은 사라져요)'))return;CT.cur=ctBlank(c);renderContract(m)};
+  const br=$('ctBodyReset');if(br)br.onclick=e=>{e.preventDefault();if(confirm('직접 고친 본문을 버리고 양식 본문으로 되돌릴까요? (저장해야 반영돼요)')){c.body=null;c.tplVer=0;ctFormView(b,m)}};
+  b.querySelectorAll('[data-fid]').forEach(a=>a.onclick=()=>ctDownload(a.dataset.fid,a.dataset.fn));
+  b.querySelectorAll('[data-vv]').forEach(a=>a.onclick=e=>{e.preventDefault();const v=(c.versions||[]).find(x=>x.ver===Number(a.dataset.vv));if(!v)return;
+    const old=Object.assign({},c,{f:Object.assign({},v.f),body:v.body||null,tplVer:v.tplVer||0,status:'이전 버전 v'+v.ver});ctPreview(old,'view',true)});
+  const up=$('ctSigned');if(up)up.onchange=()=>ctUploadSigned(c,up.files[0],b,m);
+}
+function ctApprView(c,m){
+  const el=$('ctAppr');if(!el)return;const a=c.approval||{};
+  const who=x=>x?`<span class="ctok">✓</span> ${esc(x.by)} <span class="muted">${esc(x.at)}</span>`:'<span class="muted">대기</span>';
+  let html=`<div class="ctchk"><div>법률 검토: ${who(a.legal)}</div><div>세무 검토: ${who(a.tax)}</div><div>발행 승인: ${who(a.approved)}</div></div>`;
+  const act=[];
+  if(!c.id)html+='<div class="muted" style="font-size:12px;margin-top:6px">먼저 저장해야 검토를 요청할 수 있어요. 승인 전 PDF에는 "검토용 초안" 표시가 들어가고 직인이 빠져요.</div>';
+  else if(c.status==='작성중')act.push(['request','검토 요청']);
+  else if(c.status==='검토요청'){if(!a.legal)act.push(['legal','법률 검토 완료']);if(!a.tax)act.push(['tax','세무 검토 완료']);if(a.legal&&a.tax)act.push(['approve','발행 승인']);act.push(['reject','반려(다시 작성)']);}
+  if(c.id&&!['체결','취소'].includes(c.status))act.push(['cancel','계약 취소']);
+  if(c.id&&c.status==='취소')act.push(['reopen','다시 작성']);
+  html+=act.length?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${act.map(([k,l])=>`<button class="btn ${k==='approve'?'':'sec'}" style="padding:6px 10px;font-size:12.5px" data-ca="${k}">${l}</button>`).join('')}</div>`:'';
+  el.innerHTML=html;
+  el.querySelectorAll('[data-ca]').forEach(x=>x.onclick=async()=>{
+    const k=x.dataset.ca;let memo='';
+    if(k==='legal'||k==='tax'){if(!confirm(`${k==='legal'?'법률':'세무'} 검토를 마쳤다고 기록할까요?\n(검토자: ${ME.name})`))return;}
+    if(k==='approve'&&!confirm('발행을 승인할까요? 승인 뒤에는 직인을 넣은 정식 PDF를 만들 수 있어요.'))return;
+    if(k==='reject'||k==='cancel'){memo=prompt(k==='reject'?'반려 사유를 적어 주세요':'취소 사유를 적어 주세요')||'';if(!memo)return;}
+    x.disabled=true;
+    try{const r=await call('ctAction',TOKEN,c.id,k,memo);Object.assign(c,r.contract);ctSyncList(r.contract);toast('기록했어요');ctFormView($('ctBody'),m);}
+    catch(e){toast(e.message);x.disabled=false}
+  });
+}
+function ctSyncList(full){const s=ctSummary(full);const i=CT.contracts.findIndex(x=>x.id===s.id);if(i>=0)CT.contracts[i]=s;else CT.contracts.unshift(s);}
+function ctSummary(c){return {id:c.id,company:c.company,type:c.type,cname:c.f.cname,bizno:c.f.bizno,date:c.f.date,status:c.status,ver:c.ver,total:c.type==='nda'?0:ctCalc(c.f).total,updated:c.updated||'',files:(c.files||[]).length}}
+async function ctSaveNow(b,m){
+  const c=CT.cur;
+  const miss=CT_NEED.filter(x=>!String(c.f[x]||'').trim());
+  if(miss.length&&!confirm(`비어 있는 칸이 있어요: ${miss.map(x=>CT_FL[x]).join(', ')}\n그래도 저장할까요?`))return;
+  if(ctIsFinal(c)&&!confirm('승인된 계약서를 고치면 검토·승인을 처음부터 다시 받아야 해요. 저장할까요?'))return;
+  const btn=$('ctSave');btn.disabled=true;btn.textContent='저장 중…';
+  try{
+    const r=await call('ctSave',TOKEN,{id:c.id,company:c.company,type:c.type,f:c.f,body:c.body,tplVer:c.tplVer||(CT.templates[c.company+'_'+c.type]||{}).ver||0,calc:c.type==='nda'?null:ctCalc(c.f)});
+    CT.cur=r.contract;ctSyncList(r.contract);toast(`저장했어요 · ${r.contract.id} v${r.contract.ver}`);ctFormView(b,m);
+    const nav=document.querySelector('.ctsub [data-cs=new]');if(nav)nav.textContent='계약서 작성 · '+r.contract.id;
+  }catch(e){toast(e.message);btn.disabled=false;btn.textContent='저장'}
+}
+async function ctOpen(id,m){
+  try{const r=await call('ctGet',TOKEN,id);CT.cur=r.contract;CT.sub='new';renderContract(m)}catch(e){toast(e.message)}
+}
+async function ctDownload(fid,name){
+  toast('받는 중…');
+  try{const r=await call('ctFile',TOKEN,fid);const bin=atob(r.b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+    ctSaveBlob(new Blob([u],{type:r.mime||'application/pdf'}),name||r.name)}catch(e){toast(e.message)}
+}
+async function ctUploadSigned(c,file,b,m){
+  if(!file)return;if(file.size>15*1024*1024){toast('15MB 이하 파일만 올릴 수 있어요');return}
+  if(!['발행','승인','체결'].includes(c.status)&&!confirm('아직 승인·발행 전이에요. 그래도 서명본을 올리고 "체결"로 바꿀까요?'))return;
+  toast('올리는 중…');
+  try{const ext=(file.name.match(/\.\w+$/)||['.pdf'])[0];const name=ctFileName(c).replace(/\.pdf$/,'')+'_서명본'+ext;
+    const r=await call('ctUpload',TOKEN,c.id,'signed',name,file.type||'application/pdf',await ctB64(file),c.ver);
+    Object.assign(c,r.contract);ctSyncList(r.contract);toast('서명본을 올리고 체결로 바꿨어요');ctFormView(b,m)}catch(e){toast(e.message)}
+}
+/* 미리보기 · PDF · 인쇄 */
+async function ctPreview(c,mode,readonly){
+  const final=ctIsFinal(c);
+  const ov=document.createElement('div');ov.className='ctmodal';
+  ov.innerHTML=`<div class="ctmbar"><b>${esc(CT_TYPES[c.type])} · ${esc(c.f.cname||'고객사 미입력')} ${final?'':'<span class="ctst" style="background:#dc2626;margin-left:6px">검토용 초안</span>'}</b>
+    ${final&&CT.seals[c.company]?'<label style="font-size:13px;display:flex;gap:4px;align-items:center"><input type="checkbox" id="ctSeal" checked> 직인 넣기</label>':''}
+    <button class="btn" id="ctMPdf" style="background:#0f766e">${final?'PDF 계약서 생성':'초안 PDF 받기'}</button><button class="btn sec" id="ctMPrint">인쇄</button><button class="btn sec" id="ctMClose">닫기</button></div>
+    <div class="ctmbody"><div class="ctpages" id="ctPages"><div class="loading" style="color:#fff"><div class="spin"></div>페이지 만드는 중…</div></div><div class="ctcheck" id="ctChecks"></div></div>`;
+  document.body.appendChild(ov);document.body.style.overflow='hidden';
+  const close=()=>{ov.remove();document.body.style.overflow='';const h=$('ctHost');if(h)h.innerHTML=''};
+  $('ctMClose').onclick=close;
+  let built=null;
+  const draw=async()=>{
+    const seal=final&&!!($('ctSeal')&&$('ctSeal').checked);
+    try{built=await ctBuild(c,{draft:!final,seal})}catch(e){$('ctPages').innerHTML=`<div class="banner err">${esc(e.message)}</div>`;return}
+    const wrap=$('ctPages');const w=Math.min(CT_PW,wrap.clientWidth-8),sc=w/CT_PW;
+    wrap.innerHTML=built.pages.map((p,i)=>`<div class="ctpwrap" style="width:${w}px;height:${CT_PH*sc}px" data-i="${i}"></div>`).join('');
+    wrap.querySelectorAll('.ctpwrap').forEach((x,i)=>{const cl=built.pages[i].cloneNode(true);cl.style.transform=`scale(${sc})`;x.appendChild(cl)});
+    const ck=built.checks;
+    $('ctChecks').innerHTML=`<h4>필수 검증</h4>${ck.map(x=>`<div>${x.ok?'<span class="ctok">✓</span>':'<span class="ctbad">✗</span>'} ${esc(x.msg)}</div>`).join('')}
+      <div class="muted" style="margin-top:8px;font-size:12px">${final?'승인된 계약서예요. PDF를 만들면 계약 이력에 발행본으로 저장돼요.':'검토·승인 전이라 "검토용 초안" 표시가 들어가고 직인이 빠져요. 초안 PDF도 이력에 저장돼요.'}</div>
+      <div class="muted" style="margin-top:6px;font-size:12px">파일명: ${esc(ctFileName(c))}</div>`;
+    return built;
+  };
+  await draw();
+  const sl=$('ctSeal');if(sl)sl.onchange=draw;
+  $('ctMPrint').onclick=()=>{if(built)ctPrint(built)};
+  $('ctMPdf').onclick=async()=>{
+    if(!built)return;const bad=built.checks.filter(x=>!x.ok);
+    if(bad.length&&!confirm('검증에서 문제가 있어요:\n- '+bad.map(x=>x.msg).join('\n- ')+'\n\n그래도 PDF를 만들까요?'))return;
+    if(!readonly&&!c.id&&!confirm('아직 저장하지 않은 계약서예요. 이력에 남지 않는 PDF를 받을까요? (저장하면 이력에 남아요)'))return;
+    const btn=$('ctMPdf');btn.disabled=true;btn.textContent='PDF 만드는 중…';
+    try{
+      const blob=await ctPdf(c,built.pages,(i,n)=>{btn.textContent=`PDF 만드는 중… ${i}/${n}쪽`});const name=ctFileName(c);
+      ctSaveBlob(blob,name);
+      if(c.id&&!readonly){btn.textContent='이력에 저장 중…';
+        const r=await call('ctUpload',TOKEN,c.id,final?'pdf':'draft',name,'application/pdf',await ctB64(blob),c.ver);
+        Object.assign(c,r.contract);ctSyncList(r.contract);toast(final?'PDF를 받고 발행본으로 저장했어요':'초안 PDF를 받고 이력에 저장했어요');
+        if(CT.cur===c&&$('ctBody')&&CT.sub==='new')ctFormView($('ctBody'),document.getElementById('main'));
+      }else toast('PDF를 받았어요');
+      window.__ctLastPdf={name,size:blob.size,pages:built.pages.length};
+    }catch(e){toast(e.message||'PDF를 만들지 못했어요')}
+    btn.disabled=false;btn.textContent=final?'PDF 계약서 생성':'초안 PDF 받기';
+  };
+  if(mode==='pdf')$('ctMPdf').click();
+  if(mode==='print')$('ctMPrint').click();
+}
+/* 본문 직접 수정(계약서) · 양식 수정(관리자) 편집기 */
+async function ctEditor(kind,c,b,m,tplKey){
+  const key=kind==='tpl'?tplKey:c.company+'_'+c.type;
+  const t=kind==='tpl'?CT.templates[key]:await ctTpl(key,c.tplVer);
+  const secs=JSON.parse(JSON.stringify(kind==='contract'&&c.body?c.body:t.sections));
+  const vals=kind==='contract'?ctValues(c):{};
+  const ov=document.createElement('div');ov.className='ctmodal';
+  ov.innerHTML=`<div class="ctmbar"><b>${kind==='tpl'?`양식 수정 · ${esc(CT_CO[t.company])} ${esc(t.title)} (지금 v${t.ver})`:`본문 직접 수정 · ${esc(c.f.cname||'')}`}</b>
+    <span class="muted" style="font-size:12px">파란 칸은 자동으로 채워지는 칸이에요 (지우지 마세요)</span>
+    <button class="btn" id="ctESave">${kind==='tpl'?'새 양식 버전으로 저장':'수정 내용 적용'}</button><button class="btn sec" id="ctEClose">닫기</button></div>
+    <div class="ctedit" id="ctEdit" style="--ctlh:${Number(t.lh)||1}"><style>${ctFontCss(t.css)}</style></div>`;
+  document.body.appendChild(ov);document.body.style.overflow='hidden';
+  const host=$('ctEdit');
+  secs.forEach((s,i)=>{const [mt,mr,mb,ml]=ctMargins(s.margin);const col=document.createElement('div');col.className=`ctcol tpl-${key}`;col.dataset.i=i;
+    col.style.width=(CT_PW-ml-mr)+'px';col.style.marginBottom='18px';col.innerHTML=s.html;col.contentEditable='true';host.appendChild(col);
+    col.querySelectorAll('[data-f]').forEach(e=>{e.contentEditable='false';e.dataset.l=CT_FL[e.dataset.f]||e.dataset.f;const v=vals[e.dataset.f];if(v)e.textContent=v;else{e.textContent='';e.setAttribute('data-empty','1')}});
+    col.querySelectorAll('[data-ct],[data-sp],[data-seal] [data-f]').forEach(e=>e.contentEditable='false');});
+  const close=()=>{ov.remove();document.body.style.overflow=''};
+  $('ctEClose').onclick=()=>{if(confirm('고친 내용을 버리고 닫을까요?'))close()};
+  $('ctESave').onclick=async()=>{
+    const out=[...host.querySelectorAll('.ctcol')].map((col,i)=>{const cl=col.cloneNode(true);
+      cl.querySelectorAll('[data-f]').forEach(e=>{e.textContent='';['contenteditable','data-l','data-empty'].forEach(a=>e.removeAttribute(a))});
+      cl.querySelectorAll('[contenteditable]').forEach(e=>e.removeAttribute('contenteditable'));
+      cl.querySelectorAll('div[data-ct=gen],div[data-sp]').forEach(e=>e.innerHTML='');
+      return {margin:secs[i].margin,html:cl.innerHTML.replace(/\s+/g,' ')};});
+    const lost=Object.keys(CT_FL).filter(f=>secs.some(s=>s.html.includes(`data-f="${f}"`))&&!out.some(s=>s.html.includes(`data-f="${f}"`)));
+    if(lost.length&&!confirm(`자동 칸이 지워졌어요: ${lost.map(x=>CT_FL[x]).join(', ')}\n그래도 저장할까요?`))return;
+    if(kind==='contract'){c.body=out;c.tplVer=t.ver;close();toast('본문 수정을 적용했어요. [저장]을 눌러야 새 버전으로 남아요');ctFormView(b,m);return;}
+    const memo=prompt('무엇을 고쳤는지 적어 주세요 (양식 변경 기록)','');if(memo===null)return;
+    try{const r=await call('ctTplSave',TOKEN,key,{css:t.css,sections:out,title:t.title,company:t.company,type:t.type,lh:t.lh,memo});
+      CT.templates[key]=r.template;CT.tplHist[key]=r.hist;close();toast(`양식을 v${r.template.ver}로 저장했어요`);ctTplView(b,m)}catch(e){toast(e.message)}
+  };
+}
+function ctListView(b,m){
+  const q=(CT.q||'').trim();
+  const list=CT.contracts.filter(x=>!q||[x.cname,x.id,x.bizno].join(' ').includes(q));
+  const groups={};list.forEach(x=>{(groups[x.cname||'(고객사 미입력)']=groups[x.cname||'(고객사 미입력)']||[]).push(x)});
+  b.innerHTML=`<div class="card ctlist"><div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><input id="ctQ" class="fld" style="margin:0;flex:1;min-width:200px" placeholder="고객사명·계약번호·사업자번호 검색" value="${esc(q)}"><button class="btn" id="ctNewBtn">+ 새 계약서</button></div>
+    ${Object.keys(groups).length?Object.entries(groups).map(([n,xs])=>`<div class="cgrp"><h4>${esc(n)} <span class="muted" style="font-weight:400">${xs.length}건</span></h4><div style="overflow-x:auto"><table>
+      <thead><tr><th>계약번호</th><th>회사</th><th>종류</th><th>계약일</th><th class="r">최종 금액</th><th>상태</th><th>버전</th><th>파일</th></tr></thead>
+      <tbody>${xs.map(x=>`<tr class="go" data-id="${esc(x.id)}"><td><b>${esc(x.id)}</b></td><td>${esc(x.company)}</td><td>${esc(CT_TSHORT[x.type]||x.type)}</td><td>${esc(x.date)}</td><td class="r">${x.total?won(x.total):'-'}</td><td><span class="ctst" style="background:${CT_STC[x.status]||'#64748b'}">${esc(x.status)}</span></td><td>v${x.ver}</td><td>${x.files||0}</td></tr>`).join('')}</tbody></table></div></div>`).join(''):'<div class="muted">아직 저장된 계약서가 없어요.</div>'}</div>`;
+  const qi=$('ctQ');qi.oninput=()=>{CT.q=qi.value;clearTimeout(ctListView._t);ctListView._t=setTimeout(()=>{ctListView(b,m);const n=$('ctQ');n.focus();n.setSelectionRange(n.value.length,n.value.length)},250)};
+  $('ctNewBtn').onclick=()=>{CT.cur=ctBlank();CT.sub='new';renderContract(m)};
+  b.querySelectorAll('tr[data-id]').forEach(tr=>tr.onclick=()=>ctOpen(tr.dataset.id,m));
+}
+function ctTplView(b,m){
+  const keys=['KD_pay','KD_rec','KD_nda','KDRC_pay','KDRC_rec','KDRC_nda'];
+  b.innerHTML=`<div class="card ctlist"><h3 style="margin:0 0 10px">계약서 양식 <span class="muted" style="font-weight:400;font-size:12px">고치면 새 버전으로 저장되고, 원본(v1)과 이전 버전은 그대로 남아요. 이미 만든 계약서는 만들 때의 양식 버전을 계속 써요.</span></h3>
+    <div style="overflow-x:auto"><table><thead><tr><th>회사</th><th>양식</th><th>버전</th><th>수정</th><th></th></tr></thead><tbody>
+    ${keys.map(k=>{const t=CT.templates[k];return `<tr><td>${esc(CT_CO[k.split('_')[0]])}</td><td>${esc(CT_TYPES[k.split('_')[1]])}</td><td>${t?'v'+t.ver:'<span class="ctbad">없음</span>'}</td><td>${t?esc((t.updated||'')+' '+(t.by||'')):''}</td>
+      <td>${t?`<button class="btn sec" style="padding:5px 10px" data-te="${k}">양식 수정</button> <button class="btn sec" style="padding:5px 10px" data-th="${k}">기록</button>`:''}</td></tr>`}).join('')}</tbody></table></div></div>
+    <div class="card" style="margin-top:16px"><h3 style="margin:0 0 6px">승인된 회사 직인</h3><p class="muted" style="font-size:13px;margin:0 0 10px">배경이 투명한 PNG를 올려 주세요. 발행 승인된 계약서의 "을" 서명란 (인) 자리에만 들어가요.</p>
+    <div style="display:flex;gap:16px;flex-wrap:wrap">${Object.entries(CT_CO).map(([k,v])=>`<div style="border:1px solid var(--line);border-radius:12px;padding:12px;width:220px"><b style="font-size:13px">${esc(v)}</b>
+      <div style="height:90px;display:flex;align-items:center;justify-content:center;margin:8px 0;background:#f8fafc;border-radius:8px">${CT.seals[k]?`<img src="${CT.seals[k]}" style="max-height:80px">`:'<span class="muted" style="font-size:12px">등록 안 됨</span>'}</div>
+      <label class="btn sec" style="display:flex;justify-content:center;cursor:pointer;padding:6px">직인 올리기<input type="file" accept="image/png" hidden data-seal="${k}"></label></div>`).join('')}</div></div>`;
+  b.querySelectorAll('[data-te]').forEach(x=>x.onclick=()=>ctEditor('tpl',null,b,m,x.dataset.te));
+  b.querySelectorAll('[data-th]').forEach(x=>x.onclick=()=>{const h=(CT.tplHist[x.dataset.th]||[]).slice().reverse();
+    alert(h.length?h.map(v=>`v${v.ver} · ${v.updated} · ${v.by}${v.memo?' — '+v.memo:''}`).join('\n'):'기록 없음')});
+  b.querySelectorAll('input[data-seal]').forEach(inp=>inp.onchange=()=>{const file=inp.files[0];if(!file)return;
+    if(file.size>1024*1024){toast('1MB 이하 PNG로 올려 주세요');return}
+    const r=new FileReader();r.onload=async()=>{
+      if(!confirm('이 직인을 등록할까요? 승인된 계약서 PDF에만 들어가요.'))return;
+      try{await call('ctSeal',TOKEN,inp.dataset.seal,r.result);CT.seals[inp.dataset.seal]=r.result;toast('직인을 등록했어요');ctTplView(b,m)}catch(e){toast(e.message)}};
+    r.readAsDataURL(file);});
+}
+
+/* 상단 큰 구분: 1. 매출 대시보드 / 2. 계약서 (관리자만 보임) */
+let CT_LAST='home';
+function ctSec(on){const s=document.getElementById('secsw');if(!s)return;s.hidden=!on;
+  s.onclick=e=>{const b=e.target.closest('button');if(!b)return;
+    if(b.dataset.s==='contract'){if(TAB!=='contract')show('contract')}else if(TAB==='contract')show(CT_LAST)};}
+function ctSecShow(t){const ct=t==='contract';if(!ct)CT_LAST=t;
+  const n=document.getElementById('nav');if(n)n.style.display=ct?'none':'';
+  document.querySelectorAll('#secsw button').forEach(b=>b.classList.toggle('on',(b.dataset.s==='contract')===ct));}
+
 /* ---------- 앱 ---------- */
 function buildNav(){
   const tabs=TABS.filter(t=>(!t.admin||ME.role==='관리자')&&(!t.need||Number((DATA.kpi||{})[t.need])===1));
-  document.getElementById('nav').innerHTML=tabs.map(t=>`<button data-t="${t.id}">${t.label}</button>`).join('');
+  document.getElementById('nav').innerHTML=tabs.filter(t=>t.id!=='contract').map(t=>`<button data-t="${t.id}">${t.label}</button>`).join('');
   document.getElementById('nav').onclick=e=>{const t=e.target.dataset.t;if(t)show(t)};
   if(!tabs.some(t=>t.id===TAB))TAB='home';
+  ctSec(tabs.some(t=>t.id==='contract'));
   drawBell();
 }
 /* 알림 종: 수집 프로그램이 요약지표 '알림' 칸에 넣은 Wing 알림·미답변 문의·계정 제재 */
@@ -509,7 +1084,7 @@ async function startApp(){
     const fresh=await call('getData',TOKEN);
     const changed=!cached||JSON.stringify(fresh)!==JSON.stringify(cached);
     DATA=fresh;try{store.set('cd_data',JSON.stringify(fresh))}catch(e){}
-    if(!cached||(changed&&!['costs','staff','warranty'].includes(TAB))){buildNav();show(TAB,'replace');}
+    if(!cached||(changed&&!['costs','staff','warranty','contract'].includes(TAB))){buildNav();show(TAB,'replace');}
     autoRefresh();
   }catch(e){if(!cached)document.getElementById('main').innerHTML=`<div class="banner err">${esc(e.message)} <button class="btn" style="margin-left:8px;padding:5px 12px" onclick="startApp()">다시 시도</button></div>`}
 }
@@ -519,13 +1094,13 @@ function autoRefresh(){
     if(document.hidden||!TOKEN||document.querySelector('.modal'))return;
     try{const fresh=await call('getData',TOKEN);if(JSON.stringify(fresh)===JSON.stringify(DATA))return;
       DATA=fresh;try{store.set('cd_data',JSON.stringify(fresh))}catch(e){}
-      if(['costs','staff','warranty'].includes(TAB))return;
+      if(['costs','staff','warranty','contract'].includes(TAB))return;
       const y=window.scrollY;buildNav();show(TAB,'replace');window.scrollTo(0,y);
     }catch(e){}
   },180000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&TOKEN&&Date.now()-(window.__arLast||0)>60000){window.__arLast=Date.now();
     call('getData',TOKEN).then(fresh=>{if(JSON.stringify(fresh)===JSON.stringify(DATA))return;DATA=fresh;try{store.set('cd_data',JSON.stringify(fresh))}catch(e){}
-      if(!['costs','staff','warranty'].includes(TAB)){const y=window.scrollY;buildNav();show(TAB,'replace');window.scrollTo(0,y)}}).catch(()=>{})}});
+      if(!['costs','staff','warranty','contract'].includes(TAB)){const y=window.scrollY;buildNav();show(TAB,'replace');window.scrollTo(0,y)}}).catch(()=>{})}});
 }
 /* 브라우저 뒤로가기 지원: 화면마다 주소 뒤에 #탭 을 붙여 기록 */
 function navHash(h,mode){
@@ -539,7 +1114,7 @@ window.addEventListener('popstate',()=>{
   if(!DATA||!ME)return;
   const parts=decodeURIComponent(location.hash.slice(1)).split('/');
   const t=parts[0],a=parts[1],b=parts.slice(2).join('/');
-  const ok=[...document.querySelectorAll('nav button')].some(x=>x.dataset.t===t);
+  const ok=[...document.querySelectorAll('nav button')].some(x=>x.dataset.t===t)||(t==='contract'&&ME.role==='관리자');
   const tab=ok?t:'home';
   if(tab==='costs'&&TAB==='costs'&&typeof costGo==='function'&&BOOK){
     let v={view:'list',f:CV.f};
@@ -555,6 +1130,7 @@ function show(t,mode){
   TAB=t;
   navHash(t,mode);
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  ctSecShow(t);
   Object.values(charts).forEach(c=>c.destroy()); charts={};
   const m=document.getElementById('main');
   const adLast=(DATA.kpi||{})['광고 마지막 날짜']||'';
@@ -563,7 +1139,7 @@ function show(t,mode){
     (adOld&&ME&&ME.role==='관리자'?`<div class="banner info">📢 광고 보고서가 ${esc(adLast)}까지만 들어와 있어요. 사무실 PC 크롬의 "광고·정산 자동 받기" 아이콘에 빨간 ! 가 있으면 광고센터에 다시 로그인해 주세요.</div>`:'')+
     `<div class="updrow"><p class="updated">마지막 업데이트: ${esc(DATA.updated||'-')}</p>${extBtn()}</div>`;
   ({home:renderHome,sales:renderSales,products:renderProducts,returns:renderReturns,
-    stock:renderStock,settle:renderSettle,ads:renderAds,costs:renderCosts,warranty:renderWarranty,staff:renderStaff})[t](m,head);
+    stock:renderStock,settle:renderSettle,ads:renderAds,costs:renderCosts,warranty:renderWarranty,contract:renderContract,staff:renderStaff})[t](m,head);
   window.scrollTo(0,0);
 }
 
