@@ -280,7 +280,66 @@ tr.click{cursor:pointer}
 .ctgx i{font-style:normal;font-weight:700;color:var(--ink)}
 .ctgx pre{margin:4px 0;padding:6px 8px;background:#fff;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:12px;line-height:1.6;white-space:pre-wrap;word-break:keep-all;color:var(--ink)}
 .ctgx span{display:block;color:#0f766e}
-@media (max-width:700px){.ctgx{grid-template-columns:1fr}.ctrow,.ctrow.c3{grid-template-columns:1fr}}   /* 폰: 입력칸 한 줄에 하나씩 넓게 */
+@media (max-width:700px){.ctgx{grid-template-columns:1fr}.ctform .ctrow,.ctform .ctrow.c3{grid-template-columns:1fr}}   /* 폰: 입력칸 한 줄에 하나씩 넓게 */
+/* 3. 결과보고서 슬라이드 (1280×720, 원본 보고서 모양: 하늘색 바탕 · 남색 꺾쇠 테두리) */
+#rpHost{position:fixed;left:-14000px;top:0;width:1280px;pointer-events:none}
+.rpsl{position:relative;width:1280px;height:720px;background:#dbeef7;overflow:hidden;font-family:Pretendard,"맑은 고딕","Malgun Gothic",sans-serif;color:#111;box-sizing:border-box;flex:none}
+.rpsl *{box-sizing:border-box}
+/* 대시보드 전체 제목·표 스타일이 슬라이드에 새지 않게 */
+.rpsl h2,.rpsl h3{display:block;grid-template-columns:none;color:#111;letter-spacing:0}
+.rpsl table{width:auto;font-size:inherit;border-collapse:collapse}
+.rpsl th,.rpsl td{position:static;color:#111;background:transparent;text-align:left;white-space:normal;padding:0;border:0;font-weight:inherit;vertical-align:top;font-variant-numeric:normal}
+.rpsl .rpb{position:absolute;background:#173e6a;display:block}
+.rpsl .b1{left:79px;top:78px;width:343px;height:40px}.rpsl .b2{left:79px;top:78px;width:42px;height:463px}
+.rpsl .b3{left:1157px;top:177px;width:42px;height:462px}.rpsl .b4{left:856px;top:600px;width:343px;height:39px}
+.rpsl-logo{position:absolute;left:19px;top:9px;height:62px;max-width:300px;object-fit:contain}
+.rpsl-title{position:absolute;left:300px;right:160px;top:16px;text-align:center;font-size:34px;font-weight:600;color:#1f4e79;white-space:nowrap}
+.rpsl-meta{position:absolute;right:36px;top:76px;font-size:19px;line-height:1.45}
+.rpsl-c{position:absolute;left:167px;top:140px;width:975px;height:525px;overflow:hidden;font-size:22px;line-height:1.45}
+.rpsl-c h2{font-size:1.45em;font-weight:600;margin:0 0 .3em}.rpsl-c h2.big{font-size:1.6em}
+.rpsl-c p{margin:0}
+.rpsl-lines p{margin:0 0 .8em}
+.rpsl-toc{list-style:none;padding:0;margin:.1em 0;font-size:1.45em}.rpsl-toc li{margin:0 0 1.15em}
+.rpsl-sm{font-size:.95em;margin:0 0 .45em!important}
+.rpsl-sub{margin:.15em 0 .45em!important}
+.rpsl-xs{font-size:.78em}
+.rpsl-note{max-width:700px;margin:0 0 .5em!important}
+.rpsl .rpsl-t{border-collapse:collapse;width:100%;font-size:1.25em;background:#f2f2f2}
+.rpsl .rpsl-t th{background:#a6a6a6;text-align:center;font-weight:400;padding:.3em .4em;border:2px solid #fff;white-space:nowrap}
+.rpsl .rpsl-t td{padding:.45em .4em;border:2px solid #fff;text-align:center;white-space:nowrap}
+.rpsl .rpsl-t td.memo{white-space:normal;font-size:.78em;line-height:1.35;width:50%}
+.rpsl-imgs{display:flex;gap:26px;align-items:flex-start}
+.rpsl-imgs figure{margin:0;flex:1;min-width:0}.rpsl-imgs.n1 figure{max-width:640px}
+.rpsl-imgs img{display:block;width:100%;max-height:330px;object-fit:contain;background:#0f172a}
+.rpsl-imgs figcaption{margin-top:.4em;font-size:.95em;line-height:1.35}
+.rpsl-shot{background:#fff;padding:6px;margin-top:.3em}.rpsl-shot img{display:block;max-width:100%;max-height:370px;margin:0 auto;object-fit:contain}
+.rpsl-shot.sm img{max-height:290px}
+.rpsl-pre{background:#fff;padding:.6em .8em;font-family:Consolas,"맑은 고딕",monospace;font-size:.7em;line-height:1.5;white-space:pre-wrap;word-break:break-all;margin:.4em 0 0}
+.rpsl-post{margin:0 0 .7em}.rpsl-post h3{font-size:1.2em;font-weight:600;margin:0 0 .2em}
+.rpsl .rpsl-post table{border-collapse:collapse;font-size:.86em}.rpsl .rpsl-post th{text-align:left;font-weight:700;padding:.05em 1.3em .05em 0;vertical-align:top;white-space:nowrap;font-size:1.12em}
+.rpsl .rpsl-post td{padding:.05em 0;line-height:1.45}.rpsl-post .res{font-weight:700;margin:.2em 0 0;font-size:1.05em}
+.rpsl-end{height:100%;display:flex;align-items:center;justify-content:center;font-size:3em;padding-bottom:40px}
+.rplogo{display:flex;align-items:center;gap:8px;text-align:left}
+.rplogo span{background:#1b56a6;color:#fff;font-weight:800;border-radius:50%;width:58px;height:58px;display:flex;align-items:center;justify-content:center;font-size:16px;flex:none}
+.rplogo b{color:#1b56a6;font-size:20px;line-height:1.1}
+/* 3. 결과보고서 입력 칸 */
+.rpsub{font-size:12px;font-weight:700;color:var(--sub);margin:12px 0 4px}
+.rptbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}
+.rptbl th{font-size:12px;color:var(--sub);font-weight:600;text-align:left;padding:4px 6px;border-bottom:1px solid var(--line)}
+.rptbl td{padding:4px 6px 4px 0;vertical-align:middle}
+.ctform .rptbl input,.ctform .rptbl select{margin:0;padding:7px 8px;font-size:13px;min-width:90px}
+.rpx{border:1px solid var(--line);background:#fff;border-radius:8px;width:30px;height:30px;cursor:pointer;color:#94a3b8}
+.rpsm{margin-top:6px;padding:6px 10px;font-size:12.5px}
+.rpimgs{display:flex;gap:8px;flex-wrap:wrap}
+.rpimg{position:relative;width:110px;height:80px;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#f8fafc}
+.rpimg img{width:100%;height:100%;object-fit:cover}
+.rpimg button{position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(15,23,42,.7);color:#fff;cursor:pointer;line-height:1}
+.rpadd{display:flex;align-items:center;justify-content:center;width:110px;height:80px;border:1px dashed var(--line);border-radius:8px;font-size:12.5px;color:var(--brand);cursor:pointer;font-weight:700}
+.ctform label.rpadd{display:flex;color:var(--brand)}
+.rpchk{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+.ctform .rpchk label{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--ink);font-weight:500}
+.ctform .rpchk input{width:auto;margin:2px 0 0}
+.ctmode{margin:0 0 10px;padding:8px 12px;border-radius:10px;background:#eef2ff;color:#3730a3;font-size:13px;line-height:1.5}
 .ctin-seal{position:relative;display:inline-block}
 .ctpage .ctgan{position:absolute;right:6px;top:50%;margin-top:-29px;width:58px;height:58px;z-index:4;pointer-events:none}.ctpage .ctgan img{width:100%;height:100%;opacity:.9}
 .ctin-seal img{position:absolute;width:62px;height:62px;left:-23px;top:-41px;opacity:.9;z-index:3}
@@ -293,7 +352,7 @@ tr.click{cursor:pointer}
 .secsw[hidden]{display:none}
 .secsw button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 18px;font-size:15px;font-weight:700;color:var(--sub);cursor:pointer;white-space:nowrap}
 .secsw button.on{background:var(--brand);border-color:var(--brand);color:#fff}
-@media (max-width:700px){.secsw{padding:4px 8px 6px;gap:6px}.secsw button{flex:1;padding:8px 6px;font-size:14px}}
+@media (max-width:700px){.secsw{padding:4px 8px 6px;gap:6px;flex-wrap:wrap}.secsw button{flex:1 0 auto;padding:8px 6px;font-size:14px}}
 </style>
 <style>th.th2l{white-space:pre-line}@media (min-width:701px){th.dcol,td.dcol{display:none}}#segK{flex-wrap:wrap}</style><style>
 .bellw{position:relative}.bell{position:relative;border:1px solid var(--line);background:#fff;border-radius:10px;width:38px;height:33px;cursor:pointer;display:grid;place-items:center;padding:0}
@@ -416,7 +475,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='3.5';
+const APP_VER='3.6';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -591,8 +650,22 @@ const CT_CODE={pay:'P',rec:'R',nda:'N'};
 const CT_FLOW=['작성중','검토요청','승인','발행','체결'];
 const CT_STC={작성중:'#64748b',검토요청:'#d97706',승인:'#2563eb',발행:'#7c3aed',체결:'#16a34a',취소:'#94a3b8'};
 const CT_FL={cname:'고객사명',bizno:'사업자등록번호',ceo:'대표자명',addr:'사업장 주소',biztype:'업태',bizitem:'종목',mgr:'담당자명(직책)',tel:'연락처',email:'Email',rep:'대표번호',
-  our_mgr:'우리 담당자',our_tel:'우리 연락처',our_email:'우리 Email',date:'계약일',recDate:'복구 계약일',ndaFrom:'계약기간 시작',ndaTo:'계약기간 끝',total:'최종 계약 금액'};
+  our_mgr:'우리 담당자',our_tel:'우리 연락처',our_email:'우리 Email',date:'계약일',recDate:'복구 계약일',ndaFrom:'계약기간 시작',ndaTo:'계약기간 끝',total:'최종 계약 금액',
+  eul_name:'을 상호',eul_bizno:'을 사업자번호',eul_addr:'을 주소',eul_biztype:'을 업태',eul_bizitem:'을 종목',eul_rep:'을 대표번호',caseName:'건명'};
 const CT_NEED=['cname','bizno','ceo','addr','date'];
+/* 0. 법인_개인계약서: 갑 = 법인(KD·KDRC), 을 = 개인사업자(474·184). 2. 계약서와 같은 화면·흐름을 모드로 나눠 씀 */
+const CT_NEED_IND=['cname','bizno','ceo','addr','date','caseName'];
+let CT_MODE='corp';const CT_KEEP={corp:{},ind:{},rep:{}};
+function ctIndKeys(){const ks=Object.keys((CT&&CT.inds)||{}),pref=['474','184'];return pref.filter(k=>ks.includes(k)).concat(ks.filter(k=>!pref.includes(k)))}
+function ctIsInd(c){return !!(c&&c.f&&c.f.sec==='ind')}
+function ctTplKey(c){return ctIsInd(c)?'IND_'+c.type:c.company+'_'+c.type}
+function ctSealKey(c){return ctIsInd(c)?c.f.eul:c.company}
+function ctNeed(c){return ctIsInd(c)?CT_NEED_IND:CT_NEED}
+function ctCase(s){s=String(s||'').trim();return s&&!/건$/.test(s)?s+'의 건':s}
+function ctCorpFill(f){const o=((CT&&CT.corps)||{})[f.company];if(o)['cname','bizno','ceo','addr','biztype','bizitem','rep'].forEach(k=>f[k]=o[k]||'')}
+function ctSetMode(mode){if(mode===CT_MODE)return;
+  if(CT){CT_KEEP[CT_MODE]={cur:CT.cur,sub:CT.sub,q:CT.q};const k=CT_KEEP[mode]||{};CT.cur=k.cur||null;CT.sub=k.sub||'new';CT.q=k.q||'';}
+  CT_MODE=mode;}
 const CT_PW=794,CT_PH=1123;   // A4 (96dpi)
 let CT=null;                  // {templates, seals, contracts, cur, sub, tplCache}
 
@@ -617,11 +690,17 @@ function ctValues(c){
   const v={};Object.keys(CT_FL).forEach(x=>v[x]=String(f[x]||'').trim());
   v.date=ctKDate(f.date);v.recDate=ctKDate(f.recDate||f.date);v.ndaFrom=ctKDate(f.ndaFrom||f.date);v.ndaTo=ctKDate(f.ndaTo);
   v.total=k.total?won(k.total):'';
+  if(ctIsInd(c)){const e=((CT&&CT.inds)||{})[f.eul]||{};
+    v.eul_name=e.name||'';v.eul_bizno=e.bizno||'';v.eul_addr=e.addr||'';v.eul_biztype=e.biztype||'';v.eul_bizitem=e.bizitem||'';v.eul_rep=e.rep||'';
+    v.caseName=ctCase(f.caseName);}
   return v;
 }
 function ctFileName(c){
-  const cn=String(c.f.cname||'고객사').trim().replace(/^(주식회사|㈜)\s*/,'(주)').replace(/\s*(주식회사|㈜)$/,'(주)').replace(/[\\/:*?"<>|\s]+/g,'_').replace(/^_|_$/g,'');
-  return `${c.company}_계약서_${cn}_${(c.f.date||'').replace(/-/g,'')}_${c.id||'미저장'}.pdf`;
+  const safe=s=>String(s||'').trim().replace(/^(주식회사|㈜)\s*/,'(주)').replace(/\s*(주식회사|㈜)$/,'(주)').replace(/[\\/:*?"<>|\s]+/g,'_').replace(/^_|_$/g,'');
+  const d=(c.f.date||'').replace(/-/g,''),id=c.id||'미저장';
+  if(ctIsInd(c))return `${c.company}-${c.f.eul}_법인개인계약서_${safe(ctCase(c.f.caseName))||'건명'}_${d}_${id}.pdf`;
+  const cn=safe(c.f.cname||'고객사');
+  return `${c.company}_계약서_${cn}_${d}_${id}.pdf`;
 }
 
 /* ---------- 양식 → A4 페이지 ---------- */
@@ -676,7 +755,7 @@ function ctFill(col,c,vals,k,opt){
     lines.forEach((s,i)=>{const p=(item||document.createElement('p')).cloneNode(false);p.textContent=`(${i+1}) ${s}`;d.appendChild(p);});
     const sp=document.createElement('p');sp.innerHTML='&nbsp;';d.appendChild(sp);
   });
-  if(opt&&opt.seal){const img=CT.seals[c.company];const box=col.querySelector('[data-seal]');
+  if(opt&&opt.seal){const img=CT.seals[ctSealKey(c)];const box=col.querySelector('[data-seal]');
     if(img&&box){const p=[...box.querySelectorAll('p')].filter(p=>/\(\s*인\s*\)/.test(p.textContent)).pop();
       if(p){// 문단 끝의 "(인)" 의 '인' 글자 바로 앞에 직인을 겹쳐 놓음 ('날인'의 인이 아니라)
         const w=document.createTreeWalker(p,NodeFilter.SHOW_TEXT);const ns=[];let n;while((n=w.nextNode()))ns.push(n);
@@ -688,7 +767,7 @@ function ctFill(col,c,vals,k,opt){
 /* 본문을 A4 페이지로 나눔. 원본 양식의 섹션(페이지 묶음)·여백을 그대로 따름 */
 async function ctBuild(c,opt){
   opt=opt||{};
-  const key=c.company+'_'+c.type,t=await ctTpl(key,c.tplVer);
+  const key=ctTplKey(c),t=await ctTpl(key,c.tplVer);
   let host=document.getElementById('ctHost');if(!host){host=document.createElement('div');host.id='ctHost';document.body.appendChild(host);}
   const lh=Number(t.lh)||1;
   host.innerHTML=`<style>${ctFontCss(t.css,lh)}</style>`;
@@ -726,7 +805,7 @@ async function ctBuild(c,opt){
   pages.forEach((p,i)=>{
     if(i===0&&c.id){const n=document.createElement('div');n.className='ctno';n.style.top='14px';n.textContent='계약번호: '+c.id;p.pg.appendChild(n);}
     if(opt.draft){const w=document.createElement('div');w.className='ctwm';w.innerHTML='<span>검토용 초안 · 발행 전</span>';p.pg.appendChild(w);}
-    if(opt.seal&&opt.gan&&CT.seals[c.company]){const g=document.createElement('div');g.className='ctgan';g.innerHTML=`<img alt="간인" src="${CT.seals[c.company]}">`;p.pg.appendChild(g);}
+    if(opt.seal&&opt.gan&&CT.seals[ctSealKey(c)]){const g=document.createElement('div');g.className='ctgan';g.innerHTML=`<img alt="간인" src="${CT.seals[ctSealKey(c)]}">`;p.pg.appendChild(g);}
   });
   return {host,pages:pages.map(p=>p.pg),checks:ctChecks(c,t,pages,vals,k,opt)};
 }
@@ -742,8 +821,8 @@ function ctChecks(c,t,pages,vals,k,opt){
     const okParts=[k.supply,k.vat].every(n=>txt.includes(won(n)));
     add(!!(okSum&&okTot&&okParts&&k.total>0),`금액 일치: 화면 ${won(k.total)}원 = 계약서 표·본문 ${totEl?totEl.textContent.trim():'없음'}원`);
   }
-  const miss=CT_NEED.filter(x=>!vals[x]);
-  add(!miss.length,miss.length?`비어 있는 고객 정보: ${miss.map(x=>CT_FL[x]).join(', ')}`:'고객사 정보 자동 입력 확인 (회사명·사업자번호·대표자·주소·계약일)');
+  const miss=ctNeed(c).filter(x=>!vals[x]);
+  add(!miss.length,miss.length?`비어 있는 ${ctIsInd(c)?'갑·건명':'고객'} 정보: ${miss.map(x=>CT_FL[x]).join(', ')}`:ctIsInd(c)?'갑(법인)·을(개인사업자)·건명 자동 입력 확인':'고객사 정보 자동 입력 확인 (회사명·사업자번호·대표자·주소·계약일)');
   const heads=el=>[...el.querySelectorAll('p')].filter(p=>/^\s*제\s*\d+\s*조/.test(p.textContent)).length;
   const tmp=document.createElement('div');tmp.innerHTML=(c.body||t.sections).map(s=>s.html).join('');
   const want=heads(tmp),got=pages.reduce((s,p)=>s+heads(p.pg),0);
@@ -754,7 +833,7 @@ function ctChecks(c,t,pages,vals,k,opt){
   add(!over.length,over.length?`${over.join(', ')}쪽 내용이 아래로 넘쳐요 (본문 직접 수정으로 줄여 주세요)`:'페이지 넘침 없음 (A4)');
   const font=document.fonts&&document.fonts.check?(document.fonts.check('12px "Malgun Gothic"')||document.fonts.check('12px Pretendard')):true;
   add(font,font?'한글 글꼴 확인 (맑은 고딕/Pretendard)':'한글 글꼴을 못 찾았어요');
-  if(opt.seal&&!CT.seals[c.company])add(false,'직인 이미지가 등록되지 않았어요 (양식·직인 관리)');
+  if(opt.seal&&!CT.seals[ctSealKey(c)])add(false,'직인 이미지가 등록되지 않았어요 (양식·직인 관리)');
   return out;
 }
 
@@ -790,7 +869,7 @@ function ctPrint(built){
 async function ctLoad(force){
   if(CT&&!force)return;
   const r=await call('ctInit',TOKEN);
-  CT=Object.assign(CT||{sub:'new'},{templates:r.templates||{},seals:r.seals||{},contracts:r.contracts||[],tplHist:r.tplHist||{},ours:r.ours||[],mine:r.mine||null});
+  CT=Object.assign(CT||{sub:'new'},{templates:r.templates||{},seals:r.seals||{},contracts:r.contracts||[],tplHist:r.tplHist||{},ours:r.ours||[],mine:r.mine||null,corps:r.corps||{},inds:r.inds||{}});
 }
 function ctBlank(prev){
   const d=ctToday();
@@ -799,7 +878,8 @@ function ctBlank(prev){
   // 내가 마지막으로 고른 담당자(서버에 사람마다 저장) → 없으면 로그인 이름과 같은 사람
   const me=(CT&&CT.mine)||((CT&&CT.ours)||[]).find(o=>ME&&ME.name&&o.mgr.split('(')[0]===ME.name);
   if(me){f.our_mgr=me.mgr;f.our_tel=me.tel;f.our_email=me.email;}
-  if(prev)['cname','bizno','ceo','addr','biztype','bizitem','mgr','tel','email','rep','our_mgr','our_tel','our_email','company'].forEach(x=>f[x]=prev.f[x]||f[x]);
+  if(CT_MODE==='ind'){f.sec='ind';f.eul=ctIndKeys()[0]||'474';f.caseName='';ctCorpFill(f);}
+  if(prev)['cname','bizno','ceo','addr','biztype','bizitem','mgr','tel','email','rep','our_mgr','our_tel','our_email','company','eul','caseName'].forEach(x=>{if(x in f||x in prev.f)f[x]=prev.f[x]||f[x]});
   return {id:'',company:f.company,type:f.type,status:'작성중',ver:0,f,body:null,tplVer:0,approval:{},files:[],log:[],versions:[]};
 }
 function ctIsFinal(c){return ['승인','발행','체결'].includes(c.status)}
@@ -811,31 +891,40 @@ async function renderContract(m,head){
     m.innerHTML=head+'<div class="loading"><div class="spin"></div>불러오는 중…</div>';
     try{await ctLoad(true)}catch(e){m.innerHTML=head+`<div class="banner err">${esc(e.message)}</div>`;return}
   }
+  if(CT_MODE==='rep'){rpView(m,head);return;}
   if(!CT.cur)CT.cur=ctBlank();
-  const sub=CT.sub||'new';
-  const nav=`<div class="ctsub">${[['new',CT.cur.id?'계약서 작성 · '+CT.cur.id:'새 계약서'],['list','계약 이력 ('+CT.contracts.length+')'],['tpl','양식·직인 관리']].map(([k,l])=>`<button data-cs="${k}" class="${k===sub?'on':''}">${esc(l)}</button>`).join('')}</div>`;
+  const sub=CT.sub||'new',ind=CT_MODE==='ind';
+  const nav=(ind?`<div class="ctmode"><b>0. 법인_개인계약서</b> · 갑 = 법인((주)한국데이터 / 주식회사 한국데이터복구센터), 을 = 개인사업자(474 / 184)</div>`:'')
+    +`<div class="ctsub">${[['new',CT.cur.id?'계약서 작성 · '+CT.cur.id:'새 계약서'],['list','계약 이력 ('+CT.contracts.filter(ctMineList).length+')'],['tpl','양식·직인 관리']].map(([k,l])=>`<button data-cs="${k}" class="${k===sub?'on':''}">${esc(l)}</button>`).join('')}</div>`;
   const noTpl=!Object.keys(CT.templates).length?`<div class="banner err">아직 계약서 양식이 서버에 없어요. [양식·직인 관리]에서 원본 양식을 올려 주세요.</div>`:'';
   m.innerHTML=head+nav+noTpl+`<div id="ctBody"></div>`;
   m.querySelector('.ctsub').onclick=e=>{const k=e.target.closest('[data-cs]');if(!k)return;CT.sub=k.dataset.cs;renderContract(m)};
   const b=$('ctBody');
   if(sub==='list')ctListView(b,m);else if(sub==='tpl')ctTplView(b,m);else ctFormView(b,m);
 }
+function ctMineList(x){return (x.sec==='ind')===(CT_MODE==='ind')}
 function ctIn(id,label,val,o){o=o||{};return `<label class="${o.wide?'wide':''}">${label}<input id="ct_${id}" value="${esc(val==null?'':val)}"${o.num?' class="num" inputmode="numeric"':''}${o.type?` type="${o.type}"`:''}${o.ph?` placeholder="${esc(o.ph)}"`:''}></label>`}
 function ctFormView(b,m){
-  const c=CT.cur,f=c.f,lock=c.status==='체결'||c.status==='취소',nda=c.type==='nda';
+  const c=CT.cur,f=c.f,lock=c.status==='체결'||c.status==='취소',nda=c.type==='nda',ind=ctIsInd(c);
   const vs=(c.versions||[]).slice().reverse();
+  const coSel=`<select id="ct_company">${Object.entries(CT_CO).map(([k,v])=>`<option value="${k}"${c.company===k?' selected':''}>${v}</option>`).join('')}</select>`;
+  const tySel=`<label>계약서 종류<select id="ct_type">${Object.entries(CT_TYPES).map(([k,v])=>`<option value="${k}"${c.type===k?' selected':''}>${v}</option>`).join('')}</select></label>`;
+  const eo=((CT.inds||{})[f.eul])||{};
   b.innerHTML=`<div class="ctgrid"><div class="card ctform" id="ctForm">
     <h3>계약 구분</h3>
-    <div class="ctrow"><label>계약 회사(을)<select id="ct_company">${Object.entries(CT_CO).map(([k,v])=>`<option value="${k}"${c.company===k?' selected':''}>${v}</option>`).join('')}</select></label>
-      <label>계약서 종류<select id="ct_type">${Object.entries(CT_TYPES).map(([k,v])=>`<option value="${k}"${c.type===k?' selected':''}>${v}</option>`).join('')}</select></label></div>
-    <h3 class="cth">고객사(갑) 정보<label class="ctocr" id="ctBizLab"><span>📄 사업자등록증으로 자동 입력</span><input type="file" id="ctBiz" accept="image/*,.pdf" hidden></label></h3>
-    <div class="ctrow">${ctIn('cname','고객사명 *',f.cname,{ph:'예: 주식회사 OO'})}${ctIn('bizno','사업자등록번호 *',f.bizno,{ph:'000-00-00000 / 법인번호'})}
+    ${ind?`<div class="ctrow c3"><label>갑 (법인)${coSel}</label>
+      <label>을 (개인사업자)<select id="ct_eul">${ctIndKeys().map(k=>{const v=CT.inds[k];return `<option value="${k}"${f.eul===k?' selected':''}>${esc(v.name)} (${esc(v.bizno)})</option>`}).join('')}</select></label>${tySel}</div>
+      <div class="ctguide">을: <b>${esc(eo.name||'')}</b> · ${esc(eo.bizno||'')} · 대표 ${esc(eo.ceo||'')} · ${esc(eo.addr||'')} · 업태 ${esc(eo.biztype||'')} / 종목 ${esc(eo.bizitem||'')}</div>`
+    :`<div class="ctrow"><label>계약 회사(을)${coSel}</label>${tySel}</div>`}
+    ${ind?`<h3>갑(법인) 정보 <span class="muted" style="font-weight:400;font-size:12px">위에서 법인을 고르면 자동으로 채워져요</span></h3>`
+    :`<h3 class="cth">고객사(갑) 정보<label class="ctocr" id="ctBizLab"><span>📄 사업자등록증으로 자동 입력</span><input type="file" id="ctBiz" accept="image/*,.pdf" hidden></label></h3>`}
+    <div class="ctrow">${ctIn('cname',ind?'법인명 *':'고객사명 *',f.cname,{ph:'예: 주식회사 OO'})}${ctIn('bizno','사업자등록번호 *',f.bizno,{ph:'000-00-00000 / 법인번호'})}
       ${ctIn('ceo','대표자명 *',f.ceo)}${ctIn('rep','대표번호',f.rep)}
       ${ctIn('addr','사업장 주소 *',f.addr,{wide:1})}
       ${ctIn('biztype','업태',f.biztype)}${ctIn('bizitem','종목',f.bizitem)}
       ${ctIn('mgr','담당자명(직책)',f.mgr)}${ctIn('tel','연락처',f.tel)}${ctIn('email','Email',f.email,{wide:1})}</div>
     <h3>계약 정보</h3>
-    <div class="ctrow c3">${ctIn('date','계약일 *',f.date,{type:'date'})}<label>계약번호<input value="${esc(c.id||'저장하면 자동으로 붙어요')}" disabled></label><label>양식 버전<input value="${c.tplVer?'v'+c.tplVer:'최신 v'+((CT.templates[c.company+'_'+c.type]||{}).ver||'-')}" disabled></label>
+    <div class="ctrow c3">${ind?ctIn('caseName','건명 * · 계약서 제목 아래에 "OO의 건"으로 들어가요',f.caseName,{ph:'예: 주식회사 OO의 건',wide:1}):''}${ctIn('date','계약일 *',f.date,{type:'date'})}<label>계약번호<input value="${esc(c.id||'저장하면 자동으로 붙어요')}" disabled></label><label>양식 버전<input value="${c.tplVer?'v'+c.tplVer:'최신 v'+((CT.templates[ctTplKey(c)]||{}).ver||'-')}" disabled></label>
       ${nda?ctIn('recDate','복구 계약 체결일',f.recDate,{type:'date'})+ctIn('ndaFrom','계약기간 시작',f.ndaFrom,{type:'date'})+ctIn('ndaTo','계약기간 끝',f.ndaTo,{type:'date'}):''}
       ${nda?'':`<label class="wide">우리 담당자 선택<select id="ctOurPick">${(CT.ours||[]).map((o,i)=>`<option value="${i}"${o.mgr===f.our_mgr&&o.tel===f.our_tel?' selected':''}>${esc(o.mgr)} · ${esc(o.tel)}</option>`).join('')}<option value=""${(CT.ours||[]).some(o=>o.mgr===f.our_mgr&&o.tel===f.our_tel)?'':' selected'}>직접 입력</option></select></label>`
         +ctIn('our_mgr','우리 담당자(직책)',f.our_mgr,{ph:'예: 홍길동(대리)'})+ctIn('our_tel','우리 연락처',f.our_tel,{ph:'010-0000-0000'})+ctIn('our_email','우리 Email',f.our_email,{ph:'name@koreadr.kr'})}</div>
@@ -872,7 +961,7 @@ function ctFormView(b,m){
         <b style="display:block;margin-top:10px">기록</b><div class="ctlog">${(c.log||[]).slice().reverse().map(l=>`<div>${esc(l.at)} · ${esc(l.by)} · ${esc(l.action)}${l.memo?' — '+esc(l.memo):''}</div>`).join('')||'-'}</div></div>`:''}
     </div></div>`;
   const read=()=>{const g=id=>{const e=$('ct_'+id);return e?e.value:undefined};
-    ['cname','bizno','ceo','rep','addr','biztype','bizitem','mgr','tel','email','date','recDate','ndaFrom','ndaTo','our_mgr','our_tel','our_email','special'].forEach(x=>{const v=g(x);if(v!==undefined)f[x]=v});
+    ['cname','bizno','ceo','rep','addr','biztype','bizitem','mgr','tel','email','date','recDate','ndaFrom','ndaTo','our_mgr','our_tel','our_email','special','caseName'].forEach(x=>{const v=g(x);if(v!==undefined)f[x]=v});
     ['base','tripDays','tripUnit','extra'].forEach(x=>{const v=g(x);if(v!==undefined)f[x]=ctInt(v)||''});};
   const syncRate=()=>{if(nda)return;const b=ctInt(f.base),t=ctTier(b);if(f.rateAuto)f.rate=t[1];
     const r=$('ctRates');if(!r)return;r.querySelectorAll('button').forEach(x=>x.classList.toggle('on',Number(x.dataset.r)===Number(f.rate)));
@@ -899,8 +988,11 @@ function ctFormView(b,m){
     if(e.target.classList.contains('num')){const p=e.target.selectionStart,l=e.target.value.length;const n=ctInt(e.target.value);
       if(e.target.id!=='ct_tripDays'){e.target.value=n?won(n):'';try{const d=e.target.value.length-l;e.target.setSelectionRange(p+d,p+d)}catch(_){}}}
     if(e.target.id==='ct_date'&&c.type==='nda'){}drawCalc();});
-  ['ct_company','ct_type'].forEach(id=>{const s=$(id);if(s)s.onchange=()=>{read();c.company=f.company=$('ct_company').value;c.type=f.type=$('ct_type').value;
-    if(c.id&&!confirm('이미 저장된 계약서의 회사·종류를 바꾸면 새 계약번호로 따로 저장돼요. 바꿀까요?')){s.value=s.id==='ct_company'?c.id.split('-')[0]:Object.keys(CT_CODE).find(k=>CT_CODE[k]===c.id.split('-')[1]);return;}
+  ['ct_company','ct_type','ct_eul'].forEach(id=>{const s=$(id);if(s)s.onchange=()=>{read();
+    if(c.id&&!confirm('이미 저장된 계약서의 회사·종류를 바꾸면 새 계약번호로 따로 저장돼요. 바꿀까요?')){const p=c.id.split('-');
+      s.value=s.id==='ct_company'?p[0]:s.id==='ct_eul'?p[1]:Object.keys(CT_CODE).find(k=>CT_CODE[k]===p[ind?2:1]);return;}
+    const co=$('ct_company').value;if(ind&&co!==c.company){c.company=f.company=co;ctCorpFill(f);}
+    c.company=f.company=co;c.type=f.type=$('ct_type').value;if($('ct_eul'))f.eul=$('ct_eul').value;
     if(c.id){c.id='';c.ver=0;c.versions=[];c.files=[];c.log=[];c.status='작성중';c.approval={};}c.body=null;c.tplVer=0;ctFormView(b,m)}});
   const rates=$('ctRates');if(rates)rates.onclick=e=>{const r=e.target.closest('[data-r]');if(!r||lock)return;f.rate=Number(r.dataset.r);f.rateAuto=false;drawCalc();};
   const ri=$('ct_rate');if(ri)ri.onblur=()=>{ri.value=f.rate};
@@ -946,15 +1038,15 @@ function ctApprView(c,m){
   });
 }
 function ctSyncList(full){const s=ctSummary(full);const i=CT.contracts.findIndex(x=>x.id===s.id);if(i>=0)CT.contracts[i]=s;else CT.contracts.unshift(s);}
-function ctSummary(c){return {id:c.id,company:c.company,type:c.type,cname:c.f.cname,bizno:c.f.bizno,date:c.f.date,status:c.status,ver:c.ver,total:c.type==='nda'?0:ctCalc(c.f).total,updated:c.updated||'',files:(c.files||[]).length}}
+function ctSummary(c){return {id:c.id,company:c.company,type:c.type,cname:c.f.cname,bizno:c.f.bizno,date:c.f.date,status:c.status,ver:c.ver,total:c.type==='nda'?0:ctCalc(c.f).total,updated:c.updated||'',files:(c.files||[]).length,sec:c.f.sec||'',eul:c.f.eul||'',caseName:c.f.caseName||''}}
 async function ctSaveNow(b,m){
   const c=CT.cur;
-  const miss=CT_NEED.filter(x=>!String(c.f[x]||'').trim());
+  const miss=ctNeed(c).filter(x=>!String(c.f[x]||'').trim());
   if(miss.length&&!confirm(`비어 있는 칸이 있어요: ${miss.map(x=>CT_FL[x]).join(', ')}\n그래도 저장할까요?`))return;
   if(ctIsFinal(c)&&!confirm('승인된 계약서를 고치면 검토·승인을 처음부터 다시 받아야 해요. 저장할까요?'))return;
   const btn=$('ctSave');btn.disabled=true;btn.textContent='저장 중…';
   try{
-    const r=await call('ctSave',TOKEN,{id:c.id,company:c.company,type:c.type,f:c.f,body:c.body,tplVer:c.tplVer||(CT.templates[c.company+'_'+c.type]||{}).ver||0,calc:c.type==='nda'?null:ctCalc(c.f)});
+    const r=await call('ctSave',TOKEN,{id:c.id,company:c.company,type:c.type,f:c.f,body:c.body,tplVer:c.tplVer||(CT.templates[ctTplKey(c)]||{}).ver||0,calc:c.type==='nda'?null:ctCalc(c.f)});
     CT.cur=r.contract;ctSyncList(r.contract);toast(`저장했어요 · ${r.contract.id} v${r.contract.ver}`);ctFormView(b,m);
     const nav=document.querySelector('.ctsub [data-cs=new]');if(nav)nav.textContent='계약서 작성 · '+r.contract.id;
   }catch(e){toast(e.message);btn.disabled=false;btn.textContent='저장'}
@@ -993,8 +1085,8 @@ async function ctUploadSigned(c,file,b,m){
 async function ctPreview(c,mode,readonly){
   const final=ctIsFinal(c);
   const ov=document.createElement('div');ov.className='ctmodal';
-  ov.innerHTML=`<div class="ctmbar"><b>${esc(CT_TYPES[c.type])} · ${esc(c.f.cname||'고객사 미입력')} ${final?'':'<span class="ctst" style="background:#dc2626;margin-left:6px">검토용 초안</span>'}</b>
-    ${final&&CT.seals[c.company]?'<label style="font-size:13px;display:flex;gap:4px;align-items:center"><input type="checkbox" id="ctSeal" checked> 직인 넣기</label><label style="font-size:13px;display:flex;gap:4px;align-items:center"><input type="checkbox" id="ctGan" checked> 페이지마다 간인</label>':''}
+  ov.innerHTML=`<div class="ctmbar"><b>${esc(CT_TYPES[c.type])} · ${esc(ctIsInd(c)?(ctCase(c.f.caseName)||'건명 미입력'):(c.f.cname||'고객사 미입력'))} ${final?'':'<span class="ctst" style="background:#dc2626;margin-left:6px">검토용 초안</span>'}</b>
+    ${final&&CT.seals[ctSealKey(c)]?'<label style="font-size:13px;display:flex;gap:4px;align-items:center"><input type="checkbox" id="ctSeal" checked> 직인 넣기</label><label style="font-size:13px;display:flex;gap:4px;align-items:center"><input type="checkbox" id="ctGan" checked> 페이지마다 간인</label>':''}
     <button class="btn" id="ctMPdf" style="background:#0f766e">${final?'PDF 계약서 생성':'초안 PDF 받기'}</button><button class="btn sec" id="ctMPrint">인쇄</button><button class="btn sec" id="ctMClose">닫기</button></div>
     <div class="ctmbody"><div class="ctpages" id="ctPages"><div class="loading" style="color:#fff"><div class="spin"></div>페이지 만드는 중…</div></div><div class="ctcheck" id="ctChecks"></div></div>`;
   document.body.appendChild(ov);document.body.style.overflow='hidden';
@@ -1010,7 +1102,7 @@ async function ctPreview(c,mode,readonly){
     const ck=built.checks;
     $('ctChecks').innerHTML=`<h4>필수 검증</h4>${ck.map(x=>`<div>${x.ok?'<span class="ctok">✓</span>':'<span class="ctbad">✗</span>'} ${esc(x.msg)}</div>`).join('')}
       <div class="muted" style="margin-top:8px;font-size:12px">${final?'승인된 계약서예요. PDF를 만들면 계약 이력에 발행본으로 저장돼요.':'검토·승인 전이라 "검토용 초안" 표시가 들어가고 직인·간인이 빠져요. 초안 PDF도 이력에 저장돼요.'}</div>
-      ${final?(CT.seals[c.company]?'<div class="muted" style="margin-top:6px;font-size:12px">간인: 모든 페이지 오른쪽 가운데에 우리 직인이 찍혀요. 위쪽 "페이지마다 간인"으로 끄고 켤 수 있어요.</div>'
+      ${final?(CT.seals[ctSealKey(c)]?'<div class="muted" style="margin-top:6px;font-size:12px">간인: 모든 페이지 오른쪽 가운데에 우리 직인이 찍혀요. 위쪽 "페이지마다 간인"으로 끄고 켤 수 있어요.</div>'
         :'<div class="ctwarn" style="margin-top:8px;font-size:12px">직인이 아직 등록되지 않아 서명란 직인과 페이지 간인이 빠져요. [양식·직인 관리]에서 직인 PNG를 올려 주세요.</div>'):''}
       <div class="muted" style="margin-top:6px;font-size:12px">파일명: ${esc(ctFileName(c))}</div>`;
     return built;
@@ -1040,12 +1132,12 @@ async function ctPreview(c,mode,readonly){
 }
 /* 본문 직접 수정(계약서) · 양식 수정(관리자) 편집기 */
 async function ctEditor(kind,c,b,m,tplKey){
-  const key=kind==='tpl'?tplKey:c.company+'_'+c.type;
+  const key=kind==='tpl'?tplKey:ctTplKey(c);
   const t=kind==='tpl'?CT.templates[key]:await ctTpl(key,c.tplVer);
   const secs=JSON.parse(JSON.stringify(kind==='contract'&&c.body?c.body:t.sections));
   const vals=kind==='contract'?ctValues(c):{};
   const ov=document.createElement('div');ov.className='ctmodal';
-  ov.innerHTML=`<div class="ctmbar"><b>${kind==='tpl'?`양식 수정 · ${esc(CT_CO[t.company])} ${esc(t.title)} (지금 v${t.ver})`:`본문 직접 수정 · ${esc(c.f.cname||'')}`}</b>
+  ov.innerHTML=`<div class="ctmbar"><b>${kind==='tpl'?`양식 수정 · ${esc(CT_CO[t.company]||'법인_개인')} ${esc(t.title)} (지금 v${t.ver})`:`본문 직접 수정 · ${esc(c.f.cname||'')}`}</b>
     <span class="muted" style="font-size:12px">파란 칸은 자동으로 채워지는 칸이에요 (지우지 마세요)</span>
     <button class="btn" id="ctESave">${kind==='tpl'?'새 양식 버전으로 저장':'수정 내용 적용'}</button><button class="btn sec" id="ctEClose">닫기</button></div>
     <div class="ctedit" id="ctEdit" style="--ctlh:${Number(t.lh)||1}"><style>${ctFontCss(t.css)}</style></div>`;
@@ -1073,29 +1165,32 @@ async function ctEditor(kind,c,b,m,tplKey){
 }
 function ctListView(b,m){
   const q=(CT.q||'').trim();
-  const list=CT.contracts.filter(x=>!q||[x.cname,x.id,x.bizno].join(' ').includes(q));
-  const groups={};list.forEach(x=>{(groups[x.cname||'(고객사 미입력)']=groups[x.cname||'(고객사 미입력)']||[]).push(x)});
-  b.innerHTML=`<div class="card ctlist"><div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><input id="ctQ" class="fld" style="margin:0;flex:1;min-width:200px" placeholder="고객사명·계약번호·사업자번호 검색" value="${esc(q)}"><button class="btn" id="ctNewBtn">+ 새 계약서</button></div>
+  const ind=CT_MODE==='ind',gk=x=>ind?(ctCase(x.caseName)||'(건명 미입력)'):(x.cname||'(고객사 미입력)');
+  const list=CT.contracts.filter(ctMineList).filter(x=>!q||[x.cname,x.id,x.bizno,x.caseName].join(' ').includes(q));
+  const groups={};list.forEach(x=>{(groups[gk(x)]=groups[gk(x)]||[]).push(x)});
+  b.innerHTML=`<div class="card ctlist"><div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><input id="ctQ" class="fld" style="margin:0;flex:1;min-width:200px" placeholder="${ind?'건명·계약번호 검색':'고객사명·계약번호·사업자번호 검색'}" value="${esc(q)}"><button class="btn" id="ctNewBtn">+ 새 계약서</button></div>
     ${Object.keys(groups).length?Object.entries(groups).map(([n,xs])=>`<div class="cgrp"><h4>${esc(n)} <span class="muted" style="font-weight:400">${xs.length}건</span></h4><div style="overflow-x:auto"><table>
-      <thead><tr><th>계약번호</th><th>회사</th><th>종류</th><th>계약일</th><th class="r">최종 금액</th><th>상태</th><th>버전</th><th>파일</th></tr></thead>
-      <tbody>${xs.map(x=>`<tr class="go" data-id="${esc(x.id)}"><td><b>${esc(x.id)}</b></td><td>${esc(x.company)}</td><td>${esc(CT_TSHORT[x.type]||x.type)}</td><td>${esc(x.date)}</td><td class="r">${x.total?won(x.total):'-'}</td><td><span class="ctst" style="background:${CT_STC[x.status]||'#64748b'}">${esc(x.status)}</span></td><td>v${x.ver}</td><td>${x.files||0}</td></tr>`).join('')}</tbody></table></div></div>`).join(''):'<div class="muted">아직 저장된 계약서가 없어요.</div>'}</div>`;
+      <thead><tr><th>계약번호</th><th>${ind?'갑 → 을':'회사'}</th><th>종류</th><th>계약일</th><th class="r">최종 금액</th><th>상태</th><th>버전</th><th>파일</th></tr></thead>
+      <tbody>${xs.map(x=>`<tr class="go" data-id="${esc(x.id)}"><td><b>${esc(x.id)}</b></td><td>${esc(ind?x.company+' → '+x.eul:x.company)}</td><td>${esc(CT_TSHORT[x.type]||x.type)}</td><td>${esc(x.date)}</td><td class="r">${x.total?won(x.total):'-'}</td><td><span class="ctst" style="background:${CT_STC[x.status]||'#64748b'}">${esc(x.status)}</span></td><td>v${x.ver}</td><td>${x.files||0}</td></tr>`).join('')}</tbody></table></div></div>`).join(''):'<div class="muted">아직 저장된 계약서가 없어요.</div>'}</div>`;
   const qi=$('ctQ');qi.oninput=()=>{CT.q=qi.value;clearTimeout(ctListView._t);ctListView._t=setTimeout(()=>{ctListView(b,m);const n=$('ctQ');n.focus();n.setSelectionRange(n.value.length,n.value.length)},250)};
   $('ctNewBtn').onclick=()=>{CT.cur=ctBlank();CT.sub='new';renderContract(m)};
   b.querySelectorAll('tr[data-id]').forEach(tr=>tr.onclick=()=>ctOpen(tr.dataset.id,m));
 }
 function ctTplView(b,m){
-  const keys=['KD_pay','KD_rec','KD_nda','KDRC_pay','KDRC_rec','KDRC_nda'];
+  const ind=CT_MODE==='ind';
+  const keys=ind?['IND_pay','IND_rec','IND_nda']:['KD_pay','KD_rec','KD_nda','KDRC_pay','KDRC_rec','KDRC_nda'];
+  const sealCos=ind?ctIndKeys().map(k=>[k,CT.inds[k].name+' ('+k+')']):Object.entries(CT_CO);
   b.innerHTML=`<div class="card ctlist"><h3 style="margin:0 0 10px">계약서 양식 <span class="muted" style="font-weight:400;font-size:12px">고치면 새 버전으로 저장되고, 원본(v1)과 이전 버전은 그대로 남아요. 이미 만든 계약서는 만들 때의 양식 버전을 계속 써요.</span></h3>
     <div style="overflow-x:auto"><table><thead><tr><th>회사</th><th>양식</th><th>버전</th><th>수정</th><th></th></tr></thead><tbody>
-    ${keys.map(k=>{const t=CT.templates[k];return `<tr><td>${esc(CT_CO[k.split('_')[0]])}</td><td>${esc(CT_TYPES[k.split('_')[1]])}</td><td>${t?'v'+t.ver:'<span class="ctbad">없음</span>'}</td><td>${t?esc((t.updated||'')+' '+(t.by||'')):''}</td>
+    ${keys.map(k=>{const t=CT.templates[k];return `<tr><td>${esc(CT_CO[k.split('_')[0]]||'법인 → 개인')}</td><td>${esc(CT_TYPES[k.split('_')[1]])}</td><td>${t?'v'+t.ver:'<span class="ctbad">없음</span>'}</td><td>${t?esc((t.updated||'')+' '+(t.by||'')):''}</td>
       <td>${t?`<button class="btn sec" style="padding:5px 10px" data-te="${k}">양식 수정</button> <button class="btn sec" style="padding:5px 10px" data-th="${k}">기록</button>`:''}</td></tr>`}).join('')}</tbody></table></div></div>
-    <div class="card" style="margin-top:16px"><h3 style="margin:0 0 6px">승인된 회사 직인</h3><p class="muted" style="font-size:13px;margin:0 0 10px">배경이 투명한 PNG를 올려 주세요. 발행 승인된 계약서에만 들어가요.</p>
+    <div class="card" style="margin-top:16px"><h3 style="margin:0 0 6px">${ind?'을(개인사업자) 직인':'승인된 회사 직인'}</h3><p class="muted" style="font-size:13px;margin:0 0 10px">배경이 투명한 PNG를 올려 주세요. 발행 승인된 계약서에만 들어가요.</p>
       <div class="ctguide" style="margin:0 0 12px"><b>직인 · 간인 안내</b>
         <div>· <b>직인</b>: 마지막 쪽 "을" 서명란 (인) 자리에 찍혀요.</div>
         <div>· <b>간인</b>: 모든 페이지 오른쪽 가운데에 같은 직인이 찍혀요. 여러 장짜리 계약서에서 중간 페이지를 바꿔 끼우지 못하게 하는 표시예요.</div>
         <div>· 미리보기 위쪽의 <b>☑ 직인 넣기</b>, <b>☑ 페이지마다 간인</b>으로 넣고 뺄 수 있어요. 둘 다 처음엔 켜져 있어요.</div>
         <div>· 검토용 초안(승인 전)에는 직인·간인이 들어가지 않아요. 갑(고객)은 출력본에 직접 서명·날인해요.</div></div>
-    <div style="display:flex;gap:16px;flex-wrap:wrap">${Object.entries(CT_CO).map(([k,v])=>`<div style="border:1px solid var(--line);border-radius:12px;padding:12px;width:220px"><b style="font-size:13px">${esc(v)}</b>
+    <div style="display:flex;gap:16px;flex-wrap:wrap">${sealCos.map(([k,v])=>`<div style="border:1px solid var(--line);border-radius:12px;padding:12px;width:220px"><b style="font-size:13px">${esc(v)}</b>
       <div style="height:90px;display:flex;align-items:center;justify-content:center;margin:8px 0;background:#f8fafc;border-radius:8px">${CT.seals[k]?`<img src="${CT.seals[k]}" style="max-height:80px">`:'<span class="muted" style="font-size:12px">등록 안 됨</span>'}</div>
       <label class="btn sec" style="display:flex;justify-content:center;cursor:pointer;padding:6px">직인 올리기<input type="file" accept="image/png" hidden data-seal="${k}"></label></div>`).join('')}</div></div>`;
   b.querySelectorAll('[data-te]').forEach(x=>x.onclick=()=>ctEditor('tpl',null,b,m,x.dataset.te));
@@ -1109,14 +1204,267 @@ function ctTplView(b,m){
     r.readAsDataURL(file);});
 }
 
+/* ═══════ 3. 결과보고서 (랜섬웨어 복호화 결과 보고서) ═══════
+   입력 → 저장(서버 시트, 사진은 드라이브) → 16:9 슬라이드 미리보기 → PDF(내려받기 + 드라이브 보관) */
+let RP=null,RPL=null,RP_TXT={},RP_SUB='new',RP_BUSY=0;const RP_IMG={};
+const RP_POST=[['zt','5-1 Zero Trust 네트워크 아키텍처 – 2차 인증(MFA) 기반 접근 제어'],['iv','5-2 무결성 검토(Integrity Validation) – 네트워크 장비 설정 무결성'],
+  ['nm','5-3 네트워크 모니터링(Network Monitoring)'],['td','5-4 파일 변조 검사(Tamper Detection)'],['wb','5-5 WORM 백업(Immutable Backup)']];
+const RP_INF=['Yes(전체)','Yes(일부)','No'],RP_BK=['O','X','-'];
+const RP_W=1280,RP_H=720;
+function rpBlankF(){const me=(CT&&CT.mine)||{};
+  return {company:'KDRC',title:'랜섬웨어 복호화 결과 보고서',cname:'',contractId:'',date:ctToday(),writer:me.mgr?me.mgr.split('(')[0]:(ME&&ME.name||''),
+    incDate:'',scope:'',ext:'',demand:'',contact:'',log:'',hosts:[{name:'',ip:''}],hostNote:'',hostImgs:[],
+    infNote:'',infRows:[{k:'VMware',a:'Yes(전체)',b:'O'},{k:'NAS',a:'Yes(전체)',b:'O'},{k:'물리서버',a:'Yes(전체)',b:'O'}],infMemo:'',
+    hackHow:'',note:'',noteImgs:[],
+    finalBtc:'',finalKrw:'',rounds:'',payHow:'',payImgs:[],payAttach:'※별도 파일 첨부 제공(테스트 파일 내역, 해커의 BTC 주소, 전송 내역 등)',
+    decNote:'',decRows:[],decMemo:'',post:RP_POST.map(x=>x[0]),postMore:''};}
+function rpBlank(){return {id:'',ver:0,f:rpBlankF(),files:[],log:[]}}
+async function rpLoad(force){if(RPL&&!force)return;const r=await call('rpInit',TOKEN);RPL=r.reports||[];RP_TXT=r.post||{};}
+/* 사진: 줄여서(긴 변 1600px, JPG) 드라이브에 올리고 파일ID만 저장. 화면에서는 캐시한 dataURL로 보여 줌 */
+function rpShrink(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onerror=rej;fr.onload=()=>{const im=new Image();im.onerror=rej;im.onload=()=>{
+  const k=Math.min(1,1600/Math.max(im.width,im.height)),cv=document.createElement('canvas');cv.width=Math.round(im.width*k);cv.height=Math.round(im.height*k);
+  const g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);g.drawImage(im,0,0,cv.width,cv.height);res(cv.toDataURL('image/jpeg',0.85));};im.src=fr.result;};fr.readAsDataURL(file);})}
+async function rpImgs(fids){for(const id of fids){if(RP_IMG[id])continue;try{const r=await call('rpFile',TOKEN,id);RP_IMG[id]=`data:${r.mime};base64,${r.b64}`}catch(e){RP_IMG[id]=''}}}
+function rpAllImgs(f){return [].concat(f.hostImgs||[],f.noteImgs||[],f.payImgs||[])}
+function rpFileName(r){const f=r.f,s=x=>String(x||'').trim().replace(/^(주식회사|㈜)\s*/,'(주)').replace(/[\\/:*?"<>|\s]+/g,'_');
+  return `${f.company}_결과보고서_${s(f.cname)||'고객사'}_${(f.date||'').replace(/-/g,'')}_${r.id||'미저장'}.pdf`}
+
+async function rpView(m,head){
+  if(!RPL){m.innerHTML=head+'<div class="loading"><div class="spin"></div>불러오는 중…</div>';try{await rpLoad(true)}catch(e){m.innerHTML=head+`<div class="banner err">${esc(e.message)}</div>`;return}}
+  if(!RP)RP=rpBlank();
+  const nav=`<div class="ctmode"><b>3. 결과보고서</b> · 랜섬웨어 복호화 결과 보고서 (16:9 슬라이드 PDF)</div>
+    <div class="ctsub">${[['new',RP.id?'보고서 작성 · '+RP.id:'새 보고서'],['list','보고서 이력 ('+RPL.length+')'],['logo','로고 관리']].map(([k,l])=>`<button data-rs="${k}" class="${k===RP_SUB?'on':''}">${esc(l)}</button>`).join('')}</div>`;
+  m.innerHTML=head+nav+'<div id="rpBody"></div>';
+  m.querySelector('.ctsub').onclick=e=>{const k=e.target.closest('[data-rs]');if(!k)return;RP_SUB=k.dataset.rs;rpView(m,head)};
+  const b=$('rpBody');
+  if(RP_SUB==='list')rpListView(b,m,head);else if(RP_SUB==='logo')rpLogoView(b,m,head);else rpFormView(b,m,head);
+}
+function rpListView(b,m,head){
+  b.innerHTML=`<div class="card ctlist"><div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><button class="btn" id="rpNew">+ 새 보고서</button></div>
+    ${RPL.length?`<div style="overflow-x:auto"><table><thead><tr><th>보고서 번호</th><th>고객사</th><th>회사</th><th>작성일</th><th>작성자</th><th>버전</th><th>PDF</th><th>수정</th></tr></thead><tbody>
+    ${RPL.map(x=>`<tr class="go" data-id="${esc(x.id)}"><td><b>${esc(x.id)}</b></td><td>${esc(x.cname)}</td><td>${esc(x.company)}</td><td>${esc(x.date)}</td><td>${esc(x.writer)}</td><td>v${x.ver}</td><td>${x.files||0}</td><td>${esc(x.updated)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="muted">아직 저장된 보고서가 없어요.</div>'}</div>`;
+  $('rpNew').onclick=()=>{RP=rpBlank();RP_SUB='new';rpView(m,head)};
+  b.querySelectorAll('tr[data-id]').forEach(tr=>tr.onclick=async()=>{try{const r=await call('rpGet',TOKEN,tr.dataset.id);RP=r.report;RP_SUB='new';toast('불러오는 중…');await rpImgs(rpAllImgs(RP.f));rpView(m,head)}catch(e){toast(e.message)}});
+}
+function rpLogoView(b,m,head){
+  b.innerHTML=`<div class="card"><h3 style="margin:0 0 6px">보고서 로고</h3><p class="muted" style="font-size:13px;margin:0 0 10px">슬라이드 왼쪽 위에 들어가는 회사 로고예요. 배경이 투명한 PNG(1MB 이하)가 좋아요. 없으면 글자 로고로 들어가요.</p>
+    <div style="display:flex;gap:16px;flex-wrap:wrap">${Object.entries(CT_CO).map(([k,v])=>`<div style="border:1px solid var(--line);border-radius:12px;padding:12px;width:240px"><b style="font-size:13px">${esc(v)}</b>
+      <div style="height:90px;display:flex;align-items:center;justify-content:center;margin:8px 0;background:#dbeef7;border-radius:8px">${CT.seals['logo_'+k]?`<img src="${CT.seals['logo_'+k]}" style="max-height:70px;max-width:210px">`:rpTextLogo(k)}</div>
+      <label class="btn sec" style="display:flex;justify-content:center;cursor:pointer;padding:6px">로고 올리기<input type="file" accept="image/png,image/jpeg" hidden data-logo="${k}"></label></div>`).join('')}</div></div>`;
+  b.querySelectorAll('input[data-logo]').forEach(inp=>inp.onchange=()=>{const file=inp.files[0];if(!file)return;if(file.size>1024*1024){toast('1MB 이하로 올려 주세요');return}
+    const fr=new FileReader();fr.onload=async()=>{try{await call('rpLogo',TOKEN,inp.dataset.logo,fr.result);CT.seals['logo_'+inp.dataset.logo]=fr.result;toast('로고를 등록했어요');rpView(m,head)}catch(e){toast(e.message)}};fr.readAsDataURL(file);});
+}
+function rpTextLogo(k){return `<div class="rplogo"><span>${k==='KD'?'KD':'KDRC'}</span><b>${k==='KD'?'한국데이터':'한국<br>데이터복구센터'}</b></div>`}
+
+function rpFormView(b,m,head){
+  const R=RP,r=R.f;
+  if(!r.decRows.length)r.decRows=r.infRows.map(x=>({k:x.k,a:'Yes(전체)',b:x.b}));
+  const I=(id,label,o)=>{o=o||{};return `<label class="${o.wide?'wide':''}">${label}<input data-rp="${id}" value="${esc(r[id]||'')}"${o.type?` type="${o.type}"`:''}${o.ph?` placeholder="${esc(o.ph)}"`:''}></label>`};
+  const T=(id,label,ph)=>`<label class="wide">${label}<textarea data-rp="${id}" placeholder="${esc(ph||'')}">${esc(r[id]||'')}</textarea></label>`;
+  const sel=(arr,v)=>arr.map(x=>`<option${x===v?' selected':''}>${esc(x)}</option>`).join('');
+  const imgs=k=>`<div class="rpimgs">${r[k].map((id,i)=>`<div class="rpimg">${RP_IMG[id]?`<img src="${RP_IMG[id]}">`:'<span class="muted" style="font-size:11px">불러오는 중</span>'}<button type="button" data-rmimg="${k}:${i}" title="빼기">×</button></div>`).join('')}
+    <label class="rpadd">+ 사진 넣기<input type="file" accept="image/*" multiple hidden data-addimg="${k}"></label></div>`;
+  const grid=(k,col)=>`<div style="overflow-x:auto"><table class="rptbl"><thead><tr><th>구분</th><th>${col}</th><th>Backup</th><th></th></tr></thead><tbody>
+    ${r[k].map((x,i)=>`<tr><td><input data-row="${k}:${i}:k" value="${esc(x.k)}"></td><td><select data-row="${k}:${i}:a">${sel(RP_INF,x.a)}</select></td>
+      <td><select data-row="${k}:${i}:b">${sel(RP_BK,x.b)}</select></td><td><button type="button" class="rpx" data-rmrow="${k}:${i}">×</button></td></tr>`).join('')}</tbody></table></div>
+    <button type="button" class="btn sec rpsm" data-addrow="${k}">+ 줄 추가</button>`;
+  const cts=((CT&&CT.contracts)||[]).filter(x=>x.sec!=='ind');
+  b.innerHTML=`<div class="ctgrid"><div class="card ctform" id="rpForm">
+    <h3>기본 정보</h3>
+    <div class="ctrow"><label>보고 회사 (로고)<select data-rp="company">${Object.entries(CT_CO).map(([k,v])=>`<option value="${k}"${r.company===k?' selected':''}>${esc(v)}</option>`).join('')}</select></label>
+      <label>관련 계약서 (고르면 고객사명이 채워져요)<select data-rp="contractId"><option value="">선택 안 함</option>${cts.map(x=>`<option value="${esc(x.id)}"${r.contractId===x.id?' selected':''}>${esc(x.id)} · ${esc(x.cname||'')}</option>`).join('')}</select></label>
+      ${I('cname','고객사명 *',{ph:'예: 주식회사 OO'})}${I('title','보고서 제목')}
+      ${I('date','작성일 *',{type:'date'})}${I('writer','작성자 *',{ph:'예: 김영준'})}</div>
+    <h3>1. 사건 개요</h3>
+    <div class="ctrow">${I('incDate','사건 발생 일자',{type:'date'})}${I('scope','랜섬웨어 감염 범위',{ph:'예: 가상서버 포함 약 30대'})}
+      ${I('ext','감염 확장자',{ph:"예: '.locked'"})}${I('demand','최초 요구액',{ph:'예: 총 5 BTC'})}
+      ${I('contact','접촉 방법',{ph:'예: Session, Tox 등 메신저로 접촉 요구'})}${I('log','확인된 감사 성공 로그',{ph:'예: "IPv4 주소 0.0.0.0"로 접속 시도'})}</div>
+    <div class="rpsub">숙주 의심 PC·서버 <span class="muted">Workstation Name / IP · 사진 순서대로 아래에 이름이 붙어요</span></div>
+    <div style="overflow-x:auto"><table class="rptbl"><thead><tr><th>Workstation Name</th><th>IP</th><th></th></tr></thead><tbody>
+      ${r.hosts.map((x,i)=>`<tr><td><input data-host="${i}:name" value="${esc(x.name)}" placeholder="예: SERVER-01"></td><td><input data-host="${i}:ip" value="${esc(x.ip)}" placeholder="0.0.0.0"></td><td><button type="button" class="rpx" data-rmhost="${i}">×</button></td></tr>`).join('')}</tbody></table></div>
+    <button type="button" class="btn sec rpsm" id="rpAddHost">+ PC·서버 추가</button>
+    ${T('hostNote','의심 근거 설명','예: 평소 해당 PC로 하지 않는 감사 시도가 매시·분·초 자동으로 반복되어 숙주 PC 및 서버로 의심됩니다.')}
+    <div class="rpsub">로그 화면 사진</div>${imgs('hostImgs')}
+    <h3>2. 감염 범위 파악</h3>
+    ${I('infNote','요약 문구',{wide:1,ph:'예: ※ 물리서버와 가상서버 약 30대 확인'})}
+    ${grid('infRows','감염')}
+    ${T('infMemo','특이사항','예: 가상화 환경이 감염되어 물리 서버의 중요 데이터에 접근이 불가능한 상태입니다.')}
+    <h3>3. 해커 접촉 방법</h3>
+    ${T('hackHow','접촉 경로','예: 랜섬 노트 파일 안의 메신저 ID로 접촉 시작')}
+    ${T('note','랜섬 노트 내용 (원문)','랜섬 노트 파일 내용을 붙여 넣어 주세요 (캡처가 있으면 캡처가 우선으로 들어가요)')}
+    <div class="rpsub">랜섬 노트 캡처</div>${imgs('noteImgs')}
+    <h3>협상 결과</h3>
+    <div class="ctrow">${I('finalBtc','최종 금액 (BTC)',{ph:'예: 3.5'})}${I('finalKrw','원화 환산',{ph:'예: 약 4억원'})}
+      ${I('rounds','협상 경과 (차수별 BTC, 쉼표로)',{wide:1,ph:'예: 5, 4.5, 4, 3.5'})}</div>
+    ${T('payHow','송금·복호화 진행','예: 해커에게 받은 BTC 주소로 순차 송금, 1차 송금 후 복호화 키 수령 → 2차 송금 후 복호화 키 수령')}
+    <div class="rpsub">송금 내역 캡처</div>${imgs('payImgs')}
+    ${I('payAttach','첨부 안내 문구',{wide:1})}
+    <h3>4. 복호화 결과</h3>
+    ${I('decNote','요약 문구',{wide:1,ph:'예: ※ 물리서버와 가상서버 약 30대 복호화 완료'})}
+    ${grid('decRows','복호화')}
+    ${T('decMemo','특이사항','예: 복호화와 동시에 WORM 백업을 시작했으며, 백업 일정 확인 후 순차적으로 서비스를 재개할 예정입니다.')}
+    <h3>5. 사후 대응 방안 <span class="muted" style="font-weight:400;font-size:12px">넣을 항목만 체크 · 표준 문구로 들어가요</span></h3>
+    <div class="rpchk">${RP_POST.map(([k,l])=>`<label><input type="checkbox" data-post="${k}"${r.post.includes(k)?' checked':''}> ${esc(l)}</label>`).join('')}</div>
+    ${T('postMore','추가 대응 방안 (선택)','고객사 상황에 맞춘 추가 권고가 있으면 적어 주세요 (따로 한 장으로 들어가요)')}
+  </div>
+  <div class="ctside"><div class="card"><b>입력 현황</b><div class="ctchk" id="rpStat" style="margin-top:6px"></div></div>
+    <div class="card ctbtns"><button class="btn" id="rpSave">저장 (새 버전 v${(R.ver||0)+1})</button><button class="btn sec" id="rpPrev">슬라이드 미리보기</button>
+      <button class="btn" style="background:#0f766e" id="rpPdf">PDF 보고서 생성</button><button class="btn sec" id="rpReset">새 보고서 (지우기)</button>
+      <div class="muted" style="font-size:12px;line-height:1.6">PDF 파일명: ${esc(rpFileName(R))}</div></div>
+    ${R.id?`<div class="card"><b>PDF 기록</b><div class="ctfiles" style="font-size:13px;line-height:1.9;margin-top:6px">${(R.files||[]).length?R.files.slice().reverse().map(x=>`<div>📄 v${x.ver} · <a data-rpf="${esc(x.fid)}" data-fn="${esc(x.name)}">${esc(x.name)}</a> <span class="muted">${esc(x.at)}</span></div>`).join(''):'<span class="muted">아직 없어요</span>'}</div>
+      <b style="display:block;margin-top:10px">기록</b><div class="ctlog">${(R.log||[]).slice().reverse().map(l=>`<div>${esc(l.at)} · ${esc(l.by)} · ${esc(l.action)}</div>`).join('')}</div></div>`:''}</div></div>`;
+  const stat=()=>{const S=[['기본 정보',r.cname&&r.date&&r.writer],['1. 사건 개요',r.incDate||r.scope||r.ext],['2. 감염 범위',r.infRows.length&&(r.infNote||r.infMemo)],
+      ['3. 해커 접촉',r.hackHow||r.note||r.noteImgs.length],['협상 결과',r.finalBtc],['4. 복호화 결과',r.decNote||r.decMemo],['5. 사후 대응',r.post.length||r.postMore]];
+    const el=$('rpStat');if(el)el.innerHTML=S.map(([l,ok])=>`<div>${ok?'<span class="ctok">✓</span>':'<span class="muted">○</span>'} ${l}</div>`).join('');};
+  stat();
+  const f=$('rpForm'),redraw=()=>rpFormView(b,m,head);
+  f.addEventListener('input',e=>{const t=e.target;
+    if(t.dataset.rp){r[t.dataset.rp]=t.value;
+      if(t.dataset.rp==='contractId'&&t.value){const x=cts.find(c=>c.id===t.value);if(x){r.cname=x.cname||r.cname;r.company=x.company||r.company;redraw();return;}}}
+    else if(t.dataset.row){const [k,i,c]=t.dataset.row.split(':');r[k][+i][c]=t.value;}
+    else if(t.dataset.host){const [i,c]=t.dataset.host.split(':');r.hosts[+i][c]=t.value;}
+    else if(t.dataset.post){r.post=RP_POST.map(x=>x[0]).filter(k=>f.querySelector(`[data-post=${k}]`).checked);}
+    stat();});
+  f.addEventListener('change',async e=>{const t=e.target;if(t.tagName==='SELECT'||t.type==='checkbox')t.dispatchEvent(new Event('input',{bubbles:true}));
+    if(t.dataset.addimg){const k=t.dataset.addimg,files=[...t.files];t.value='';if(!files.length)return;
+      const lab=t.parentElement;lab.firstChild.textContent='올리는 중…';RP_BUSY++;
+      try{for(const file of files){const url=await rpShrink(file);const res=await call('rpImg',TOKEN,'image/jpeg',url.split(',')[1]);RP_IMG[res.fid]=url;r[k].push(res.fid);}
+        toast(`사진 ${files.length}장을 넣었어요 · 저장해야 보고서에 남아요`);}catch(err){toast(err.message)}
+      RP_BUSY--;if(RP&&RP.f===r)redraw();}});
+  f.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
+    if(t.dataset.addrow){r[t.dataset.addrow].push({k:'',a:RP_INF[0],b:'O'});redraw();}
+    else if(t.dataset.rmrow){const [k,i]=t.dataset.rmrow.split(':');r[k].splice(+i,1);redraw();}
+    else if(t.id==='rpAddHost'){r.hosts.push({name:'',ip:''});redraw();}
+    else if(t.dataset.rmhost){r.hosts.splice(+t.dataset.rmhost,1);if(!r.hosts.length)r.hosts.push({name:'',ip:''});redraw();}
+    else if(t.dataset.rmimg){const [k,i]=t.dataset.rmimg.split(':');r[k].splice(+i,1);redraw();}});
+  $('rpReset').onclick=()=>{if(confirm('지금 화면을 비우고 새 보고서를 쓸까요? (저장 안 한 내용은 사라져요)')){RP=rpBlank();rpView(m,head);}};
+  $('rpSave').onclick=()=>rpSaveNow(m,head);
+  $('rpPrev').onclick=()=>rpPreview(R,'view');
+  $('rpPdf').onclick=()=>{if(RP_BUSY){toast('사진을 올리는 중이에요');return}rpPreview(R,'pdf')};
+  b.querySelectorAll('[data-rpf]').forEach(a=>a.onclick=async()=>{try{const x=await call('rpFile',TOKEN,a.dataset.rpf);const bin=atob(x.b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);ctSaveBlob(new Blob([u],{type:'application/pdf'}),a.dataset.fn)}catch(e){toast(e.message)}});
+}
+async function rpSaveNow(m,head){
+  if(RP_BUSY){toast('사진을 올리는 중이에요. 끝난 뒤에 저장해 주세요');return}
+  const R=RP,miss=[['cname','고객사명'],['date','작성일'],['writer','작성자']].filter(([k])=>!String(R.f[k]||'').trim());
+  if(miss.length){toast('먼저 넣어 주세요: '+miss.map(x=>x[1]).join(', '));return}
+  const btn=$('rpSave');btn.disabled=true;btn.textContent='저장 중…';
+  try{const r=await call('rpSave',TOKEN,{id:R.id,f:R.f});RP=r.report;
+    const s={id:RP.id,company:RP.f.company,cname:RP.f.cname,date:RP.f.date,writer:RP.f.writer,title:RP.f.title,updated:RP.updated,ver:RP.ver,files:(RP.files||[]).length};
+    const i=RPL.findIndex(x=>x.id===s.id);if(i>=0)RPL[i]=s;else RPL.unshift(s);
+    toast(`저장했어요 · ${RP.id} v${RP.ver}`);rpView(m,head);}
+  catch(e){toast(e.message);btn.disabled=false;btn.textContent='저장'}
+}
+
+/* ---------- 16:9 슬라이드 ---------- */
+const rpE=s=>esc(String(s==null?'':s));
+function rpKDate(d){const x=ctKDate(d);return x||''}
+function rpFrame(f,inner,extra){
+  const logo=CT.seals['logo_'+f.company]?`<img class="rpsl-logo" src="${CT.seals['logo_'+f.company]}">`:`<div class="rpsl-logo">${rpTextLogo(f.company)}</div>`;
+  return `<div class="rpsl">${logo}<div class="rpsl-title">${rpE(f.title||'랜섬웨어 복호화 결과 보고서')}</div>
+    <i class="rpb b1"></i><i class="rpb b2"></i><i class="rpb b3"></i><i class="rpb b4"></i>${extra||''}<div class="rpsl-c">${inner}</div></div>`;}
+function rpTable(rows,col,memo){
+  return `<table class="rpsl-t"><tr><th>구분</th><th>${col}</th><th>Backup</th><th>특이사항</th></tr>
+    ${rows.map((x,i)=>`<tr><td>${rpE(x.k)}</td><td>${rpE(x.a)}</td><td>${rpE(x.b)}</td>${i===0?`<td rowspan="${rows.length}" class="memo">${rpE(memo).replace(/\n/g,'<br>')}</td>`:''}</tr>`).join('')}</table>`;}
+function rpChunk(a,n){const o=[];for(let i=0;i<a.length;i+=n)o.push(a.slice(i,i+n));return o}
+function rpSlides(R){
+  const f=R.f,S=[],line=(k,v)=>v?`<p><span>${k}:</span> ${rpE(v)}</p>`:'';
+  // 표지
+  S.push(rpFrame(f,`<ol class="rpsl-toc"><li>1. 사건 개요</li><li>2. 감염 범위 파악</li><li>3. 해커 접촉 및 협상 결과</li><li>4. 복호화 결과</li><li>5. 사후 대응 방안</li></ol>`,
+    `<div class="rpsl-meta">작성일: ${rpE(f.date)}<br>작성자: ${rpE(f.writer)}</div>`));
+  // 1. 사건 개요
+  S.push(rpFrame(f,`<h2>1. 사건 개요</h2><div class="rpsl-lines">${line('사건 발생 일자',rpKDate(f.incDate))}${line('랜섬웨어 감염 범위',f.scope)}${line('랜섬웨어 감염 확장자',f.ext)}
+    ${line('랜섬웨어 최초 요구액',f.demand)}${line('랜섬웨어 접촉 방법',f.contact)}${line('현재 확인된 감사 성공 Log',f.log)}</div>`));
+  // 숙주 의심 PC (사진 2장씩)
+  const hosts=f.hosts.filter(h=>h.name||h.ip),hi=f.hostImgs||[];
+  if(f.hostNote||hi.length||hosts.length){
+    const groups=hi.length?rpChunk(hi.map((id,i)=>({id,h:hosts[i]})),2):[[]];
+    groups.forEach((g,gi)=>S.push(rpFrame(f,`${gi===0&&f.hostNote?`<p class="rpsl-note">${rpE(f.hostNote).replace(/\n/g,'<br>')}</p>`:''}
+      <div class="rpsl-imgs n${Math.max(1,g.length)}">${g.map(x=>`<figure><img src="${RP_IMG[x.id]||''}"><figcaption>${x.h?`Workstation Name: ${rpE(x.h.name)}<br>IP: ${rpE(x.h.ip)}`:''}</figcaption></figure>`).join('')
+        ||hosts.map(h=>`<p>Workstation Name: ${rpE(h.name)}<br>IP: ${rpE(h.ip)}</p>`).join('')}</div>`)));
+  }
+  // 2. 감염 범위
+  S.push(rpFrame(f,`<h2>2. 감염 범위 파악</h2>${f.infNote?`<p class="rpsl-sm">${rpE(f.infNote)}</p>`:''}${rpTable(f.infRows,'감염',f.infMemo)}`));
+  // 3. 해커 접촉
+  const ni=f.noteImgs||[];
+  S.push(rpFrame(f,`<h2>3. 해커 접촉 방법</h2>${f.hackHow?`<p class="rpsl-sub">${rpE(f.hackHow).replace(/\n/g,'<br>')}</p>`:''}
+    ${ni.length?`<div class="rpsl-shot"><img src="${RP_IMG[ni[0]]||''}"></div>`:f.note?`<pre class="rpsl-pre">${rpE(f.note)}</pre>`:''}`));
+  ni.slice(1).forEach(id=>S.push(rpFrame(f,`<h2>3. 해커 접촉 방법 (계속)</h2><div class="rpsl-shot"><img src="${RP_IMG[id]||''}"></div>`)));
+  // 협상 결과
+  const rs=String(f.rounds||'').split(/[,，\/]/).map(s=>s.trim()).filter(Boolean);
+  const hist=rs.map((v,i)=>`${i+1}차: ${rpE(v)}`).concat(f.finalBtc?[`최종: ${rpE(f.finalBtc)} BTC${f.finalKrw?`(${rpE(f.finalKrw)})`:''}`]:[]).join(', ');
+  const pi=f.payImgs||[];
+  S.push(rpFrame(f,`<h2 class="big">협상 결과: ${rpE(f.finalBtc||'-')}BTC${f.finalKrw?` (${rpE(f.finalKrw)})`:''}</h2>${hist?`<p class="rpsl-sub">${hist}</p>`:''}
+    ${pi.length?`<div class="rpsl-shot sm"><img src="${RP_IMG[pi[0]]||''}"></div>`:''}
+    ${f.payHow?`<p class="rpsl-sub">${rpE(f.payHow).replace(/\n/g,'<br>')}</p>`:''}${f.payAttach?`<p class="rpsl-xs">${rpE(f.payAttach)}</p>`:''}`));
+  pi.slice(1).forEach(id=>S.push(rpFrame(f,`<h2>협상 결과 (송금 내역 계속)</h2><div class="rpsl-shot"><img src="${RP_IMG[id]||''}"></div>`)));
+  // 4. 복호화 결과
+  S.push(rpFrame(f,`<h2>4. 복호화 결과</h2>${f.decNote?`<p class="rpsl-sm">${rpE(f.decNote)}</p>`:''}${rpTable(f.decRows,'복호화',f.decMemo)}`));
+  // 5. 사후 대응 (2개씩)
+  const items=RP_POST.map(x=>x[0]).filter(k=>f.post.includes(k)&&RP_TXT[k]);
+  rpChunk(items,2).forEach((g,gi)=>S.push(rpFrame(f,`${gi===0?'<h2>5. 사후 대응 방안</h2>':''}${g.map(k=>{const t=RP_TXT[k];
+    return `<div class="rpsl-post"><h3>${rpE(t.t)}</h3><table>${t.rows.map(([l,ls])=>`<tr><th>${rpE(l)}</th><td>${ls.map(rpE).join('<br>')}</td></tr>`).join('')}</table><p class="res">결과: ${rpE(t.r)}</p></div>`}).join('')}`)));
+  if(f.postMore)S.push(rpFrame(f,`<h2>5. 사후 대응 방안 (추가)</h2><p class="rpsl-sub">${rpE(f.postMore).replace(/\n/g,'<br>')}</p>`));
+  S.push(rpFrame(f,`<div class="rpsl-end">감사합니다.</div>`));
+  return S;
+}
+/* 넘치는 글은 글자 크기를 줄여 맞춤 */
+function rpFit(sl){const c=sl.querySelector('.rpsl-c');if(!c)return;let fs=100;
+  while(c.scrollHeight>c.clientHeight+1&&fs>55){fs-=5;c.style.fontSize=fs+'%';}}
+async function rpBuild(R){
+  await rpImgs(rpAllImgs(R.f));
+  if(!Object.keys(RP_TXT).length)await rpLoad(true);
+  let host=document.getElementById('rpHost');if(!host){host=document.createElement('div');host.id='rpHost';document.body.appendChild(host);}
+  host.innerHTML=rpSlides(R).join('');
+  const sl=[...host.querySelectorAll('.rpsl')];
+  await Promise.all([...host.querySelectorAll('img')].map(im=>im.complete?0:new Promise(r=>{im.onload=im.onerror=r})));
+  if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+  sl.forEach(rpFit);
+  return sl;
+}
+async function rpPreview(R,mode){
+  const ov=document.createElement('div');ov.className='ctmodal';
+  ov.innerHTML=`<div class="ctmbar"><b>${rpE(R.f.title)} · ${rpE(R.f.cname||'고객사 미입력')}</b>
+    <button class="btn" id="rpMPdf" style="background:#0f766e">PDF 보고서 생성</button><button class="btn sec" id="rpMClose">닫기</button></div>
+    <div class="ctmbody"><div class="ctpages" id="rpPages"><div class="loading" style="color:#fff"><div class="spin"></div>슬라이드 만드는 중…</div></div>
+    <div class="ctcheck" id="rpChecks"></div></div>`;
+  document.body.appendChild(ov);document.body.style.overflow='hidden';
+  const close=()=>{ov.remove();document.body.style.overflow='';const h=$('rpHost');if(h)h.innerHTML='';if(TAB==='contract'&&CT_MODE==='rep')show('contract')};
+  $('rpMClose').onclick=close;
+  let sl;try{sl=await rpBuild(R)}catch(e){$('rpPages').innerHTML=`<div class="banner err">${esc(e.message)}</div>`;return}
+  const wrap=$('rpPages'),w=Math.min(RP_W,wrap.clientWidth-8),sc=w/RP_W;
+  wrap.innerHTML=sl.map((s,i)=>`<div class="ctpwrap" style="width:${w}px;height:${RP_H*sc}px"></div>`).join('');
+  wrap.querySelectorAll('.ctpwrap').forEach((x,i)=>{const cl=sl[i].cloneNode(true);cl.style.transform=`scale(${sc})`;cl.style.transformOrigin='0 0';x.appendChild(cl)});
+  const small=sl.filter(s=>{const c=s.querySelector('.rpsl-c');return c&&parseFloat(c.style.fontSize||'100')<100}).length;
+  $('rpChecks').innerHTML=`<h4>확인</h4><div><span class="ctok">✓</span> 슬라이드 ${sl.length}장 (16:9)</div>
+    <div>${R.id?'<span class="ctok">✓</span> 저장된 보고서 '+esc(R.id)+' v'+R.ver:'<span class="ctbad">✗</span> 아직 저장 안 됨 (PDF를 만들면 이력에 안 남아요)'}</div>
+    ${small?`<div><span class="ctbad">!</span> 글이 길어 ${small}장은 글자를 조금 줄였어요</div>`:''}
+    <div class="muted" style="margin-top:8px;font-size:12px">파일명: ${esc(rpFileName(R))}</div>`;
+  const make=async()=>{const btn=$('rpMPdf');btn.disabled=true;
+    try{await ctLibs();const pdf=new window.jspdf.jsPDF({unit:'px',format:[RP_W,RP_H],orientation:'landscape',compress:true,hotfixes:['px_scaling']});
+      for(let i=0;i<sl.length;i++){btn.textContent=`PDF 만드는 중 ${i+1}/${sl.length}`;
+        const cv=await html2canvas(sl[i],{scale:1.5,backgroundColor:'#dbeef7',logging:false,useCORS:true,width:RP_W,height:RP_H,windowWidth:RP_W});
+        if(i)pdf.addPage([RP_W,RP_H],'landscape');pdf.addImage(cv.toDataURL('image/jpeg',0.9),'JPEG',0,0,RP_W,RP_H,undefined,'FAST');}
+      pdf.setProperties({title:R.f.title,subject:R.f.cname||'',creator:'한국데이터 대시보드'});
+      const blob=pdf.output('blob'),name=rpFileName(R);ctSaveBlob(blob,name);
+      if(R.id){btn.textContent='보관 중…';const res=await call('rpPdf',TOKEN,R.id,name,await ctB64(blob));Object.assign(R,res.report);const li=(RPL||[]).find(x=>x.id===R.id);if(li)li.files=(R.files||[]).length;toast('PDF를 내려받고 이력에 보관했어요');}
+      else toast('PDF를 내려받았어요 (저장 전이라 이력에는 안 남아요)');}
+    catch(e){toast(e.message)}btn.disabled=false;btn.textContent='PDF 보고서 생성';};
+  $('rpMPdf').onclick=make;
+  if(mode==='pdf')make();
+}
+
 /* 상단 큰 구분: 1. 매출 대시보드 / 2. 계약서 (관리자만 보임) */
 let CT_LAST='home';
 function ctSec(on){const s=document.getElementById('secsw');if(!s)return;s.hidden=!on;
-  s.onclick=e=>{const b=e.target.closest('button');if(!b)return;
-    if(b.dataset.s==='contract'){if(TAB!=='contract')show('contract')}else if(TAB==='contract')show(CT_LAST)};}
+  [['contract0','0. 법인_개인계약서'],['report','3. 결과보고서']].forEach(([k,l])=>{if(!s.querySelector(`[data-s=${k}]`)){const x=document.createElement('button');x.dataset.s=k;x.textContent=l;s.appendChild(x);}});
+  const MD={contract:'corp',contract0:'ind',report:'rep'};
+  s.onclick=e=>{const b=e.target.closest('button');if(!b)return;const md=MD[b.dataset.s];
+    if(md){if(TAB!=='contract'||md!==CT_MODE){ctSetMode(md);show('contract')}}
+    else if(TAB==='contract')show(CT_LAST)};}
 function ctSecShow(t){const ct=t==='contract';if(!ct)CT_LAST=t;
   const n=document.getElementById('nav');if(n)n.style.display=ct?'none':'';
-  document.querySelectorAll('#secsw button').forEach(b=>b.classList.toggle('on',(b.dataset.s==='contract')===ct));}
+  const on={corp:'contract',ind:'contract0',rep:'report'}[CT_MODE];
+  document.querySelectorAll('#secsw button').forEach(b=>b.classList.toggle('on',b.dataset.s==='sales'?!ct:ct&&b.dataset.s===on));}
 
 /* ---------- 앱 ---------- */
 function buildNav(){
