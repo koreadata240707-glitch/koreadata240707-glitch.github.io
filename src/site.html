@@ -280,7 +280,7 @@ tr.click{cursor:pointer}
 .ctgx i{font-style:normal;font-weight:700;color:var(--ink)}
 .ctgx pre{margin:4px 0;padding:6px 8px;background:#fff;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:12px;line-height:1.6;white-space:pre-wrap;word-break:keep-all;color:var(--ink)}
 .ctgx span{display:block;color:#0f766e}
-@media (max-width:700px){.ctgx{grid-template-columns:1fr}}
+@media (max-width:700px){.ctgx{grid-template-columns:1fr}.ctrow,.ctrow.c3{grid-template-columns:1fr}}   /* 폰: 입력칸 한 줄에 하나씩 넓게 */
 .ctin-seal{position:relative;display:inline-block}
 .ctpage .ctgan{position:absolute;right:6px;top:50%;margin-top:-29px;width:58px;height:58px;z-index:4;pointer-events:none}.ctpage .ctgan img{width:100%;height:100%;opacity:.9}
 .ctin-seal img{position:absolute;width:62px;height:62px;left:-23px;top:-41px;opacity:.9;z-index:3}
@@ -416,7 +416,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='3.4';
+const APP_VER='3.5';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
