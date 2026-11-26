@@ -281,47 +281,116 @@ tr.click{cursor:pointer}
 .ctgx pre{margin:4px 0;padding:6px 8px;background:#fff;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:12px;line-height:1.6;white-space:pre-wrap;word-break:keep-all;color:var(--ink)}
 .ctgx span{display:block;color:#0f766e}
 @media (max-width:700px){.ctgx{grid-template-columns:1fr}.ctform .ctrow,.ctform .ctrow.c3{grid-template-columns:1fr}}   /* 폰: 입력칸 한 줄에 하나씩 넓게 */
-/* 3. 결과보고서 슬라이드 (1280×720, 원본 보고서 모양: 하늘색 바탕 · 남색 꺾쇠 테두리) */
+/* 3. 결과보고서 슬라이드 (1280×720) — 디자인은 --변수와 L-(틀)/H-(제목)/K-(숫자칸) 클래스로 바뀜 */
 #rpHost{position:fixed;left:-14000px;top:0;width:1280px;pointer-events:none}
-.rpsl{position:relative;width:1280px;height:720px;background:#dbeef7;overflow:hidden;font-family:Pretendard,"맑은 고딕","Malgun Gothic",sans-serif;color:#111;box-sizing:border-box;flex:none}
+.rpsl{position:relative;width:1280px;height:720px;overflow:hidden;font-family:Pretendard,"맑은 고딕","Malgun Gothic",sans-serif;box-sizing:border-box;flex:none;
+  --main:#173e6a;--main2:#173e6a;--acc:#1f4e79;--bg:#dbeef7;--ink:#111;--sub:#475569;--kbg:#fff;--boxbg:#fff;--boxln:#bcd7e8;--thbg:#a6a6a6;--thfg:#111;--tdbg:#f2f2f2;--ttl:#1f4e79;--logobg:#1b56a6;--logofg:#fff;--logotx:#1b56a6;--clfg:#fff;
+  background:var(--bg);color:var(--ink)}
 .rpsl *{box-sizing:border-box}
 /* 대시보드 전체 제목·표 스타일이 슬라이드에 새지 않게 */
-.rpsl h2,.rpsl h3{display:block;grid-template-columns:none;color:#111;letter-spacing:0}
+.rpsl h1,.rpsl h2,.rpsl h3,.rpsl h4{display:block;grid-template-columns:none;color:inherit;letter-spacing:0;margin:0}
 .rpsl table{width:auto;font-size:inherit;border-collapse:collapse}
-.rpsl th,.rpsl td{position:static;color:#111;background:transparent;text-align:left;white-space:normal;padding:0;border:0;font-weight:inherit;vertical-align:top;font-variant-numeric:normal}
-.rpsl .rpb{position:absolute;background:#173e6a;display:block}
-.rpsl .b1{left:79px;top:78px;width:343px;height:40px}.rpsl .b2{left:79px;top:78px;width:42px;height:463px}
-.rpsl .b3{left:1157px;top:177px;width:42px;height:462px}.rpsl .b4{left:856px;top:600px;width:343px;height:39px}
-.rpsl-logo{position:absolute;left:19px;top:9px;height:62px;max-width:300px;object-fit:contain}
-.rpsl-title{position:absolute;left:300px;right:160px;top:16px;text-align:center;font-size:34px;font-weight:600;color:#1f4e79;white-space:nowrap}
-.rpsl-meta{position:absolute;right:36px;top:76px;font-size:19px;line-height:1.45}
-.rpsl-c{position:absolute;left:167px;top:140px;width:975px;height:525px;overflow:hidden;font-size:22px;line-height:1.45}
-.rpsl-c h2{font-size:1.45em;font-weight:600;margin:0 0 .3em}.rpsl-c h2.big{font-size:1.6em}
+.rpsl th,.rpsl td{position:static;color:inherit;background:transparent;text-align:left;white-space:normal;padding:0;border:0;font-weight:inherit;vertical-align:top;font-variant-numeric:normal}
+/* 로고·제목·꼬리말 */
+.rpsl-logo{position:absolute;left:22px;top:10px;height:60px;max-width:300px;object-fit:contain;z-index:3}
+.rplogo{display:flex;align-items:center;gap:8px;text-align:left}
+.rplogo span{background:#1b56a6;color:#fff;font-weight:800;border-radius:50%;width:56px;height:56px;display:flex;align-items:center;justify-content:center;font-size:15px;flex:none}
+.rplogo b{color:#1b56a6;font-size:19px;line-height:1.1}
+.rpsl .rplogo span{background:var(--logobg);color:var(--logofg)}.rpsl .rplogo b{color:var(--logotx)}
+.rpsl-title{position:absolute;z-index:3;white-space:nowrap}
+.rpsl-foot{position:absolute;right:44px;bottom:14px;font-size:14px;color:var(--sub);z-index:3}
+.rpsl-meta{position:absolute;right:36px;top:76px;font-size:19px;line-height:1.45;z-index:3}
+/* 틀: 원본(하늘색 + 남색 꺾쇠) */
+.L-orig .rpb{position:absolute;background:var(--main);display:block}
+.L-orig .b1{left:79px;top:78px;width:343px;height:40px}.L-orig .b2{left:79px;top:78px;width:42px;height:463px}
+.L-orig .b3{left:1157px;top:177px;width:42px;height:462px}.L-orig .b4{left:856px;top:600px;width:343px;height:39px}
+.L-orig .rpsl-title{left:300px;right:160px;top:16px;text-align:center;font-size:34px;font-weight:600;color:var(--ttl)}
+.L-orig .rpsl-c{position:absolute;left:167px;top:140px;width:975px;height:525px;overflow:hidden;font-size:22px;line-height:1.45}
+.L-orig .rpsl-foot{right:auto;left:0;width:100%;text-align:center}
+/* 틀: 새 디자인 공통 */
+.L-band .rpsl-title,.L-bar .rpsl-title,.L-line .rpsl-title{right:44px;top:28px;font-size:20px;font-weight:600;color:var(--ttl)}
+.L-band .rpsl-c,.L-bar .rpsl-c,.L-line .rpsl-c{position:absolute;left:84px;top:116px;right:70px;height:555px;overflow:hidden;font-size:22px;line-height:1.45}
+.L-band .rpsl-logo{left:44px}
+.rpband{position:absolute;left:0;top:0;bottom:0;width:22px;background:linear-gradient(180deg,var(--main),var(--main2));display:block}
+.rpline{position:absolute;left:22px;right:0;top:86px;height:3px;background:linear-gradient(90deg,var(--main),var(--acc) 55%,transparent);display:block}
+.rpbar{position:absolute;left:0;right:0;top:0;height:84px;background:linear-gradient(90deg,var(--main),var(--main2));display:block;border-bottom:4px solid var(--acc)}
+.rpline2{position:absolute;left:44px;right:44px;top:84px;height:2px;background:var(--acc);display:block}
+/* 제목 */
+.rpsl-c h2.rh{font-size:1.45em;font-weight:700;margin:0 0 .3em}.rpsl-c h2.rh.big{font-size:1.6em}
+.rh small{display:none;color:var(--acc);margin-right:.35em;font-size:1em}
+.H-num .rpsl-c h2.rh{font-weight:800}.H-num .rh small{display:inline}.H-num .rh span{display:none}
+.H-bar .rpsl-c h2.rh{font-weight:800;border-left:8px solid var(--acc);padding-left:14px}.H-bar .rh span{display:none}
+/* 본문 공통 */
 .rpsl-c p{margin:0}
 .rpsl-lines p{margin:0 0 .8em}
-.rpsl-toc{list-style:none;padding:0;margin:.1em 0;font-size:1.45em}.rpsl-toc li{margin:0 0 1.15em}
-.rpsl-sm{font-size:.95em;margin:0 0 .45em!important}
+.rpsl-sm{font-size:.95em;margin:0 0 .45em!important;opacity:.85}
 .rpsl-sub{margin:.15em 0 .45em!important}
-.rpsl-xs{font-size:.78em}
+.rpsl-xs{font-size:.78em;opacity:.85}
 .rpsl-note{max-width:700px;margin:0 0 .5em!important}
-.rpsl .rpsl-t{border-collapse:collapse;width:100%;font-size:1.25em;background:#f2f2f2}
-.rpsl .rpsl-t th{background:#a6a6a6;text-align:center;font-weight:400;padding:.3em .4em;border:2px solid #fff;white-space:nowrap}
-.rpsl .rpsl-t td{padding:.45em .4em;border:2px solid #fff;text-align:center;white-space:nowrap}
-.rpsl .rpsl-t td.memo{white-space:normal;font-size:.78em;line-height:1.35;width:50%}
+.rpsl .rpsl-t{border-collapse:collapse;width:100%;font-size:1.2em;background:var(--tdbg)}
+.rpsl .rpsl-t th{background:var(--thbg);color:var(--thfg);text-align:center;font-weight:600;padding:.35em .4em;white-space:nowrap}
+.rpsl .rpsl-t td{background:var(--tdbg);padding:.45em .4em;text-align:center;white-space:nowrap;border-bottom:1px solid var(--boxln)}
+.rpsl .rpsl-t td.memo{white-space:normal;text-align:left;font-size:.75em;line-height:1.4;width:50%}
+.L-orig .rpsl-t th,.L-orig .rpsl-t td{border:2px solid #fff}
+.L-band .rpsl-t th{border-bottom:3px solid var(--main)}
+.rpbadge{display:inline-block;white-space:nowrap;padding:.12em .55em;border-radius:999px;font-weight:700;font-size:.85em}
+.rpbadge.all{background:#dcfce7;color:#166534}.rpbadge.part{background:#fef3c7;color:#92400e}
 .rpsl-imgs{display:flex;gap:26px;align-items:flex-start}
 .rpsl-imgs figure{margin:0;flex:1;min-width:0}.rpsl-imgs.n1 figure{max-width:640px}
-.rpsl-imgs img{display:block;width:100%;max-height:330px;object-fit:contain;background:#0f172a}
-.rpsl-imgs figcaption{margin-top:.4em;font-size:.95em;line-height:1.35}
-.rpsl-shot{background:#fff;padding:6px;margin-top:.3em}.rpsl-shot img{display:block;max-width:100%;max-height:370px;margin:0 auto;object-fit:contain}
-.rpsl-shot.sm img{max-height:290px}
-.rpsl-pre{background:#fff;padding:.6em .8em;font-family:Consolas,"맑은 고딕",monospace;font-size:.7em;line-height:1.5;white-space:pre-wrap;word-break:break-all;margin:.4em 0 0}
-.rpsl-post{margin:0 0 .7em}.rpsl-post h3{font-size:1.2em;font-weight:600;margin:0 0 .2em}
-.rpsl .rpsl-post table{border-collapse:collapse;font-size:.86em}.rpsl .rpsl-post th{text-align:left;font-weight:700;padding:.05em 1.3em .05em 0;vertical-align:top;white-space:nowrap;font-size:1.12em}
+.rpsl-imgs img{display:block;width:100%;max-height:330px;object-fit:contain;background:#0f172a;border-radius:6px}
+.rpsl-imgs figcaption{margin-top:.4em;font-size:.9em;line-height:1.35}
+.rpsl-shot{background:#fff;padding:6px;margin-top:.3em;border:1px solid var(--boxln);border-radius:6px}.rpsl-shot img{display:block;max-width:100%;max-height:360px;margin:0 auto;object-fit:contain}
+.rpsl-shot.sm img{max-height:280px}
+.rpsl-pre{background:var(--boxbg);color:var(--ink);border:1px solid var(--boxln);padding:.6em .8em;font-family:Consolas,"맑은 고딕",monospace;font-size:.7em;line-height:1.5;white-space:pre-wrap;word-break:break-all;margin:.4em 0 0}
+.rpsl-post{margin:0 0 .7em}.rpsl-post h3{font-size:1.15em;font-weight:700;margin:0 0 .2em}
+.rpsl .rpsl-post table{font-size:.84em}.rpsl .rpsl-post th{font-weight:700;padding:.05em 1.3em .05em 0;white-space:nowrap;font-size:1.1em}
 .rpsl .rpsl-post td{padding:.05em 0;line-height:1.45}.rpsl-post .res{font-weight:700;margin:.2em 0 0;font-size:1.05em}
 .rpsl-end{height:100%;display:flex;align-items:center;justify-content:center;font-size:3em;padding-bottom:40px}
-.rplogo{display:flex;align-items:center;gap:8px;text-align:left}
-.rplogo span{background:#1b56a6;color:#fff;font-weight:800;border-radius:50%;width:58px;height:58px;display:flex;align-items:center;justify-content:center;font-size:16px;flex:none}
-.rplogo b{color:#1b56a6;font-size:20px;line-height:1.1}
+/* 한눈에 보기 */
+.rpsl-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.rpsl-kpis .rpk{border-radius:14px;padding:.7em .8em}
+.rpsl-kpis small{display:block;font-size:.68em;margin-bottom:.25em;opacity:.85}.rpsl-kpis b{font-size:1.5em;font-weight:800;letter-spacing:-.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rpsl-kpis i{display:block;font-style:normal;font-size:.62em;margin-top:.2em;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rpsl-kpis i b.save{display:inline;font-size:1em}
+.K-box .rpk{background:var(--kbg);border:1px solid var(--boxln)}.K-box .rpk b{color:var(--main)}
+.K-soft .rpk{background:var(--kbg);border-left:6px solid var(--main)}
+.K-grad .rpk{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff}
+.K-out .rpk{border:2px solid var(--acc)}.K-out .rpk b{color:var(--acc)}
+.rpsl-row2{display:grid;grid-template-columns:1.25fr 1fr;gap:20px;margin-top:20px}.rpsl-row2.one{grid-template-columns:1fr}
+.rpsl-row2 .rpbox{border-radius:14px;padding:.6em .8em;background:var(--boxbg);border:1px solid var(--boxln)}
+.rpsl-row2 h4{font-size:.78em;font-weight:700;margin:0 0 .3em}
+.rptl{display:flex;flex-direction:column;gap:.4em;font-size:.68em}.rptl div{display:flex;gap:.6em;align-items:center}
+.rptl em{font-style:normal;font-weight:700;min-width:5em;opacity:.75}.rptl u{text-decoration:none;width:12px;height:12px;border-radius:50%;flex:none}
+/* 표지: 원본 */
+.cv-o h1{font-size:2.3em;font-weight:700;color:var(--main);line-height:1.2;margin:0 0 .35em;max-width:620px}
+.cv-o .cl{font-size:1.3em;font-weight:700;margin-bottom:1.4em}
+.cv-o ol{list-style:none;padding:0;margin:0;font-size:1.1em;line-height:2}
+/* 표지: 흰 바탕(B) */
+.cv-white .cvw{position:absolute;left:84px;top:200px;right:80px}
+.cv-white h1{font-size:56px;font-weight:800;letter-spacing:-1px;margin:0 0 14px}
+.cv-white .cl{font-size:28px;font-weight:700;color:var(--acc);margin-bottom:40px}
+.cv-white ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:12px 28px;font-size:19px;color:var(--sub)}.cv-white ol b{color:var(--main);margin-right:6px}
+.cv-white .m{margin-top:70px;font-size:18px;color:var(--sub)}
+/* 표지: 그라데이션(C·D·H) / 어두운(F) */
+.cv-grad{background:linear-gradient(135deg,var(--main) 0%,var(--main2) 100%);color:#fff}
+.cv-grad.cv-dark{background:var(--bg);color:var(--ink)}
+.cv-grad .rplogo span{background:#fff;color:var(--main)}.cv-grad .rplogo b{color:#fff}
+.cv-grad.cv-dark .rplogo span{background:var(--acc);color:var(--bg)}
+.cvg{position:absolute;left:110px;top:140px;right:110px}
+.cvg h1{font-size:58px;font-weight:800;letter-spacing:-1px;line-height:1.15;margin:0 0 18px}
+.cvg .cl{display:inline-block;font-size:28px;font-weight:700;background:var(--acc);color:var(--clfg);padding:6px 18px;border-radius:10px;margin-bottom:46px}
+.cvg ol{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(5,1fr);gap:14px;font-size:18px}
+.cvg ol li{border-top:3px solid var(--acc);padding-top:10px}
+.cvmeta{position:absolute;right:110px;bottom:56px;font-size:18px;text-align:right;opacity:.85}
+/* 표지: 반반(E·G) */
+.cv-split{background:var(--bg)}
+.cv-split .left{position:absolute;left:0;top:0;bottom:0;width:560px;background:linear-gradient(160deg,var(--main),var(--main2));color:#fff;padding:150px 56px 0}
+.cv-split .left h1{font-size:50px;font-weight:800;margin:0 0 22px;line-height:1.18;letter-spacing:-1px}
+.cv-split .left .cl{display:inline-block;font-size:24px;font-weight:700;background:var(--acc);color:var(--clfg);padding:6px 16px;border-radius:10px}
+.cv-split .rplogo span{background:#fff;color:var(--main)}.cv-split .rplogo b{color:#fff}
+.cv-split .right{position:absolute;left:560px;right:0;top:0;bottom:0;padding:160px 70px 0 80px}
+.cv-split .right h3{margin:0 0 26px;font-size:18px;letter-spacing:3px;color:var(--sub)}
+.cv-split .right ol{list-style:none;padding:0;margin:0;font-size:24px;line-height:2.1}.cv-split .right ol b{color:var(--acc);margin-right:14px;font-size:26px}
+.cv-split .right .m{position:absolute;bottom:60px;font-size:17px;color:var(--sub)}
 /* 3. 결과보고서 입력 칸 */
 .rpsub{font-size:12px;font-weight:700;color:var(--sub);margin:12px 0 4px}
 .rptbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}
@@ -475,7 +544,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='3.9';
+const APP_VER='4.0';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -1228,7 +1297,8 @@ function rpBlankF(){const me=(CT&&CT.mine)||{};
     infNote:'',infRows:[{k:'VMware',a:'Yes(전체)',b:'O'},{k:'NAS',a:'Yes(전체)',b:'O'},{k:'물리서버',a:'Yes(전체)',b:'O'}],infMemo:'',
     hackHow:'',note:'',noteImgs:[],
     finalBtc:'',finalKrw:'',rounds:'',payHow:'',payImgs:[],payAttach:'※별도 파일 첨부 제공(테스트 파일 내역, 해커의 BTC 주소, 전송 내역 등)',
-    decNote:'',decRows:[],decMemo:'',post:RP_POST.map(x=>x[0]),postMore:''};}
+    decNote:'',decRows:[],decMemo:'',post:RP_POST.map(x=>x[0]),postMore:'',
+    theme:'D',sumOn:true,sumDec:'100%',sumDecSub:'',sumTl:[]};}
 function rpBlank(){return {id:'',ver:0,f:rpBlankF(),files:[],log:[]}}
 async function rpLoad(force){if(RPL&&!force)return;const r=await call('rpInit',TOKEN);RPL=r.reports||[];RP_TXT=r.post||{};}
 /* 사진: 줄여서(긴 변 1600px, JPG) 드라이브에 올리고 파일ID만 저장. 화면에서는 캐시한 dataURL로 보여 줌 */
@@ -1270,6 +1340,7 @@ function rpTextLogo(k){return `<div class="rplogo"><span>${k==='KD'?'KD':'KDRC'}
 function rpFormView(b,m,head){
   const R=RP,r=R.f;
   if(!r.decRows.length)r.decRows=r.infRows.map(x=>({k:x.k,a:'Yes(전체)',b:x.b}));
+  if(!r.sumTl)r.sumTl=[];if(r.theme==null)r.theme='D';if(r.sumOn==null)r.sumOn=true;if(r.sumDec==null)r.sumDec='100%';
   const I=(id,label,o)=>{o=o||{};return `<label class="${o.wide?'wide':''}">${label}<input data-rp="${id}" value="${esc(r[id]||'')}"${o.type?` type="${o.type}"`:''}${o.ph?` placeholder="${esc(o.ph)}"`:''}></label>`};
   const T=(id,label,ph)=>`<label class="wide">${label}<textarea data-rp="${id}" placeholder="${esc(ph||'')}">${esc(r[id]||'')}</textarea></label>`;
   const sel=(arr,v)=>arr.map(x=>`<option${x===v?' selected':''}>${esc(x)}</option>`).join('');
@@ -1285,7 +1356,8 @@ function rpFormView(b,m,head){
     <div class="ctrow"><label>보고 회사 (로고)<select data-rp="company">${Object.entries(CT_CO).map(([k,v])=>`<option value="${k}"${r.company===k?' selected':''}>${esc(v)}</option>`).join('')}</select></label>
       <label>관련 계약서 (고르면 고객사명이 채워져요)<select data-rp="contractId"><option value="">선택 안 함</option>${cts.map(x=>`<option value="${esc(x.id)}"${r.contractId===x.id?' selected':''}>${esc(x.id)} · ${esc(x.cname||'')}</option>`).join('')}</select></label>
       ${I('cname','고객사명 *',{ph:'예: 주식회사 OO'})}${I('title','보고서 제목')}
-      ${I('date','작성일 *',{type:'date'})}${I('writer','작성자 *',{ph:'예: 김영준'})}</div>
+      ${I('date','작성일 *',{type:'date'})}${I('writer','작성자 *',{ph:'예: 김영준'})}
+      <label class="wide">보고서 디자인 <span class="muted" style="font-weight:400">미리보기에서 바로 확인할 수 있어요</span><select data-rp="theme">${Object.entries(RP_THEMES).map(([k,t])=>`<option value="${k}"${(r.theme||'D')===k?' selected':''}>${esc(t.name)}</option>`).join('')}</select></label></div>
     <h3>1. 사건 개요</h3>
     <div class="ctrow">${I('incDate','사건 발생 일자',{type:'date'})}${I('scope','랜섬웨어 감염 범위',{ph:'예: 가상서버 포함 약 30대'})}
       ${I('ext','감염 확장자',{ph:"예: '.locked'"})}${I('demand','최초 요구액',{ph:'예: 총 5 BTC'})}
@@ -1314,6 +1386,13 @@ function rpFormView(b,m,head){
     ${I('decNote','요약 문구',{wide:1,ph:'예: ※ 물리서버와 가상서버 약 30대 복호화 완료'})}
     ${grid('decRows','복호화')}
     ${T('decMemo','특이사항','예: 복호화와 동시에 WORM 백업을 시작했으며, 백업 일정 확인 후 순차적으로 서비스를 재개할 예정입니다.')}
+    <h3>한눈에 보기 (요약 장) <span class="muted" style="font-weight:400;font-size:12px">표지 다음 장에 숫자 칸·협상 그래프·진행 일정이 들어가요</span></h3>
+    <div class="rpchk"><label><input type="checkbox" data-sumon${r.sumOn!==false?' checked':''}> 한눈에 보기 장 넣기</label></div>
+    <div class="ctrow">${I('sumDec','복호화 결과 표시',{ph:'예: 100%'})}${I('sumDecSub','복호화 결과 설명',{ph:'예: 30대 전체 복호화'})}</div>
+    <div class="rpsub">진행 일정 <span class="muted">날짜 / 내용 · 비우면 일정 칸이 빠져요</span></div>
+    <div style="overflow-x:auto"><table class="rptbl"><thead><tr><th>날짜</th><th>내용</th><th></th></tr></thead><tbody>
+      ${(r.sumTl||[]).map((x,i)=>`<tr><td><input data-tl="${i}:d" value="${esc(x.d)}" placeholder="예: 11/20"></td><td><input data-tl="${i}:t" value="${esc(x.t)}" placeholder="예: 랜섬웨어 감염 확인"></td><td><button type="button" class="rpx" data-rmtl="${i}">×</button></td></tr>`).join('')}</tbody></table></div>
+    <button type="button" class="btn sec rpsm" id="rpAddTl">+ 일정 추가</button>
     <h3>5. 사후 대응 방안 <span class="muted" style="font-weight:400;font-size:12px">넣을 항목만 체크 · 표준 문구로 들어가요</span></h3>
     <div class="rpchk">${RP_POST.map(([k,l])=>`<label><input type="checkbox" data-post="${k}"${r.post.includes(k)?' checked':''}> ${esc(l)}</label>`).join('')}</div>
     ${T('postMore','추가 대응 방안 (선택)','고객사 상황에 맞춘 추가 권고가 있으면 적어 주세요 (따로 한 장으로 들어가요)')}
@@ -1334,6 +1413,8 @@ function rpFormView(b,m,head){
       if(t.dataset.rp==='contractId'&&t.value){const x=cts.find(c=>c.id===t.value);if(x){r.cname=x.cname||r.cname;r.company=x.company||r.company;redraw();return;}}}
     else if(t.dataset.row){const [k,i,c]=t.dataset.row.split(':');r[k][+i][c]=t.value;}
     else if(t.dataset.host){const [i,c]=t.dataset.host.split(':');r.hosts[+i][c]=t.value;}
+    else if(t.dataset.tl){const [i,c]=t.dataset.tl.split(':');r.sumTl[+i][c]=t.value;}
+    else if(t.hasAttribute&&t.hasAttribute('data-sumon')){r.sumOn=t.checked;}
     else if(t.dataset.post){r.post=RP_POST.map(x=>x[0]).filter(k=>f.querySelector(`[data-post=${k}]`).checked);}
     stat();});
   f.addEventListener('change',async e=>{const t=e.target;if(t.tagName==='SELECT'||t.type==='checkbox')t.dispatchEvent(new Event('input',{bubbles:true}));
@@ -1343,7 +1424,9 @@ function rpFormView(b,m,head){
         toast(`사진 ${files.length}장을 넣었어요 · 저장해야 보고서에 남아요`);}catch(err){toast(err.message)}
       RP_BUSY--;if(RP&&RP.f===r)redraw();}});
   f.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
-    if(t.dataset.addrow){r[t.dataset.addrow].push({k:'',a:RP_INF[0],b:'O'});redraw();}
+    if(t.id==='rpAddTl'){r.sumTl=r.sumTl||[];r.sumTl.push({d:'',t:''});redraw();}
+    else if(t.dataset.rmtl){r.sumTl.splice(+t.dataset.rmtl,1);redraw();}
+    else if(t.dataset.addrow){r[t.dataset.addrow].push({k:'',a:RP_INF[0],b:'O'});redraw();}
     else if(t.dataset.rmrow){const [k,i]=t.dataset.rmrow.split(':');r[k].splice(+i,1);redraw();}
     else if(t.id==='rpAddHost'){r.hosts.push({name:'',ip:''});redraw();}
     else if(t.dataset.rmhost){r.hosts.splice(+t.dataset.rmhost,1);if(!r.hosts.length)r.hosts.push({name:'',ip:''});redraw();}
@@ -1366,26 +1449,72 @@ async function rpSaveNow(m,head){
   catch(e){toast(e.message);btn.disabled=false;btn.textContent='저장'}
 }
 
-/* ---------- 16:9 슬라이드 ---------- */
+/* ---------- 16:9 슬라이드 (디자인 8가지: 원본 + B~H) ---------- */
 const rpE=s=>esc(String(s==null?'':s));
 function rpKDate(d){const x=ctKDate(d);return x||''}
-function rpFrame(f,inner,extra){
-  const logo=CT.seals['logo_'+f.company]?`<img class="rpsl-logo" src="${CT.seals['logo_'+f.company]}">`:`<div class="rpsl-logo">${rpTextLogo(f.company)}</div>`;
-  return `<div class="rpsl">${logo}<div class="rpsl-title">${rpE(f.title||'랜섬웨어 복호화 결과 보고서')}</div>
-    <i class="rpb b1"></i><i class="rpb b2"></i><i class="rpb b3"></i><i class="rpb b4"></i>${extra||''}<div class="rpsl-c">${inner}</div></div>`;}
+const RP_THEMES={
+  O:{name:'원본 (지금 모양)',L:'orig',H:'plain',K:'box',cover:'orig',v:{}},
+  B:{name:'B · 화이트 & 네이비',L:'band',H:'num',K:'soft',cover:'white',
+     v:{main:'#173e6a',main2:'#173e6a',acc:'#3b82f6',bg:'#ffffff',ink:'#0f172a',sub:'#64748b',kbg:'#f1f5f9',boxbg:'#f8fafc',boxln:'#e2e8f0',thbg:'#f1f5f9',thfg:'#0f172a',tdbg:'#ffffff',ttl:'#64748b',logobg:'#1b56a6',logofg:'#fff',logotx:'#1b56a6',clfg:'#fff'}},
+  C:{name:'C · 블루 그라데이션',L:'bar',H:'bar',K:'grad',cover:'grad',
+     v:{main:'#0f2d52',main2:'#1f5fae',acc:'#f59e0b',bg:'#f8fbff',ink:'#0f172a',sub:'#64748b',kbg:'#eef4fb',boxbg:'#ffffff',boxln:'#dbe4f0',thbg:'#0f2d52',thfg:'#fff',tdbg:'#ffffff',ttl:'#dbeafe',logobg:'#fff',logofg:'#0f2d52',logotx:'#fff',clfg:'#0b2545'}},
+  D:{name:'D · B+C 믹스 (추천)',L:'band',H:'num',K:'grad',cover:'grad',
+     v:{main:'#0b2545',main2:'#1f5fae',acc:'#f59e0b',bg:'#ffffff',ink:'#0f172a',sub:'#64748b',kbg:'#f1f5f9',boxbg:'#f8fafc',boxln:'#e2e8f0',thbg:'#0b2545',thfg:'#fff',tdbg:'#ffffff',ttl:'#64748b',logobg:'#1b56a6',logofg:'#fff',logotx:'#1b56a6',clfg:'#0b2545'}},
+  E:{name:'E · 네이비 & 틸',L:'bar',H:'bar',K:'soft',cover:'split',
+     v:{main:'#0f3b4c',main2:'#0e7490',acc:'#14b8a6',bg:'#f7fbfc',ink:'#0f172a',sub:'#64748b',kbg:'#e6f6f5',boxbg:'#ffffff',boxln:'#d5e7ea',thbg:'#0f3b4c',thfg:'#fff',tdbg:'#ffffff',ttl:'#ccfbf1',logobg:'#fff',logofg:'#0f3b4c',logotx:'#fff',clfg:'#0f3b4c'}},
+  F:{name:'F · 미드나잇 & 골드',L:'line',H:'num',K:'out',cover:'dark',
+     v:{main:'#0b1a30',main2:'#13294b',acc:'#d4a843',bg:'#0b1a30',ink:'#f1f5f9',sub:'#94a3b8',kbg:'#13294b',boxbg:'#13294b',boxln:'#22385e',thbg:'#d4a843',thfg:'#0b1a30',tdbg:'#13294b',ttl:'#d4a843',logobg:'#d4a843',logofg:'#0b1a30',logotx:'#f1f5f9',clfg:'#0b1a30'}},
+  G:{name:'G · 스카이 라이트',L:'bar',H:'num',K:'soft',cover:'split',
+     v:{main:'#1d4ed8',main2:'#60a5fa',acc:'#0ea5e9',bg:'#ffffff',ink:'#0f172a',sub:'#64748b',kbg:'#eff6ff',boxbg:'#f8fbff',boxln:'#dbeafe',thbg:'#1d4ed8',thfg:'#fff',tdbg:'#ffffff',ttl:'#e0f2fe',logobg:'#fff',logofg:'#1d4ed8',logotx:'#fff',clfg:'#fff'}},
+  H:{name:'H · 로열 블루 & 코랄',L:'band',H:'bar',K:'grad',cover:'grad',
+     v:{main:'#1e3a8a',main2:'#3b5bdb',acc:'#fb7185',bg:'#ffffff',ink:'#0f172a',sub:'#64748b',kbg:'#eef2ff',boxbg:'#f8faff',boxln:'#e0e7ff',thbg:'#1e3a8a',thfg:'#fff',tdbg:'#ffffff',ttl:'#64748b',logobg:'#1e3a8a',logofg:'#fff',logotx:'#1e3a8a',clfg:'#fff'}}
+};
+const RP_ORIG_V={main:'#173e6a',main2:'#173e6a',acc:'#1f4e79',bg:'#dbeef7',ink:'#111111',sub:'#475569',kbg:'#ffffff',boxbg:'#ffffff',boxln:'#bcd7e8',thbg:'#a6a6a6',thfg:'#111111',tdbg:'#f2f2f2',ttl:'#1f4e79',logobg:'#1b56a6',logofg:'#fff',logotx:'#1b56a6',clfg:'#fff'};
+function rpTheme(f){const t=RP_THEMES[f.theme]||RP_THEMES.D;return Object.assign({},t,{v:Object.assign({},RP_ORIG_V,t.v)})}
+const rpVars=v=>Object.entries(v).map(([k,x])=>`--${k}:${x}`).join(';');
+function rpLogoHtml(f){return CT.seals['logo_'+f.company]?`<img class="rpsl-logo" src="${CT.seals['logo_'+f.company]}">`:`<div class="rpsl-logo">${rpTextLogo(f.company)}</div>`}
+function rpH(n,dot,title){return `<h2 class="rh"><small>${n}</small><span>${dot}</span>${title}</h2>`}
+function rpFrame(f,inner,extra){const t=rpTheme(f);
+  const deco=t.L==='orig'?'<i class="rpb b1"></i><i class="rpb b2"></i><i class="rpb b3"></i><i class="rpb b4"></i>':t.L==='band'?'<i class="rpband"></i><i class="rpline"></i>':t.L==='bar'?'<i class="rpbar"></i>':'<i class="rpline2"></i>';
+  return `<div class="rpsl L-${t.L} H-${t.H} K-${t.K}" style="${rpVars(t.v)}">${deco}${rpLogoHtml(f)}<div class="rpsl-title">${rpE(f.title||'랜섬웨어 복호화 결과 보고서')}</div>${extra||''}
+    <div class="rpsl-c">${inner}</div><div class="rpsl-foot">${rpE(f.cname)} · {{P}} / {{N}}</div></div>`;}
+function rpCover(f){const t=rpTheme(f),st=rpVars(t.v),toc=['사건 개요','감염 범위 파악','해커 접촉 및 협상 결과','복호화 결과','사후 대응 방안'];
+  const meta=`작성일 ${rpE(f.date)}<br>작성자 ${rpE(f.writer)}`,title=rpE(f.title||'랜섬웨어 복호화 결과 보고서');
+  if(t.cover==='orig')return rpFrame(f,`<div class="cv-o"><h1>${title}</h1><div class="cl">${rpE(f.cname)} 귀중</div><ol>${toc.map((x,i)=>`<li>${i+1}. ${x}</li>`).join('')}</ol></div>`,`<div class="rpsl-meta">작성일: ${rpE(f.date)}<br>작성자: ${rpE(f.writer)}</div>`).replace(/<div class="rpsl-foot">[\s\S]*?<\/div>/,'');
+  if(t.cover==='white')return `<div class="rpsl cv-white L-band" style="${st}"><i class="rpband"></i><i class="rpline"></i>${rpLogoHtml(f)}<div class="cvw"><h1>${title}</h1><div class="cl">${rpE(f.cname)}</div>
+    <ol>${toc.map((x,i)=>`<li><b>0${i+1}</b>${x}</li>`).join('')}</ol><div class="m">${rpE(f.date)} · 작성 ${rpE(f.writer)} · ${rpE(CT_CO[f.company]||'')}</div></div></div>`;
+  if(t.cover==='split')return `<div class="rpsl cv-split" style="${st}"><div class="left"><h1>${title.replace(' 결과','<br>결과')}</h1><div class="cl">${rpE(f.cname)}</div></div>${rpLogoHtml(f)}
+    <div class="right"><h3>CONTENTS</h3><ol>${toc.map((x,i)=>`<li><b>0${i+1}</b>${x}</li>`).join('')}</ol><div class="m">작성일 ${rpE(f.date)} · 작성자 ${rpE(f.writer)}</div></div></div>`;
+  return `<div class="rpsl cv-grad ${t.cover==='dark'?'cv-dark':''}" style="${st}">${t.cover==='dark'?'<i class="rpline2"></i>':''}${rpLogoHtml(f)}<div class="cvg"><h1>${title.replace(' 결과','<br>결과')}</h1><div class="cl">${rpE(f.cname)}</div>
+    <ol>${toc.map((x,i)=>`<li>0${i+1}<br>${x}</li>`).join('')}</ol></div><div class="cvmeta">${meta}</div></div>`;}
 function rpTable(rows,col,memo){
+  const badge=a=>/전체/.test(a)?`<span class="rpbadge all">${rpE(a)}</span>`:/일부/.test(a)?`<span class="rpbadge part">${rpE(a)}</span>`:rpE(a);
   return `<table class="rpsl-t"><tr><th>구분</th><th>${col}</th><th>Backup</th><th>특이사항</th></tr>
-    ${rows.map((x,i)=>`<tr><td>${rpE(x.k)}</td><td>${rpE(x.a)}</td><td>${rpE(x.b)}</td>${i===0?`<td rowspan="${rows.length}" class="memo">${rpE(memo).replace(/\n/g,'<br>')}</td>`:''}</tr>`).join('')}</table>`;}
+    ${rows.map((x,i)=>`<tr><td>${rpE(x.k)}</td><td>${badge(x.a)}</td><td>${rpE(x.b)}</td>${i===0?`<td rowspan="${rows.length}" class="memo">${rpE(memo).replace(/\n/g,'<br>')}</td>`:''}</tr>`).join('')}</table>`;}
 function rpChunk(a,n){const o=[];for(let i=0;i<a.length;i+=n)o.push(a.slice(i,i+n));return o}
+function rpNum(s){const m=/([\d]+(?:\.\d+)?)/.exec(String(s||''));return m?Number(m[1]):NaN}
+/* 한눈에 보기: 숫자 칸 4개 + 협상 그래프 + 진행 일정 */
+function rpSummary(f){const t=rpTheme(f),v=t.v;
+  const sc=/(\d+)\s*대/.exec(f.scope||''),dm=/([\d.]+)\s*BTC/i.exec(f.demand||'');
+  const init=dm?Number(dm[1]):NaN,fin=rpNum(f.finalBtc),save=init>0&&fin>0&&fin<init?Math.round((1-fin/init)*100):0;
+  const kp=(l,b,i)=>`<div class="rpk"><small>${l}</small><b>${b}</b><i>${i||'&nbsp;'}</i></div>`;
+  const k=[kp('감염 범위',rpE(sc?sc[0]:(f.scope||'-')),sc?rpE(f.scope):''),kp('최초 요구액',dm?`${dm[1]} BTC`:rpE(f.demand||'-'),dm?rpE(f.demand.replace(dm[0],'').replace(/^[\s:·,(/]+|[\s)]+$/g,'')):''),
+    kp('최종 협상액',f.finalBtc?`${rpE(f.finalBtc)} BTC`:'-',[f.finalKrw?rpE(f.finalKrw):'',save?`<b class="save">${save}% 절감</b>`:''].filter(Boolean).join(' · ')),
+    kp('복호화 결과',rpE(f.sumDec||'-'),rpE(f.sumDecSub||''))].join('');
+  const vals=String(f.rounds||'').split(/[,，\/]/).map(rpNum).filter(x=>x>0);if(fin>0&&vals[vals.length-1]!==fin)vals.push(fin);
+  let chart='<p class="rpsl-sub" style="opacity:.6">협상 경과를 넣으면 그래프가 그려져요</p>';
+  if(vals.length>=2){const w=500,h=200,mx=Math.max(...vals)*1.1,x=i=>30+i*(w-60)/(vals.length-1),y=q=>h-26-q/mx*(h-48),pts=vals.map((q,i)=>`${x(i)},${y(q)}`).join(' ');
+    chart=`<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><polygon points="${x(0)},${h-26} ${pts} ${x(vals.length-1)},${h-26}" fill="${v.acc}" fill-opacity="0.15"/><polyline points="${pts}" fill="none" stroke="${v.acc}" stroke-width="4"/>
+      ${vals.map((q,i)=>`<circle cx="${x(i)}" cy="${y(q)}" r="6" fill="${v.acc}"/><text x="${x(i)}" y="${y(q)-12}" text-anchor="middle" font-size="15" font-weight="700" fill="${v.ink}">${q}</text><text x="${x(i)}" y="${h-5}" text-anchor="middle" font-size="13" fill="${v.sub}">${i===vals.length-1&&fin>0?'최종':(i+1)+'차'}</text>`).join('')}</svg>`;}
+  const tl=(f.sumTl||[]).filter(x=>x.d||x.t);
+  const tlHtml=tl.length?`<div class="rpbox"><h4>진행 일정</h4><div class="rptl">${tl.map(x=>`<div><u style="background:${v.acc}"></u><em>${rpE(x.d)}</em>${rpE(x.t)}</div>`).join('')}</div></div>`:'';
+  return rpFrame(f,`${rpH('00','','한눈에 보기')}<div class="rpsl-kpis">${k}</div><div class="rpsl-row2${tlHtml?'':' one'}"><div class="rpbox"><h4>협상 경과 (BTC)</h4>${chart}</div>${tlHtml}</div>`);}
 function rpSlides(R){
   const f=R.f,S=[],line=(k,v)=>v?`<p><span>${k}:</span> ${rpE(v)}</p>`:'';
-  // 표지
-  S.push(rpFrame(f,`<ol class="rpsl-toc"><li>1. 사건 개요</li><li>2. 감염 범위 파악</li><li>3. 해커 접촉 및 협상 결과</li><li>4. 복호화 결과</li><li>5. 사후 대응 방안</li></ol>`,
-    `<div class="rpsl-meta">작성일: ${rpE(f.date)}<br>작성자: ${rpE(f.writer)}</div>`));
-  // 1. 사건 개요
-  S.push(rpFrame(f,`<h2>1. 사건 개요</h2><div class="rpsl-lines">${line('사건 발생 일자',rpKDate(f.incDate))}${line('랜섬웨어 감염 범위',f.scope)}${line('랜섬웨어 감염 확장자',f.ext)}
+  S.push(rpCover(f));
+  if(f.sumOn!==false)S.push(rpSummary(f));
+  S.push(rpFrame(f,`${rpH('01','1. ','사건 개요')}<div class="rpsl-lines">${line('사건 발생 일자',rpKDate(f.incDate))}${line('랜섬웨어 감염 범위',f.scope)}${line('랜섬웨어 감염 확장자',f.ext)}
     ${line('랜섬웨어 최초 요구액',f.demand)}${line('랜섬웨어 접촉 방법',f.contact)}${line('현재 확인된 감사 성공 Log',f.log)}</div>`));
-  // 숙주 의심 PC (사진 2장씩)
   const hosts=f.hosts.filter(h=>h.name||h.ip),hi=f.hostImgs||[];
   if(f.hostNote||hi.length||hosts.length){
     const groups=hi.length?rpChunk(hi.map((id,i)=>({id,h:hosts[i]})),2):[[]];
@@ -1393,30 +1522,25 @@ function rpSlides(R){
       <div class="rpsl-imgs n${Math.max(1,g.length)}">${g.map(x=>`<figure><img src="${RP_IMG[x.id]||''}"><figcaption>${x.h?`Workstation Name: ${rpE(x.h.name)}<br>IP: ${rpE(x.h.ip)}`:''}</figcaption></figure>`).join('')
         ||hosts.map(h=>`<p>Workstation Name: ${rpE(h.name)}<br>IP: ${rpE(h.ip)}</p>`).join('')}</div>`)));
   }
-  // 2. 감염 범위
-  S.push(rpFrame(f,`<h2>2. 감염 범위 파악</h2>${f.infNote?`<p class="rpsl-sm">${rpE(f.infNote)}</p>`:''}${rpTable(f.infRows,'감염',f.infMemo)}`));
-  // 3. 해커 접촉
+  S.push(rpFrame(f,`${rpH('02','2. ','감염 범위 파악')}${f.infNote?`<p class="rpsl-sm">${rpE(f.infNote)}</p>`:''}${rpTable(f.infRows,'감염',f.infMemo)}`));
   const ni=f.noteImgs||[];
-  S.push(rpFrame(f,`<h2>3. 해커 접촉 방법</h2>${f.hackHow?`<p class="rpsl-sub">${rpE(f.hackHow).replace(/\n/g,'<br>')}</p>`:''}
+  S.push(rpFrame(f,`${rpH('03','3. ','해커 접촉 방법')}${f.hackHow?`<p class="rpsl-sub">${rpE(f.hackHow).replace(/\n/g,'<br>')}</p>`:''}
     ${ni.length?`<div class="rpsl-shot"><img src="${RP_IMG[ni[0]]||''}"></div>`:f.note?`<pre class="rpsl-pre">${rpE(f.note)}</pre>`:''}`));
-  ni.slice(1).forEach(id=>S.push(rpFrame(f,`<h2>3. 해커 접촉 방법 (계속)</h2><div class="rpsl-shot"><img src="${RP_IMG[id]||''}"></div>`)));
-  // 협상 결과
+  ni.slice(1).forEach(id=>S.push(rpFrame(f,`${rpH('03','3. ','해커 접촉 방법 (계속)')}<div class="rpsl-shot"><img src="${RP_IMG[id]||''}"></div>`)));
   const rs=String(f.rounds||'').split(/[,，\/]/).map(s=>s.trim()).filter(Boolean);
   const hist=rs.map((v,i)=>`${i+1}차: ${rpE(v)}`).concat(f.finalBtc?[`최종: ${rpE(f.finalBtc)} BTC${f.finalKrw?`(${rpE(f.finalKrw)})`:''}`]:[]).join(', ');
   const pi=f.payImgs||[];
-  S.push(rpFrame(f,`<h2 class="big">협상 결과: ${rpE(f.finalBtc||'-')}BTC${f.finalKrw?` (${rpE(f.finalKrw)})`:''}</h2>${hist?`<p class="rpsl-sub">${hist}</p>`:''}
+  S.push(rpFrame(f,`<h2 class="rh big"><small>03</small>협상 결과: ${rpE(f.finalBtc||'-')}BTC${f.finalKrw?` (${rpE(f.finalKrw)})`:''}</h2>${hist?`<p class="rpsl-sub">${hist}</p>`:''}
     ${pi.length?`<div class="rpsl-shot sm"><img src="${RP_IMG[pi[0]]||''}"></div>`:''}
     ${f.payHow?`<p class="rpsl-sub">${rpE(f.payHow).replace(/\n/g,'<br>')}</p>`:''}${f.payAttach?`<p class="rpsl-xs">${rpE(f.payAttach)}</p>`:''}`));
-  pi.slice(1).forEach(id=>S.push(rpFrame(f,`<h2>협상 결과 (송금 내역 계속)</h2><div class="rpsl-shot"><img src="${RP_IMG[id]||''}"></div>`)));
-  // 4. 복호화 결과
-  S.push(rpFrame(f,`<h2>4. 복호화 결과</h2>${f.decNote?`<p class="rpsl-sm">${rpE(f.decNote)}</p>`:''}${rpTable(f.decRows,'복호화',f.decMemo)}`));
-  // 5. 사후 대응 (2개씩)
+  pi.slice(1).forEach(id=>S.push(rpFrame(f,`${rpH('03','','협상 결과 (송금 내역 계속)')}<div class="rpsl-shot"><img src="${RP_IMG[id]||''}"></div>`)));
+  S.push(rpFrame(f,`${rpH('04','4. ','복호화 결과')}${f.decNote?`<p class="rpsl-sm">${rpE(f.decNote)}</p>`:''}${rpTable(f.decRows,'복호화',f.decMemo)}`));
   const items=RP_POST.map(x=>x[0]).filter(k=>f.post.includes(k)&&RP_TXT[k]);
-  rpChunk(items,2).forEach((g,gi)=>S.push(rpFrame(f,`${gi===0?'<h2>5. 사후 대응 방안</h2>':''}${g.map(k=>{const t=RP_TXT[k];
+  rpChunk(items,2).forEach((g,gi)=>S.push(rpFrame(f,`${gi===0?rpH('05','5. ','사후 대응 방안'):''}${g.map(k=>{const t=RP_TXT[k];
     return `<div class="rpsl-post"><h3>${rpE(t.t)}</h3><table>${t.rows.map(([l,ls])=>`<tr><th>${rpE(l)}</th><td>${ls.map(rpE).join('<br>')}</td></tr>`).join('')}</table><p class="res">결과: ${rpE(t.r)}</p></div>`}).join('')}`)));
-  if(f.postMore)S.push(rpFrame(f,`<h2>5. 사후 대응 방안 (추가)</h2><p class="rpsl-sub">${rpE(f.postMore).replace(/\n/g,'<br>')}</p>`));
+  if(f.postMore)S.push(rpFrame(f,`${rpH('05','5. ','사후 대응 방안 (추가)')}<p class="rpsl-sub">${rpE(f.postMore).replace(/\n/g,'<br>')}</p>`));
   S.push(rpFrame(f,`<div class="rpsl-end">감사합니다.</div>`));
-  return S;
+  return S.map((h,i)=>h.replace('{{P}}',i+1).replace('{{N}}',S.length));
 }
 /* 넘치는 글은 글자 크기를 줄여 맞춤 */
 function rpFit(sl){const c=sl.querySelector('.rpsl-c');if(!c)return;let fs=100;
