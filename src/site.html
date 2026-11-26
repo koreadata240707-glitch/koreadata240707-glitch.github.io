@@ -581,7 +581,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='4.9';
+const APP_VER='5.0';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -1687,7 +1687,7 @@ async function csUpload(plan,rerender){
   setTimeout(()=>{if(!CS_BUSY)box.remove()},5000);
   try{await csLoadFiles(k.id)}catch(e){}
   rerender();
-  if(fail.length)alert(`${plan.length-fail.length}개는 올렸고, ${fail.length}개는 못 올렸어요.\n\n${fail.slice(0,15).join('\n')}${fail.length>15?'\n…':''}\n\n안 되는 파일은 [드라이브에서 열기]로 그 칸 폴더에 직접 넣어도 돼요.`);
+  if(fail.length)alert(`${plan.length-fail.length}개는 올렸고, ${fail.length}개는 못 올렸어요.\n\n${fail.slice(0,15).join('\n')}${fail.length>15?'\n…':''}\n\n안 되는 파일은 [드라이브 바로가기]로 그 칸 폴더에 직접 넣어도 돼요.`);
   else toast(`${plan.length}개를 올렸어요`);
 }
 async function csLoad(force){if(CS&&!force)return;const r=await call('rsInit',TOKEN);CS=Object.assign(CS||{},{cases:r.cases||[],slots:r.slots||[],rootUrl:r.rootUrl||'',rootName:r.rootName||'랜섬웨어 진행폴더'});}
@@ -1713,7 +1713,7 @@ async function csView(m,head){
   </div><div id="csRight">${k?csDetail(k):CS.newForm?csNewForm():`<div class="card"><h3 style="margin:0 0 8px">사건 자료함 쓰는 법</h3>
     <ol class="cs-howto"><li><b>[+ 새 사건]</b>을 누르고 계약서를 고르거나 고객사명만 넣으면 드라이브에 사건 폴더와 칸 12개가 자동으로 생겨요.</li>
       <li>사건을 열고 파일을 <b>알맞은 칸에 끌어다 놓으면</b> 그 칸 폴더로 올라가요. 칸 이름을 누르면 드라이브에서 그 칸 폴더가 열려서 거기에 넣어도 돼요 (넣은 뒤 [↻ 새로고침]).</li>
-      <li>잘못 들어간 파일은 ↔ 로 칸을 옮기고, 모아서 받을 땐 [드라이브에서 열기]에서 폴더째 다운로드해요.</li>
+      <li>잘못 들어간 파일은 ↔ 로 칸을 옮기고, 모아서 받을 땐 [📦 전체 파일 다운로드(zip)]를 눌러요.</li>
       <li><b>다른 구글 계정으로 드라이브 폴더를 열려면</b> 왼쪽 [📂 ${esc(CS.rootName)} 열기 · 공유]에서 그 계정을 <b>편집자</b>로 한 번만 공유하세요. 안에 있는 사건 폴더와 앞으로 만들 사건 폴더까지 모두 열려요.</li></ol></div>`}</div></div>`;
   const qi=$('csQ');qi.oninput=()=>{CS.q=qi.value;clearTimeout(csView._t);csView._t=setTimeout(()=>{re();const n=$('csQ');n.focus();n.setSelectionRange(n.value.length,n.value.length)},250)};
   $('csNewBtn').onclick=()=>{CS.cur=null;CS.newForm={};re()};
@@ -1755,7 +1755,7 @@ function csDetail(k){
   const F=CS.files||{},linked=(k.contracts||[]);
   const cs=csAllContracts(),lab=x=>`${x.id} · ${x.sec==='ind'?(ctCase(x.caseName)||'법인_개인'):(x.cname||'')}`;
   return `<div class="card"><div class="cs-head"><div><h2>${esc(k.name)}</h2><p>${esc(k.id)} · 자료 ${k.count||0}개 · ${csSize(k.bytes)} · ${k.filled||0}/12칸 · 수정 ${esc(k.updated||'')}</p></div>
-    <div class="cs-acts"><a class="btn" style="background:#0f766e" href="${esc(CS.folderUrl)}" target="_blank" rel="noopener">📂 드라이브에서 열기 · 전체 다운로드</a>
+    <div class="cs-acts"><a class="btn" style="background:#0f766e" href="${esc(CS.folderUrl)}" target="_blank" rel="noopener">📂 드라이브 바로가기</a><button class="btn" id="csZip" style="background:#1d4ed8">📦 전체 파일 다운로드(zip)</button>
       <button class="btn sec" id="csRefresh">↻ 새로고침</button><button class="btn sec" id="csToRp">결과보고서 만들기 →</button><button class="btn sec" id="csRemove" style="color:#b91c1c">사건 지우기</button></div></div>
     <div class="ctform"><div class="ctrow cs-info"><label>고객사명<input id="cs_cname" value="${esc(k.cname||'')}"></label><label>사건일<input id="cs_date" type="date" value="${esc(k.date||'')}"></label>
       <label>종류<select id="cs_kind">${['랜섬웨어','데이터 복구','기타'].map(x=>`<option${k.kind===x?' selected':''}>${x}</option>`).join('')}</select></label>
@@ -1775,6 +1775,7 @@ function csBind(m,re){const k=CS.cur;
   $('csRemove').onclick=async()=>{if(!confirm(`"${k.name}" 사건을 지울까요?
 드라이브 폴더(자료 ${k.count||0}개)는 휴지통으로 옮겨지고, 30일 안에는 드라이브에서 되살릴 수 있어요.`))return;
     try{await call('rsRemove',TOKEN,k.id);CS_GONE.add(k.id);delete CS_CACHE[k.id];CS.cases=CS.cases.filter(x=>x.id!==k.id);CS.cur=null;re();toast('사건을 지웠어요')}catch(e){toast(e.message)}};
+  $('csZip').onclick=()=>csZipAll(k);
   $('csRefresh').onclick=async()=>{toast('새로고침…');try{await csLoadFiles(k.id);re()}catch(e){toast(e.message)}};
   $('csToRp').onclick=()=>{const first=(k.contracts||[]).find(id=>{const x=csAllContracts().find(c=>c.id===id);return x&&x.sec!=='ind'});
     ctSetMode('rep');RP=rpBlank();Object.assign(RP.f,{cname:k.cname||'',incDate:k.date||'',contractId:first||''});RP_SUB='new';show('contract');toast('결과보고서를 새로 시작했어요 · 고객사명이 채워졌어요')};
@@ -1804,6 +1805,46 @@ function csBind(m,re){const k=CS.cur;
       ctSaveBlob(new Blob([u],{type:r.mime||'application/octet-stream'}),r.name||a.dataset.fn)}catch(e){toast(e.message)}});
   m.querySelectorAll('[data-del]').forEach(a=>a.onclick=async()=>{if(!confirm(`"${a.dataset.fn}"을(를) 드라이브 휴지통으로 옮길까요? (30일 안에는 드라이브에서 되살릴 수 있어요)`))return;
     try{await call('rsTrash',TOKEN,k.id,a.dataset.del);await csLoadFiles(k.id);re();toast('휴지통으로 옮겼어요')}catch(e){toast(e.message)}});
+}
+
+/* 전체 파일 다운로드(zip): 서버에서 8MB씩 받아 브라우저에서 바로 zip으로 묶음 (압축 없이 묶기만 → 빠르고 큰 파일도 됨).
+   PC 크롬·엣지는 저장 위치를 먼저 고르고 받는 대로 디스크에 씀(메모리 부담 없음). 그 밖에는 다 받은 뒤 한 번에 저장 */
+async function csZipAll(k){
+  if(CS_BUSY){toast('지금 올리거나 받는 중이에요');return}
+  const zname=(String(k.name||'사건').replace(/[\\/:*?"<>|]+/g,'_'))+'.zip';
+  let writer=null;
+  if(window.showSaveFilePicker){
+    try{const h=await window.showSaveFilePicker({suggestedName:zname,types:[{description:'ZIP 파일',accept:{'application/zip':['.zip']}}]});writer=await h.createWritable()}
+    catch(e){if(e&&e.name==='AbortError')return;writer=null}
+  }
+  CS_BUSY=true;
+  const box=document.getElementById('csUpBox')||document.body.appendChild(Object.assign(document.createElement('div'),{id:'csUpBox'}));box.className='cs-upbox';
+  const paint=(title,p,line,f,stage)=>{box.innerHTML=`<b>${title}</b><div class="cs-pbar"><i style="width:${p}%"></i></div><span>${line}</span>${f?`<span class="f">${esc(f)}</span>`:''}${stage?`<small>${stage}</small>`:''}`};
+  const stay=e=>{e.preventDefault();e.returnValue=''};window.addEventListener('beforeunload',stay);
+  try{
+    paint('📦 전체 파일 다운로드 준비 중…',0,'파일 목록을 불러오는 중','','');
+    const L=await call('rsZipList',TOKEN,k.id);
+    if(!L.files.length){box.remove();toast('받을 파일이 없어요');if(writer)await writer.abort();return}
+    if(!window.fflate)await ctScript('https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.js');
+    const parts=[];let q=Promise.resolve(),werr=null;
+    const zip=new fflate.Zip((err,dat)=>{if(err){werr=err;return}if(writer)q=q.then(()=>writer.write(dat));else parts.push(dat)});
+    const total=L.files.reduce((a,f)=>a+(f.size||0),0)||1;let done=0;
+    for(let i=0;i<L.files.length;i++){const f=L.files[i],ent=new fflate.ZipPassThrough(f.path+f.name);zip.add(ent);
+      if(!f.size){ent.push(new Uint8Array(0),true);continue}
+      for(let s=0;;){
+        paint(`📦 받는 중 ${Math.min(99,Math.floor(done/total*100))}%`,Math.floor(done/total*100),`${i+1}/${L.files.length}개 · ${csSize(done)} / ${csSize(total)}`,f.path+f.name,'다 받을 때까지 창을 닫거나 새로고침하지 마세요');
+        const r=await call('rsChunk',TOKEN,k.id,f.id,s),bin=atob(r.b64||''),u=new Uint8Array(bin.length);for(let j=0;j<bin.length;j++)u[j]=bin.charCodeAt(j);
+        s+=u.length;done+=u.length;const last=!u.length||s>=f.size;ent.push(u,last);if(werr)throw werr;
+        if(last)break;
+      }
+      await q;
+    }
+    zip.end();await q;if(werr)throw werr;
+    if(writer)await writer.close();else ctSaveBlob(new Blob(parts,{type:'application/zip'}),zname);
+    paint(`✅ ${L.files.length}개를 zip으로 받았어요`,100,`${csSize(total)} · ${esc(zname)}`,'',L.skip&&L.skip.length?`구글 문서·시트 ${L.skip.length}개는 zip에 못 넣어요 (드라이브 바로가기에서 받아 주세요)`:'');
+    setTimeout(()=>{if(!CS_BUSY)box.remove()},6000);
+  }catch(e){box.remove();toast('전체 다운로드 실패: '+e.message);if(writer){try{await writer.abort()}catch(e2){}}}
+  finally{CS_BUSY=false;window.removeEventListener('beforeunload',stay)}
 }
 
 /* 상단 큰 구분: 1. 매출 대시보드 / 2. 계약서 / 3. 사건 자료함 / 4. 결과보고서 / 0. 법인_개인계약서 (관리자만 보임) */
