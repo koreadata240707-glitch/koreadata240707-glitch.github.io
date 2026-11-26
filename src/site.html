@@ -457,6 +457,7 @@ tr.click{cursor:pointer}
 .cs-prog{font-size:13px;color:var(--sub);margin:12px 0 8px}.cs-prog:empty{display:none}
 .cs-pbar{height:8px;border-radius:99px;background:#e5e7eb;overflow:hidden;margin-bottom:4px}.cs-pbar i{display:block;height:100%;background:var(--brand);transition:width .2s}
 .ct-casenote{font-size:12.5px;line-height:1.6;color:#334155;background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:8px 10px}.ct-casenote a{color:#0f766e;font-weight:700;cursor:pointer;text-decoration:underline}.ct-casenote .btn{display:block;width:100%;margin-top:8px;padding:7px 10px;font-size:13px}
+.ct-2line{display:flex;flex-direction:column;align-items:center;line-height:1.25}.ct-2line .ct-sub{font-size:11.5px;font-weight:500;opacity:.9;margin-top:2px}
 </style>
 <style>th.th2l{white-space:pre-line}@media (min-width:701px){th.dcol,td.dcol{display:none}}#segK{flex-wrap:wrap}</style><style>
 .bellw{position:relative}.bell{position:relative;border:1px solid var(--line);background:#fff;border-radius:10px;width:38px;height:33px;cursor:pointer;display:grid;place-items:center;padding:0}
@@ -579,7 +580,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='4.6';
+const APP_VER='4.7';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -1062,12 +1063,12 @@ function ctFormView(b,m){
       <div class="card ctbtns">
         <button class="btn" id="ctSave"${lock?' disabled':''}>저장 (새 버전 v${(c.ver||0)+1})</button>
         <button class="btn sec" id="ctPrev">전체 페이지 미리보기</button>
-        <button class="btn" id="ctPdf" style="background:#0f766e">PDF 계약서 생성</button>
+        <button class="btn ct-2line" id="ctPdf" style="background:#0f766e">PDF 계약서 생성<small class="ct-sub">(드라이브 자동 생성)</small></button>
         <button class="btn sec" id="ctPrint">인쇄</button>
         <button class="btn sec" id="ctEditBody"${lock?' disabled':''}>계약서 본문 직접 수정</button>
         <button class="btn sec" id="ctNew">새 계약서 (같은 고객으로)</button>
         <div class="muted" style="font-size:12px;line-height:1.6">PDF 파일명: ${esc(ctFileName(c))}</div>
-        <div class="ct-casenote" id="ctCaseNote">📁 정식 PDF·서명본은 <b>3. 사건 자료함</b>의 <b>2. 계약서</b> 칸에도 자동 저장돼요 (고객사명이 같은 사건)${c.id?' · 확인 중…':''}</div>
+        <div class="ct-casenote" id="ctCaseNote">📁 [PDF 계약서 생성]을 누르면 <b>3. 사건 자료함</b>의 <b>2. 계약서</b> 칸에도 자동 저장돼요 (고객사명이 같은 사건)${c.id?' · 확인 중…':''}</div>
       </div>
       ${c.id?`<div class="card"><b>파일</b><div class="ctfiles" style="font-size:13px;line-height:1.9;margin-top:6px">${(c.files||[]).length?(c.files||[]).slice().reverse().map(x=>`<div>${x.kind==='signed'?'✍️ 서명본':x.kind==='pdf'?'📄 발행본':'📝 초안'} v${x.ver||'-'} · <a data-fid="${esc(x.fid)}" data-fn="${esc(x.name)}">${esc(x.name)}</a> <span class="muted">${esc(x.at||'')}</span></div>`).join(''):'<span class="muted">아직 없어요</span>'}</div>
         <label class="btn sec" style="margin-top:8px;display:flex;justify-content:center;cursor:pointer">서명 완료된 계약서 올리기<input type="file" id="ctSigned" accept=".pdf,.jpg,.jpeg,.png" hidden></label></div>
@@ -1205,7 +1206,7 @@ async function ctPreview(c,mode,readonly){
   const ov=document.createElement('div');ov.className='ctmodal';
   ov.innerHTML=`<div class="ctmbar"><b>${esc(CT_TYPES[c.type])} · ${esc(ctIsInd(c)?(ctCase(c.f.caseName)||'건명 미입력'):(c.f.cname||'고객사 미입력'))} ${final?'':'<span class="ctst" style="background:#dc2626;margin-left:6px">검토용 초안</span>'}</b>
     ${final&&CT.seals[ctSealKey(c)]?'<label style="font-size:13px;display:flex;gap:4px;align-items:center"><input type="checkbox" id="ctSeal" checked> 직인 넣기</label><label style="font-size:13px;display:flex;gap:4px;align-items:center"><input type="checkbox" id="ctGan" checked> 페이지마다 간인</label>':''}
-    <button class="btn" id="ctMPdf" style="background:#0f766e">${final?'PDF 계약서 생성':'초안 PDF 받기'}</button><button class="btn sec" id="ctMPrint">인쇄</button><button class="btn sec" id="ctMClose">닫기</button></div>
+    <button class="btn ct-2line" id="ctMPdf" style="background:#0f766e">${final?'PDF 계약서 생성':'초안 PDF 받기'}<small class="ct-sub">(드라이브 자동 생성)</small></button><button class="btn sec" id="ctMPrint">인쇄</button><button class="btn sec" id="ctMClose">닫기</button></div>
     <div class="ctmbody"><div class="ctpages" id="ctPages"><div class="loading" style="color:#fff"><div class="spin"></div>페이지 만드는 중…</div></div><div class="ctcheck" id="ctChecks"></div></div>`;
   document.body.appendChild(ov);document.body.style.overflow='hidden';
   const close=()=>{ov.remove();document.body.style.overflow='';const h=$('ctHost');if(h)h.innerHTML=''};
@@ -1243,7 +1244,7 @@ async function ctPreview(c,mode,readonly){
       }else toast('PDF를 받았어요');
       window.__ctLastPdf={name,size:blob.size,pages:built.pages.length};
     }catch(e){toast(e.message||'PDF를 만들지 못했어요')}
-    btn.disabled=false;btn.textContent=final?'PDF 계약서 생성':'초안 PDF 받기';
+    btn.disabled=false;btn.innerHTML=(final?'PDF 계약서 생성':'초안 PDF 받기')+'<small class="ct-sub">(드라이브 자동 생성)</small>';
   };
   if(mode==='pdf')$('ctMPdf').click();
   if(mode==='print')$('ctMPrint').click();
@@ -1626,13 +1627,13 @@ async function rpPreview(R,mode){
   if(mode==='pdf')make();
 }
 
-/* 2번·0번 계약서 화면: 정식 PDF·서명본이 들어갈 3번 사건 안내 (복사는 서버가 PDF 만들 때 자동으로) */
+/* 2번·0번 계약서 화면: 만든 PDF(초안·정식·서명본)가 들어갈 3번 사건 안내 (복사는 서버가 PDF 만들 때 자동으로) */
 async function ctCaseNote(c){const el=$('ctCaseNote');if(!el)return;
   const go=async id=>{ctSetMode('case');try{if(!CS||!CS.slots)await csLoad(true);CS.newForm=null;CS.cur=null;await csLoadFiles(id)}catch(e){toast(e.message)}show('contract')};
   const paint=list=>{if(!el.isConnected)return;
-    if(list.length){el.innerHTML=`📁 정식 PDF·서명본은 <b>3. 사건 자료함</b> ${list.map(x=>`<a data-csgo="${esc(x.id)}">${esc(x.name)}</a>`).join(', ')}의 <b>2. 계약서</b> 칸에도 자동 저장돼요.`;
+    if(list.length){el.innerHTML=`📁 [PDF 계약서 생성]을 누르면 <b>3. 사건 자료함</b> ${list.map(x=>`<a data-csgo="${esc(x.id)}">${esc(x.name)}</a>`).join(', ')}의 <b>2. 계약서</b> 칸에도 자동 저장돼요.`;
       el.querySelectorAll('[data-csgo]').forEach(a=>a.onclick=()=>go(a.dataset.csgo));return}
-    el.innerHTML=`📁 <b>3. 사건 자료함</b>에 이 고객사 사건이 없어요. 사건을 만들면 정식 PDF·서명본이 그 사건의 <b>2. 계약서</b> 칸에 자동 저장돼요.<button type="button" class="btn sec" id="ctMkCase">3. 사건 자료함에 사건 만들기</button>`;
+    el.innerHTML=`📁 <b>3. 사건 자료함</b>에 이 고객사 사건이 없어요. 사건을 만들면 PDF가 그 사건의 <b>2. 계약서</b> 칸에 자동 저장돼요.<button type="button" class="btn sec" id="ctMkCase">3. 사건 자료함에 사건 만들기</button>`;
     $('ctMkCase').onclick=async()=>{const nm=(c.f.sec==='ind'?String(c.f.caseName||'').replace(/\s*의\s*건$/,''):String(c.f.cname||'')).trim();
       if(!nm){toast(c.f.sec==='ind'?'"~의 건"을 먼저 넣고 저장해 주세요':'고객사명을 먼저 넣고 저장해 주세요');return}
       const d=ctToday();try{toast('사건 만드는 중…');const r=await call('rsCreate',TOKEN,{name:`${d.replace(/-/g,'').slice(2)}.${nm}`,cname:nm,date:d,kind:'랜섬웨어'});
