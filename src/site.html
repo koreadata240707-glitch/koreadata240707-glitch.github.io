@@ -213,7 +213,7 @@ tr.click{cursor:pointer}
 .ctform input,.ctform select,.ctform textarea{width:100%;margin-top:4px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px;color:var(--ink);background:#fff}
 .ctform textarea{min-height:104px;resize:vertical;line-height:1.5}
 .ctform input.num{text-align:right}
-.ctform input:disabled,.ctform select:disabled,.ctform textarea:disabled{background:#f8fafc;color:#475569}
+.ctform input[readonly],.ctform input:disabled,.ctform select:disabled,.ctform textarea:disabled{background:#f8fafc;color:#475569}
 .ctrates{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
 .ctrates button{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 11px;font-size:13px;font-weight:700;cursor:pointer}
 .ctrates button.on{background:var(--brand);border-color:var(--brand);color:#fff}
@@ -475,7 +475,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='3.7';
+const APP_VER='3.8';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -617,6 +617,7 @@ function logout(silent){
    견적(기준 금액 × 요율 + 출장·작업비 + 추가 작업비 → 부가세 → 최종 금액)을 회사 계약서 양식에 자동으로 넣고
    A4 미리보기 · PDF · 인쇄 · 이력/버전 · 검토·승인 · 서명본 보관까지 합니다. 실제 송금 기능은 없습니다. */
 const CT_RATES=[38,41,43,45,48,50,52];
+const CT_RATES_IND=[10,15,20];   // 0. 법인_개인계약서 수수료율 (기준표 자동 없음)
 /* 사이버 침해 사고 대응 서비스 비용 기준 (최종 확정 피해금액 → 요율). 금액을 넣으면 먼저 자동으로 고르고, 사람이 바꿀 수 있음 */
 const CT_TIERS=[[15e7,38,'1억 5천만원 이하'],[3e8,41,'1억 5천만원 초과 3억원 이하'],[5e8,43,'3억원 초과 5억원 이하'],[1e9,45,'5억원 초과 10억원 이하'],
   [15e8,48,'10억원 초과 15억원 이하'],[2e9,50,'15억원 초과 20억원 이하'],[Infinity,52,'20억원 초과']];
@@ -657,6 +658,7 @@ const CT_NEED=['cname','bizno','ceo','addr','date'];
 const CT_NEED_IND=['cname','bizno','ceo','addr','date','caseName'];
 let CT_MODE='corp';const CT_KEEP={corp:{},ind:{},rep:{}};
 function ctIndKeys(){const ks=Object.keys((CT&&CT.inds)||{}),pref=['474','184'];return pref.filter(k=>ks.includes(k)).concat(ks.filter(k=>!pref.includes(k)))}
+function ctIndOur(o){return /^김영준/.test(o&&o.mgr||'')}
 function ctIsInd(c){return !!(c&&c.f&&c.f.sec==='ind')}
 function ctTplKey(c){return ctIsInd(c)?'IND_'+c.type:c.company+'_'+c.type}
 function ctSealKey(c){return ctIsInd(c)?c.f.eul:c.company}
@@ -878,8 +880,8 @@ function ctBlank(prev){
   // 내가 마지막으로 고른 담당자(서버에 사람마다 저장) → 없으면 로그인 이름과 같은 사람
   const me=(CT&&CT.mine)||((CT&&CT.ours)||[]).find(o=>ME&&ME.name&&o.mgr.split('(')[0]===ME.name);
   if(me){f.our_mgr=me.mgr;f.our_tel=me.tel;f.our_email=me.email;}
-  if(CT_MODE==='ind'){f.sec='ind';f.eul=ctIndKeys()[0]||'474';f.caseName='';ctCorpFill(f);}
-  if(prev)['cname','bizno','ceo','addr','biztype','bizitem','mgr','tel','email','rep','our_mgr','our_tel','our_email','company','eul','caseName'].forEach(x=>{if(x in f||x in prev.f)f[x]=prev.f[x]||f[x]});
+  if(CT_MODE==='ind'){f.sec='ind';f.rate=10;f.rateAuto=false;const kj=((CT&&CT.ours)||[]).find(ctIndOur);if(kj){f.our_mgr=kj.mgr;f.our_tel=kj.tel;f.our_email=kj.email;}f.eul=ctIndKeys()[0]||'474';f.caseName='';ctCorpFill(f);}
+  if(prev)['cname','bizno','ceo','addr','biztype','bizitem','mgr','tel','email','rep','our_mgr','our_tel','our_email','company','eul','caseName'].forEach(x=>{if(CT_MODE==='ind'&&/^our_/.test(x))return;if(x in f||x in prev.f)f[x]=prev.f[x]||f[x]});
   return {id:'',company:f.company,type:f.type,status:'작성중',ver:0,f,body:null,tplVer:0,approval:{},files:[],log:[],versions:[]};
 }
 function ctIsFinal(c){return ['승인','발행','체결'].includes(c.status)}
@@ -903,7 +905,7 @@ async function renderContract(m,head){
   if(sub==='list')ctListView(b,m);else if(sub==='tpl')ctTplView(b,m);else ctFormView(b,m);
 }
 function ctMineList(x){return (x.sec==='ind')===(CT_MODE==='ind')}
-function ctIn(id,label,val,o){o=o||{};return `<label class="${o.wide?'wide':''}">${label}<input id="ct_${id}" value="${esc(val==null?'':val)}"${o.num?' class="num" inputmode="numeric"':''}${o.type?` type="${o.type}"`:''}${o.ph?` placeholder="${esc(o.ph)}"`:''}></label>`}
+function ctIn(id,label,val,o){o=o||{};return `<label class="${o.wide?'wide':''}">${label}<input id="ct_${id}" value="${esc(val==null?'':val)}"${o.num?' class="num" inputmode="numeric"':''}${o.type?` type="${o.type}"`:''}${o.ph?` placeholder="${esc(o.ph)}"`:''}${o.ro?' readonly':''}></label>`}
 function ctFormView(b,m){
   const c=CT.cur,f=c.f,lock=c.status==='체결'||c.status==='취소',nda=c.type==='nda',ind=ctIsInd(c);
   const vs=(c.versions||[]).slice().reverse();
@@ -926,11 +928,13 @@ function ctFormView(b,m){
     <h3>계약 정보</h3>
     <div class="ctrow c3">${ind?ctIn('caseName','건명 * · 계약서 제목 아래에 "OO의 건"으로 들어가요',f.caseName,{ph:'예: 주식회사 OO의 건',wide:1}):''}${ctIn('date','계약일 *',f.date,{type:'date'})}<label>계약번호<input value="${esc(c.id||'저장하면 자동으로 붙어요')}" disabled></label><label>양식 버전<input value="${c.tplVer?'v'+c.tplVer:'최신 v'+((CT.templates[ctTplKey(c)]||{}).ver||'-')}" disabled></label>
       ${nda?ctIn('recDate','복구 계약 체결일',f.recDate,{type:'date'})+ctIn('ndaFrom','계약기간 시작',f.ndaFrom,{type:'date'})+ctIn('ndaTo','계약기간 끝',f.ndaTo,{type:'date'}):''}
-      ${nda?'':`<label class="wide">우리 담당자 선택<select id="ctOurPick">${(CT.ours||[]).map((o,i)=>`<option value="${i}"${o.mgr===f.our_mgr&&o.tel===f.our_tel?' selected':''}>${esc(o.mgr)} · ${esc(o.tel)}</option>`).join('')}<option value=""${(CT.ours||[]).some(o=>o.mgr===f.our_mgr&&o.tel===f.our_tel)?'':' selected'}>직접 입력</option></select></label>`
+      ${nda?'':ind?`<label class="wide">담당자 <span class="muted" style="font-weight:400">법인_개인계약서는 김영준만 선택돼요</span><select id="ctOurPick">${(CT.ours||[]).map((o,i)=>ctIndOur(o)?`<option value="${i}" selected>${esc(o.mgr)} · ${esc(o.tel)}</option>`:'').join('')}</select></label>`
+        +ctIn('our_mgr','담당자(직책)',f.our_mgr,{ro:1})+ctIn('our_tel','연락처',f.our_tel,{ro:1})+ctIn('our_email','Email',f.our_email,{ro:1})
+      :`<label class="wide">우리 담당자 선택<select id="ctOurPick">${(CT.ours||[]).map((o,i)=>`<option value="${i}"${o.mgr===f.our_mgr&&o.tel===f.our_tel?' selected':''}>${esc(o.mgr)} · ${esc(o.tel)}</option>`).join('')}<option value=""${(CT.ours||[]).some(o=>o.mgr===f.our_mgr&&o.tel===f.our_tel)?'':' selected'}>직접 입력</option></select></label>`
         +ctIn('our_mgr','우리 담당자(직책)',f.our_mgr,{ph:'예: 홍길동(대리)'})+ctIn('our_tel','우리 연락처',f.our_tel,{ph:'010-0000-0000'})+ctIn('our_email','우리 Email',f.our_email,{ph:'name@koreadr.kr'})}</div>
     ${nda?'':`<h3>비용 (자동 견적)</h3>
     <div class="ctrow">${ctIn('base',c.type==='pay'?'기준 금액 (해커비, 원) *':'기준 금액 (원) *',f.base?won(f.base):'',{num:1,ph:'0',wide:1})}
-      <div class="ctlab wide">적용 요율 <span class="ctrhint" id="ctRateHint"></span><div class="ctrates" id="ctRates">${CT_RATES.map(r=>`<button type="button" data-r="${r}" class="${Number(f.rate)===r?'on':''}">${r}%</button>`).join('')}<span class="ctrin">직접 <input id="ct_rate" inputmode="decimal" value="${esc(f.rate)}">%</span></div></div>
+      <div class="ctlab wide">${ind?'수수료율':'적용 요율'} <span class="ctrhint" id="ctRateHint"></span><div class="ctrates" id="ctRates">${(ind?CT_RATES_IND:CT_RATES).map(r=>`<button type="button" data-r="${r}" class="${Number(f.rate)===r?'on':''}">${r}%</button>`).join('')}<span class="ctrin">직접 <input id="ct_rate" inputmode="decimal" value="${esc(f.rate)}">%</span></div></div>
       ${ctIn('tripDays','출장 일수',f.tripDays,{num:1,ph:'0'})}${ctIn('tripUnit','출장 1일 단가 (원)',f.tripUnit?won(f.tripUnit):'',{num:1,ph:'0'})}
       ${ctIn('extra','추가 작업비 (원)',f.extra?won(f.extra):'',{num:1,ph:'0'})}</div>`}
     <h3>특약사항 <span class="muted" style="font-weight:400;font-size:12px">한 줄에 하나씩 · 계약서에 번호를 붙여 들어가요</span></h3>
@@ -963,10 +967,10 @@ function ctFormView(b,m){
   const read=()=>{const g=id=>{const e=$('ct_'+id);return e?e.value:undefined};
     ['cname','bizno','ceo','rep','addr','biztype','bizitem','mgr','tel','email','date','recDate','ndaFrom','ndaTo','our_mgr','our_tel','our_email','special','caseName'].forEach(x=>{const v=g(x);if(v!==undefined)f[x]=v});
     ['base','tripDays','tripUnit','extra'].forEach(x=>{const v=g(x);if(v!==undefined)f[x]=ctInt(v)||''});};
-  const syncRate=()=>{if(nda)return;const b=ctInt(f.base),t=ctTier(b);if(f.rateAuto)f.rate=t[1];
+  const syncRate=()=>{if(nda)return;const b=ctInt(f.base),t=ctTier(b);if(ind)f.rateAuto=false;if(f.rateAuto)f.rate=t[1];
     const r=$('ctRates');if(!r)return;r.querySelectorAll('button').forEach(x=>x.classList.toggle('on',Number(x.dataset.r)===Number(f.rate)));
     const ri=$('ct_rate');if(ri&&document.activeElement!==ri)ri.value=f.rate;
-    $('ctRateHint').innerHTML=f.rateAuto?(b?`자동 · ${t[2]} → ${t[1]}%`:'자동 · 금액을 넣으면 기준표대로 골라져요')
+    $('ctRateHint').innerHTML=ind?'수수료율 · 10·15·20% 중 고르거나 직접 입력':f.rateAuto?(b?`자동 · ${t[2]} → ${t[1]}%`:'자동 · 금액을 넣으면 기준표대로 골라져요')
       :`직접 정함 · 기준표는 ${t[1]}%${lock?'':' <a href="#" id="ctRateAuto">기준표대로</a>'}`;};
   const drawCalc=()=>{read();syncRate();const el=$('ctCalc');
     if(nda){el.innerHTML='<b>비용</b><p class="muted" style="font-size:13px;line-height:1.6;margin:6px 0 0">비밀유지계약서에는 금액이 들어가지 않아요.</p>';return;}
@@ -1000,7 +1004,7 @@ function ctFormView(b,m){
   const op=$('ctOurPick');if(op){
     op.onchange=()=>{const o=(CT.ours||[])[op.value];if(!o)return;
       [['our_mgr',o.mgr],['our_tel',o.tel],['our_email',o.email]].forEach(([k,v])=>{f[k]=v;const e=$('ct_'+k);if(e)e.value=v});drawCalc();
-      CT.mine=Object.assign({},o);call('ctOurPref',TOKEN,o).catch(()=>{});};
+      if(!ind){CT.mine=Object.assign({},o);call('ctOurPref',TOKEN,o).catch(()=>{});}};
     ['our_mgr','our_tel','our_email'].forEach(k=>{const e=$('ct_'+k);if(e)e.addEventListener('input',()=>{const i=(CT.ours||[]).findIndex(o=>o.mgr===$('ct_our_mgr').value&&o.tel===$('ct_our_tel').value&&o.email===$('ct_our_email').value);op.value=i<0?'':String(i)})});}
   const bz=$('ctBiz');if(bz)bz.onchange=()=>{const file=bz.files[0];bz.value='';ctBizRead(file,f,lock,drawCalc)};
   $('ctSave').onclick=()=>ctSaveNow(b,m);
