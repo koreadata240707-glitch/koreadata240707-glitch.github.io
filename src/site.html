@@ -475,7 +475,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='3.6';
+const APP_VER='3.7';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -1456,7 +1456,7 @@ async function rpPreview(R,mode){
 /* 상단 큰 구분: 1. 매출 대시보드 / 2. 계약서 (관리자만 보임) */
 let CT_LAST='home';
 function ctSec(on){const s=document.getElementById('secsw');if(!s)return;s.hidden=!on;
-  [['contract0','0. 법인_개인계약서'],['report','3. 결과보고서']].forEach(([k,l])=>{if(!s.querySelector(`[data-s=${k}]`)){const x=document.createElement('button');x.dataset.s=k;x.textContent=l;s.appendChild(x);}});
+  [['report','3. 결과보고서'],['contract0','0. 법인_개인계약서']].forEach(([k,l])=>{if(!s.querySelector(`[data-s=${k}]`)){const x=document.createElement('button');x.dataset.s=k;x.textContent=l;s.appendChild(x);}});
   const MD={contract:'corp',contract0:'ind',report:'rep'};
   s.onclick=e=>{const b=e.target.closest('button');if(!b)return;const md=MD[b.dataset.s];
     if(md){if(TAB!=='contract'||md!==CT_MODE){ctSetMode(md);show('contract')}}
