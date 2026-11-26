@@ -580,7 +580,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='4.7';
+const APP_VER='4.8';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -1143,11 +1143,18 @@ function ctApprView(c,m){
   else if(c.status==='작성중')act.push(['request','검토 요청']);
   else if(c.status==='검토요청'){if(!a.legal)act.push(['legal','법률 검토 완료']);if(!a.tax)act.push(['tax','세무 검토 완료']);if(a.legal&&a.tax)act.push(['approve','발행 승인']);act.push(['reject','반려(다시 작성)']);}
   if(c.id&&!['체결','취소'].includes(c.status))act.push(['cancel','계약 취소']);
-  if(c.id&&c.status==='취소')act.push(['reopen','다시 작성']);
-  html+=act.length?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${act.map(([k,l])=>`<button class="btn ${k==='approve'?'':'sec'}" style="padding:6px 10px;font-size:12.5px" data-ca="${k}">${l}</button>`).join('')}</div>`:'';
+  if(c.id&&c.status==='취소'){act.push(['reopen','다시 작성']);act.push(['delete','계약서 지우기'])}   // 지우기는 취소된 계약서만
+  html+=act.length?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${act.map(([k,l])=>`<button class="btn ${k==='approve'?'':'sec'}" style="padding:6px 10px;font-size:12.5px${k==='delete'?';color:#b91c1c':''}" data-ca="${k}">${l}</button>`).join('')}</div>`:'';
+  if(c.id&&c.status==='취소')html+='<div class="muted" style="font-size:12px;margin-top:6px">취소된 계약서만 지울 수 있어요. 지우면 계약 이력에서 사라지고, PDF·서명본과 3. 사건 자료함 2. 계약서 칸의 사본은 드라이브 휴지통으로 가요 (30일 안에 되살릴 수 있어요).</div>';
   el.innerHTML=html;
   el.querySelectorAll('[data-ca]').forEach(x=>x.onclick=async()=>{
     const k=x.dataset.ca;let memo='';
+    if(k==='delete'){
+      if(!confirm(`${c.id} 계약서를 지울까요?\n\n· 계약 이력에서 사라져요\n· 이 계약서의 PDF·서명본과 3. 사건 자료함 '2. 계약서' 칸의 사본은 드라이브 휴지통으로 가요 (30일 안에 되살릴 수 있어요)`))return;
+      x.disabled=true;
+      try{const r=await call('ctDelete',TOKEN,c.id);CT.contracts=CT.contracts.filter(y=>y.id!==c.id);CT.cur=ctBlank();CT.sub='list';CS=null;toast(`지웠어요 · 파일 ${r.trashed||0}개 휴지통`);renderContract(m)}
+      catch(e){toast(e.message);x.disabled=false}
+      return}
     if(k==='legal'||k==='tax'){if(!confirm(`${k==='legal'?'법률':'세무'} 검토를 마쳤다고 기록할까요?\n(검토자: ${ME.name})`))return;}
     if(k==='approve'&&!confirm('발행을 승인할까요? 승인 뒤에는 직인을 넣은 정식 PDF를 만들 수 있어요.'))return;
     if(k==='reject'||k==='cancel'){memo=prompt(k==='reject'?'반려 사유를 적어 주세요':'취소 사유를 적어 주세요')||'';if(!memo)return;}
