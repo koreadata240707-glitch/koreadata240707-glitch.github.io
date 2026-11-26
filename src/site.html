@@ -398,10 +398,6 @@ tr.click{cursor:pointer}
 .cs-case:hover{border-color:#93c5fd}.cs-case.on{border-color:var(--brand);background:#eff6ff}
 .cs-case b{display:block;word-break:break-all}.cs-case span{color:var(--sub);font-size:12px}
 .cs-bar{height:5px;border-radius:99px;background:#e5e7eb;margin-top:6px;overflow:hidden}.cs-bar i{display:block;height:100%;background:#16a34a}
-.cs-drop{border:2px dashed #93c5fd;background:#f8fbff;border-radius:14px;padding:16px;text-align:center;color:#1d4ed8;font-weight:700;margin:12px 0}
-.cs-drop small{display:block;font-weight:500;color:var(--sub);margin-top:4px;font-size:12.5px}.cs-drop.sm{font-size:12.5px;padding:12px;margin:0 0 10px;line-height:1.5}
-.cs-drop .btn{white-space:nowrap}
-.cs-drop.over,.cs-slot.over{background:#dbeafe;border-color:var(--brand)}
 .cs-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
 .cs-head h2{margin:0;font-size:20px;word-break:break-all}.cs-head p{margin:4px 0 0;color:var(--sub);font-size:13px}
 .cs-acts{display:flex;gap:8px;flex-wrap:wrap}.cs-acts .btn{text-decoration:none;display:inline-flex;align-items:center}
@@ -409,8 +405,6 @@ tr.click{cursor:pointer}
 .cs-ct{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px;font-size:13px}
 .cs-chip{background:#eef2ff;color:#3730a3;border-radius:99px;padding:4px 10px;font-weight:600;cursor:pointer}.cs-chip i{font-style:normal;margin-left:6px;color:#94a3b8}
 .cs-ct select{width:auto;margin:0;padding:6px 8px;font-size:13px}
-.cs-prog{font-size:13px;color:var(--sub);margin-bottom:8px}.cs-prog:empty{display:none}
-.cs-pbar{height:8px;border-radius:99px;background:#e5e7eb;overflow:hidden;margin-bottom:4px}.cs-pbar i{display:block;height:100%;background:var(--brand);transition:width .2s}
 .cs-slots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .cs-slot{border:1px solid var(--line);border-radius:12px;padding:12px;min-width:0;background:#fff}
 .cs-slot h4{margin:0 0 8px;font-size:14.5px;display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -420,7 +414,9 @@ tr.click{cursor:pointer}
 .cs-f .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cs-f .n small{color:#94a3b8;margin-right:4px}
 .cs-f .s{color:var(--sub);white-space:nowrap}.cs-f a{cursor:pointer;color:var(--brand);font-weight:700;padding:0 2px}.cs-f a[data-del]{color:#94a3b8}
 .cs-more{display:inline-block;margin-top:6px;font-size:12.5px;color:var(--brand);cursor:pointer}
-.cs-add{display:block;margin-top:8px;font-size:12.5px;color:var(--brand);cursor:pointer;font-weight:700}
+.cs-tip{font-size:13px;color:#334155;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:9px 12px;margin:12px 0}
+.cs-f a[data-mv]{color:#64748b}.cs-mv{width:auto;max-width:150px;margin:0;padding:3px 4px;font-size:12px}
+.cs-howto{margin:0;padding-left:20px;font-size:14px;line-height:1.75;color:#334155}
 @media (max-width:900px){.cs-grid{grid-template-columns:1fr}.cs-left{position:static;max-height:none}.ctrow.cs-info{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:700px){.cs-slots{grid-template-columns:1fr}.ctform .ctrow.cs-info{grid-template-columns:1fr}}
 /* 3. 결과보고서 입력 칸 */
@@ -454,6 +450,7 @@ tr.click{cursor:pointer}
 .secsw button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 18px;font-size:15px;font-weight:700;color:var(--sub);cursor:pointer;white-space:nowrap}
 .secsw button.on{background:var(--brand);border-color:var(--brand);color:#fff}
 @media (max-width:700px){.secsw{padding:4px 8px 6px;gap:6px;flex-wrap:wrap}.secsw button{flex:1 0 auto;padding:8px 6px;font-size:14px}}
+.cs-pre{display:flex;flex-wrap:wrap;gap:6px}.cs-pre span{font-size:12px;background:#f1f5f9;border-radius:8px;padding:4px 8px;color:#334155}
 </style>
 <style>th.th2l{white-space:pre-line}@media (min-width:701px){th.dcol,td.dcol{display:none}}#segK{flex-wrap:wrap}</style><style>
 .bellw{position:relative}.bell{position:relative;border:1px solid var(--line);background:#fff;border-radius:10px;width:38px;height:33px;cursor:pointer;display:grid;place-items:center;padding:0}
@@ -576,7 +573,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='4.1';
+const APP_VER='4.2';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -1622,96 +1619,51 @@ async function rpPreview(R,mode){
 }
 
 /* ═══════ 3. 사건 자료함 ═══════
-   사건 하나 = 드라이브 폴더 하나(칸 12개). 사건 폴더를 통째로 끌어다 놓으면 폴더 이름을 보고 칸별로 나눠 드라이브로 바로 올림.
+   사건 하나 = 드라이브 폴더 하나(칸 12개). 파일은 드라이브의 칸 폴더에 직접 넣고, 여기서는 칸별 목록·받기·옮기기·지우기만 함.
    전체 다운로드는 드라이브 폴더를 열어 "다운로드"(드라이브가 zip으로 묶어 줌). */
-let CS=null,CS_BUSY=false;const CS_OPEN={};
-const CS_RULES=[[0,/거래처|사업자|명함/],[4,/메모장|랜섬노트|ransomnote|how_?to|readme/],[1,/컨택|컨텍|contact|note|메일|e-?mail|상담|문의/],[2,/계약/],[5,/테스트/],
-  [7,/출금|지불|송금|비용|btc|코인|지갑/],[6,/접촉|hk정보|해커정보|탈취|해커/],[9,/복호화결과|복구결과|검수/],[3,/감염/],[8,/tool|툴|decrypt|복호화/],[10,/정산|세금|세무|입금|영수/],[11,/신고|기타/]];
-function csIsSlotDir(n){return /^\s*\d{1,2}\s*[.)]/.test(String(n||''))}   // "4. 해커 메모장"처럼 번호로 시작하는 칸 폴더
-function csSlotOf(name){const n=String(name||'').toLowerCase().replace(/\s+/g,'');for(const [i,re] of CS_RULES)if(re.test(n))return i;return -1}
-/* 파일 하나하나도 한 번 더 봄: 실행 파일·복호화 툴은 8번, 랜섬 노트(How_to… .txt)는 4번 */
-function csFileSlot(slot,fname){const n=String(fname).toLowerCase();
-  if((/\.(exe|dll|msi|bat|cmd|ps1|jar|bin)$/.test(n)||/decrypt|복호화툴/.test(n))&&[3,6,11].includes(slot))return 8;
-  if(/how_?to|restore|readme|랜섬노트|메모장/.test(n)&&/\.(txt|html?|hta|rtf)$/.test(n)&&[3,6,11].includes(slot))return 4;
-  return slot}
+let CS=null;const CS_OPEN={};
 function csSize(b){b=Number(b)||0;return b>=1073741824?(b/1073741824).toFixed(2)+'GB':b>=1048576?(b/1048576).toFixed(1)+'MB':b>=1024?Math.round(b/1024)+'KB':b+'B'}
 async function csLoad(force){if(CS&&!force)return;const r=await call('rsInit',TOKEN);CS=Object.assign(CS||{},{cases:r.cases||[],slots:r.slots||[]});}
 async function csLoadFiles(id){const r=await call('rsFiles',TOKEN,id);CS.cur=r.case;CS.files=r.files;CS.folderUrl=r.folderUrl;
   const s={id:r.case.id,name:r.case.name,cname:r.case.cname,date:r.case.date,kind:r.case.kind,updated:r.case.updated,count:r.case.count,bytes:r.case.bytes,filled:r.case.filled,contracts:(r.case.contracts||[]).length};
   const i=CS.cases.findIndex(x=>x.id===s.id);if(i>=0)CS.cases[i]=s;else CS.cases.unshift(s);}
-/* 끌어다 놓은 폴더·파일 읽기 (폴더 안까지) */
-async function csReadDrop(dt){const out=[],ens=[...(dt.items||[])].map(i=>i.webkitGetAsEntry&&i.webkitGetAsEntry()).filter(Boolean);
-  if(!ens.length){[...(dt.files||[])].forEach(f=>out.push({file:f,path:f.name}));return out}
-  const walk=async(en,pre)=>{if(en.isFile){const f=await new Promise((res,rej)=>en.file(res,rej));out.push({file:f,path:pre+f.name});return}
-    const rd=en.createReader();let all=[];for(;;){const b=await new Promise((res,rej)=>rd.readEntries(res,rej));if(!b.length)break;all=all.concat(b)}
-    for(const e of all)await walk(e,pre+en.name+'/')};
-  for(const en of ens)await walk(en,'');return out}
-function csFromInput(files){return [...files].map(f=>({file:f,path:f.webkitRelativePath||f.name}))}
-/* 칸 나누기. fixed 가 있으면(칸에 바로 놓은 경우) 전부 그 칸 */
-function csPlan(list,fixed){
-  return list.filter(x=>!/^(\.|~\$)|^thumbs\.db$|^desktop\.ini$/i.test(x.file.name)).map(x=>{const seg=x.path.split('/');let slot,rel='';
-    if(fixed!=null){slot=fixed;rel=seg.slice(0,-1).join('/');}
-    else if(seg.length>=3){const s1=csSlotOf(seg[1]);if(s1>=0){slot=s1;rel=seg.slice(2,-1).join('/')}else{const s0=csIsSlotDir(seg[0])?csSlotOf(seg[0]):-1;slot=s0>=0?s0:11;rel=seg.slice(s0>=0?1:1,-1).join('/')}}
-    else if(seg.length===2){const s0=csIsSlotDir(seg[0])?csSlotOf(seg[0]):-1;slot=s0>=0?s0:11;}
-    else slot=11;
-    if(fixed==null)slot=csFileSlot(slot,x.file.name);
-    return {file:x.file,slot,rel}});}
-function csPlanText(plan){const by={};plan.forEach(x=>{const b=by[x.slot]=by[x.slot]||{n:0,s:0};b.n++;b.s+=x.file.size});
-  return Object.keys(by).sort((a,b)=>a-b).map(i=>`${CS.slots[i]}: ${by[i].n}개 (${csSize(by[i].s)})`).join('\n')+`\n\n합계 ${plan.length}개 · ${csSize(plan.reduce((a,x)=>a+x.file.size,0))}`}
-function csParseName(n){const m=/^(\d{2})(\d{2})(\d{2})\.?\s*(.*)$/.exec(String(n||'').trim());
-  return m?{date:`20${m[1]}-${m[2]}-${m[3]}`,cname:m[4].replace(/\(완\)$/,'').trim()}:{date:'',cname:''}}
-async function csUpload(plan,rerender){
-  if(CS_BUSY){toast('지금 올리는 중이에요');return}if(!plan.length){toast('올릴 파일이 없어요');return}
-  CS_BUSY=true;const k=CS.cur,total=plan.reduce((a,x)=>a+x.file.size,0)||1;let done=0;const fail=[];
-  const upd=(cur,i)=>{const el=$('csProg');if(el)el.innerHTML=`<div class="cs-pbar"><i style="width:${Math.min(100,Math.round(cur/total*100))}%"></i></div><span>${i}/${plan.length}개 · ${csSize(cur)} / ${csSize(total)} 올리는 중… 창을 닫지 마세요</span>`};
-  upd(0,0);
-  for(let i=0;i<plan.length;i++){const x=plan[i];
-    try{const s=await call('rsUpStart',TOKEN,k.id,x.slot,x.rel,x.file.name,x.file.type||'application/octet-stream',x.file.size);
-      await new Promise((res,rej)=>{const xh=new XMLHttpRequest();xh.open('PUT',s.url);if(x.file.type)xh.setRequestHeader('Content-Type',x.file.type);
-        xh.upload.onprogress=e=>upd(done+e.loaded,i+1);xh.onload=()=>xh.status>=200&&xh.status<300?res():rej(new Error('올리기 실패 '+xh.status));
-        xh.onerror=()=>rej(new Error('연결 오류'));xh.send(x.file)});}
-    catch(e){fail.push(`${x.file.name} — ${e.message}`)}
-    done+=x.file.size;upd(done,i+1);}
-  CS_BUSY=false;
-  try{await csLoadFiles(k.id)}catch(e){}
-  rerender();
-  if(fail.length)alert(`${plan.length-fail.length}개는 올렸고, ${fail.length}개는 못 올렸어요.\n\n${fail.slice(0,15).join('\n')}${fail.length>15?'\n…':''}\n\n안 되는 파일은 [드라이브에서 열기]로 그 칸 폴더에 직접 넣어도 돼요.`);
-  else toast(`${plan.length}개를 올렸어요`);
-}
 async function csView(m,head){
   if(!CS||!CS.slots){m.innerHTML=head+'<div class="loading"><div class="spin"></div>불러오는 중…</div>';try{await csLoad(true)}catch(e){m.innerHTML=head+`<div class="banner err">${esc(e.message)}</div>`;return}}
   const re=()=>csView(m,head),q=(CS.q||'').trim(),k=CS.cur;
   const list=CS.cases.filter(x=>!q||[x.name,x.cname,x.id].join(' ').includes(q));
-  m.innerHTML=head+`<div class="ctmode"><b>3. 사건 자료함</b> · 사건 폴더를 통째로 끌어다 놓으면 칸별로 나눠 회사 구글 드라이브 'KD 사건자료'에 올려요 · 큰 파일도 바로 드라이브로</div>
+  m.innerHTML=head+`<div class="ctmode"><b>3. 사건 자료함</b> · 사건을 만들면 드라이브 'KD 사건자료'에 폴더와 칸 12개가 자동으로 생겨요 · 파일은 드라이브의 칸 폴더에 직접 넣어요</div>
   <div class="cs-grid"><div class="card cs-left">
     <input id="csQ" class="fld" placeholder="사건·고객사 검색" value="${esc(q)}" style="margin:0 0 8px">
-    <button class="btn" id="csNewBtn" style="width:100%;margin-bottom:8px">+ 새 사건</button>
-    <div class="cs-drop sm" id="csDropNew">📁 사건 폴더를 여기에 놓으면<br>새 사건으로 만들고 바로 올려요</div>
+    <button class="btn" id="csNewBtn" style="width:100%;margin-bottom:10px">+ 새 사건</button>
     ${list.map(x=>`<div class="cs-case${k&&k.id===x.id?' on':''}" data-cs="${esc(x.id)}"><b>${esc(x.name)}</b><span>${esc(x.date||'-')} · ${esc(x.kind||'')} · ${x.filled||0}/12칸 · ${csSize(x.bytes)}</span>
       <div class="cs-bar"><i style="width:${Math.round((x.filled||0)/12*100)}%"></i></div></div>`).join('')||'<div class="muted" style="font-size:13px;padding:8px 2px">아직 사건이 없어요</div>'}
-  </div><div id="csRight">${k?csDetail(k):CS.newForm?csNewForm():`<div class="card"><div class="cs-drop" id="csDropBig">📁 사건 폴더를 여기에 끌어다 놓으세요<small>예: 261120.(주)고객사 폴더 안의 "0. 거래처정보", "4. 해커 메모장"… 폴더 이름을 보고 칸별로 나눠 올려요</small></div>
-    <p class="muted" style="font-size:13px">왼쪽에서 사건을 고르거나 [+ 새 사건]을 눌러 주세요.</p></div>`}</div></div>`;
+  </div><div id="csRight">${k?csDetail(k):CS.newForm?csNewForm():`<div class="card"><h3 style="margin:0 0 8px">사건 자료함 쓰는 법</h3>
+    <ol class="cs-howto"><li><b>[+ 새 사건]</b>을 누르고 계약서를 고르거나 고객사명만 넣으면 드라이브에 사건 폴더와 칸 12개가 자동으로 생겨요.</li>
+      <li>사건을 열고 <b>[📂 드라이브에서 열기]</b>를 눌러 알맞은 칸 폴더에 파일을 넣어요 (PC의 구글 드라이브 앱에서 넣어도 돼요). 넣은 뒤 [↻ 새로고침]을 누르면 칸별로 보여요.</li>
+      <li>잘못 들어간 파일은 ↔ 로 칸을 옮기고, 모아서 받을 땐 [드라이브에서 열기]에서 폴더째 다운로드해요.</li></ol></div>`}</div></div>`;
   const qi=$('csQ');qi.oninput=()=>{CS.q=qi.value;clearTimeout(csView._t);csView._t=setTimeout(()=>{re();const n=$('csQ');n.focus();n.setSelectionRange(n.value.length,n.value.length)},250)};
   $('csNewBtn').onclick=()=>{CS.cur=null;CS.newForm={};re()};
   m.querySelectorAll('[data-cs]').forEach(el=>el.onclick=async()=>{CS.newForm=null;toast('불러오는 중…');try{await csLoadFiles(el.dataset.cs);re()}catch(e){toast(e.message)}});
-  const dropNew=async e=>{e.preventDefault();e.currentTarget.classList.remove('over');if(CS_BUSY)return;const list=await csReadDrop(e.dataTransfer);if(!list.length)return;
-    const root=list[0].path.includes('/')?list[0].path.split('/')[0]:'';if(!root){toast('사건 폴더를 통째로 놓아 주세요');return}
-    const p=csParseName(root),plan=csPlan(list);
-    if(!confirm(`새 사건 "${root}"을(를) 만들고 올릴게요.\n\n${csPlanText(plan)}\n\n진행할까요?`))return;
-    try{const r=await call('rsCreate',TOKEN,{name:root.replace(/\(완\)$/,'').trim(),cname:p.cname,date:p.date,kind:'랜섬웨어'});CS.newForm=null;await csLoadFiles(r.case.id);re();await csUpload(plan,re)}catch(err){toast(err.message)}};
-  ['csDropNew','csDropBig'].forEach(id=>{const el=$(id);if(!el)return;el.ondragover=e=>{e.preventDefault();el.classList.add('over')};el.ondragleave=()=>el.classList.remove('over');el.ondrop=dropNew});
-  if(CS.newForm&&!k){const f=$('csNewF');f.onsubmit=async e=>{e.preventDefault();const g=n=>f.querySelector(`[name=${n}]`).value;
-    try{const r=await call('rsCreate',TOKEN,{name:g('name'),cname:g('cname'),date:g('date'),kind:g('kind')});CS.newForm=null;await csLoadFiles(r.case.id);toast('사건을 만들었어요');re()}catch(err){toast(err.message)}};
-    f.querySelector('[name=name]').oninput=ev=>{const p=csParseName(ev.target.value);if(p.date&&!g2('date'))f.querySelector('[name=date]').value=p.date;if(p.cname&&!g2('cname'))f.querySelector('[name=cname]').value=p.cname};
-    const g2=n=>f.querySelector(`[name=${n}]`).value;$('csNewCancel').onclick=()=>{CS.newForm=null;re()};}
+  if(CS.newForm&&!k){const f=$('csNewF'),el=n=>f.querySelector(`[name=${n}]`);let touched=false;
+    // 폴더 이름은 사건일 + 고객사명으로 자동 (예: 261126.(주)고객사). 직접 고치면 그대로 둠
+    const auto=()=>{if(touched)return;const d=(el('date').value||ctToday()).replace(/-/g,'').slice(2);el('name').value=`${d}.${(el('cname').value||'').trim()}`.replace(/\.$/,'')};
+    el('cname').oninput=auto;el('date').oninput=auto;el('date').onchange=auto;el('name').oninput=()=>{touched=true};
+    el('ct').onchange=()=>{const c=csAllContracts().find(x=>x.id===el('ct').value);if(c){el('cname').value=c.sec==='ind'?(ctCase(c.caseName).replace(/의 건$/,'')||c.cname||''):(c.cname||'');if(c.date)el('date').value=c.date}auto()};
+    auto();
+    f.onsubmit=async e=>{e.preventDefault();if(!el('cname').value.trim()){toast('고객사명을 넣어 주세요');return}
+      try{const r=await call('rsCreate',TOKEN,{name:el('name').value,cname:el('cname').value,date:el('date').value,kind:el('kind').value});
+        if(el('ct').value)await call('rsSave',TOKEN,r.case.id,{contracts:[el('ct').value]});
+        CS.newForm=null;await csLoadFiles(r.case.id);toast('사건 폴더를 만들었어요 · 드라이브에서 칸 폴더에 파일을 넣어 주세요');re()}catch(err){toast(err.message)}};
+    $('csNewCancel').onclick=()=>{CS.newForm=null;re()};}
   if(k)csBind(m,re);
 }
-function csNewForm(){return `<div class="card"><h3 style="margin:0 0 10px">새 사건</h3><form id="csNewF" class="ctform"><div class="ctrow">
-  <label class="wide">사건 이름 (드라이브 폴더 이름) *<input name="name" placeholder="예: 261126.(주)고객사" required></label>
-  <label>고객사명<input name="cname" placeholder="예: (주)고객사"></label><label>사건일<input name="date" type="date"></label>
-  <label>종류<select name="kind"><option>랜섬웨어</option><option>데이터 복구</option><option>기타</option></select></label></div>
+function csNewForm(){const cs=csAllContracts();return `<div class="card"><h3 style="margin:0 0 10px">새 사건</h3><form id="csNewF" class="ctform"><div class="ctrow">
+  <label class="wide">계약서에서 가져오기 (선택)<select name="ct"><option value="">선택 안 함</option>${cs.map(x=>`<option value="${esc(x.id)}">${esc(x.id)} · ${esc(x.sec==='ind'?(ctCase(x.caseName)||'법인_개인'):(x.cname||''))}</option>`).join('')}</select></label>
+  <label>고객사명 *<input name="cname" placeholder="예: (주)고객사"></label><label>사건일<input name="date" type="date" value="${ctToday()}"></label>
+  <label>종류<select name="kind"><option>랜섬웨어</option><option>데이터 복구</option><option>기타</option></select></label>
+  <label>폴더 이름 (자동)<input name="name" placeholder="자동으로 만들어져요"></label></div>
   <div style="display:flex;gap:8px;margin-top:12px"><button class="btn">사건 만들기</button><button type="button" class="btn sec" id="csNewCancel">취소</button></div></form>
-  <p class="muted" style="font-size:12.5px;margin:10px 0 0">사건 이름을 "261126.(주)고객사"처럼 쓰면 날짜와 고객사명이 자동으로 채워져요. 드라이브에 이 이름의 폴더와 칸 12개가 만들어져요.</p></div>`}
+  <p class="muted" style="font-size:12.5px;margin:10px 0 6px">[사건 만들기]를 누르면 드라이브 'KD 사건자료'에 아래 폴더가 자동으로 생겨요. 폴더를 따로 만들 필요 없어요.</p><div class="cs-pre">${(CS.slots||[]).map(n=>`<span>📁 ${esc(n)}</span>`).join('')}</div></div>`}
 function csAllContracts(){return ((CT&&CT.contracts)||[])}
 function csDetail(k){const F=CS.files||{},linked=(k.contracts||[]);
   const cs=csAllContracts(),lab=x=>`${x.id} · ${x.sec==='ind'?(ctCase(x.caseName)||'법인_개인'):(x.cname||'')}`;
@@ -1724,16 +1676,13 @@ function csDetail(k){const F=CS.files||{},linked=(k.contracts||[]);
       <div class="cs-ct"><b>연결된 계약서</b> ${linked.map(id=>{const x=cs.find(c=>c.id===id);return `<span class="cs-chip" data-open="${esc(id)}">${esc(x?lab(x):id)} <i data-unlink="${esc(id)}">×</i></span>`}).join('')||'<span class="muted">없음</span>'}
         <select id="csLink"><option value="">+ 계약서 연결 (2번·0번)</option>${cs.filter(x=>!linked.includes(x.id)).map(x=>`<option value="${esc(x.id)}">${esc(lab(x))}</option>`).join('')}</select>
         <button class="btn sec" id="csSaveInfo" style="padding:6px 12px">정보 저장</button></div></div>
-    <div class="cs-drop" id="csDrop">📁 사건 폴더나 파일을 여기에 끌어다 놓으세요 <small>폴더 이름을 보고 칸별로 자동으로 나눠요 · 큰 파일도 드라이브로 바로 올라가요</small>
-      <div style="margin-top:8px;display:flex;gap:8px;justify-content:center"><label class="btn sec" style="padding:6px 12px;cursor:pointer">폴더 고르기<input type="file" id="csPickDir" webkitdirectory multiple hidden></label>
-      <label class="btn sec" style="padding:6px 12px;cursor:pointer">파일 고르기 (기타 칸)<input type="file" id="csPickFiles" multiple hidden></label></div></div>
-    <div id="csProg" class="cs-prog"></div>
+    <p class="cs-tip">📂 파일은 <b>[드라이브에서 열기]</b>로 알맞은 칸 폴더에 직접 넣고, 넣은 뒤 [↻ 새로고침]을 누르세요. 잘못 넣은 파일은 ↔ 로 옮겨요.</p>
     <div class="cs-slots">${CS.slots.map((name,i)=>{const fs=F[i]||[],sz=fs.reduce((a,x)=>a+(x.size||0),0),open=CS_OPEN[i],show=open?fs:fs.slice(0,6);
-      return `<div class="cs-slot" data-slot="${i}"><h4>${esc(name)} ${fs.length?`<em class="ok">${fs.length}개 · ${csSize(sz)}</em>`:'<em class="no">비어 있음</em>'}</h4>
+      return `<div class="cs-slot${fs.length?'':' empty'}" data-slot="${i}"><h4>📁 ${esc(name)} ${fs.length?`<em class="ok">${fs.length}개 · ${csSize(sz)}</em>`:'<em class="no">비어 있음</em>'}</h4>
         ${show.map(f=>`<div class="cs-f"><span class="n" title="${esc(f.path+f.name)}">${f.path?`<small>${esc(f.path)}</small>`:''}${esc(f.name)}</span><span class="s">${csSize(f.size)}</span>
-          <a data-get="${esc(f.id)}" data-fn="${esc(f.name)}" data-sz="${f.size||0}" title="받기">⬇</a><a data-del="${esc(f.id)}" data-fn="${esc(f.name)}" title="휴지통으로">×</a></div>`).join('')}
+          <a data-get="${esc(f.id)}" data-fn="${esc(f.name)}" data-sz="${f.size||0}" title="받기">⬇</a><a data-mv="${esc(f.id)}" data-from="${i}" title="다른 칸으로 옮기기">↔</a><a data-del="${esc(f.id)}" data-fn="${esc(f.name)}" title="휴지통으로">×</a></div>`).join('')}
         ${fs.length>6?`<a class="cs-more" data-more="${i}">${open?'접기':`+ ${fs.length-6}개 더 보기`}</a>`:''}
-        <label class="cs-add">+ 이 칸에 넣기<input type="file" multiple hidden data-addto="${i}"></label></div>`}).join('')}</div>
+        </div>`}).join('')}</div>
     <div class="ctlog" style="margin-top:12px">${(k.log||[]).slice(-8).reverse().map(l=>`<div>${esc(l.at)} · ${esc(l.by)} · ${esc(l.action)}${l.memo?' — '+esc(l.memo):''}</div>`).join('')}</div></div>`;}
 function csBind(m,re){const k=CS.cur;
   $('csRemove').onclick=async()=>{if(!confirm(`"${k.name}" 사건을 지울까요?
@@ -1748,16 +1697,10 @@ function csBind(m,re){const k=CS.cur;
   $('csLink').onchange=e=>{if(e.target.value)sv((k.contracts||[]).concat(e.target.value))};
   m.querySelectorAll('[data-unlink]').forEach(x=>x.onclick=ev=>{ev.stopPropagation();sv((k.contracts||[]).filter(id=>id!==x.dataset.unlink))});
   m.querySelectorAll('[data-open]').forEach(x=>x.onclick=()=>{const c=csAllContracts().find(y=>y.id===x.dataset.open);if(!c)return;ctSetMode(c.sec==='ind'?'ind':'corp');show('contract');setTimeout(()=>ctOpen(c.id,$('main')||document.querySelector('main')),300)});
-  const dz=$('csDrop');dz.ondragover=e=>{e.preventDefault();dz.classList.add('over')};dz.ondragleave=()=>dz.classList.remove('over');
-  dz.ondrop=async e=>{e.preventDefault();dz.classList.remove('over');const list=await csReadDrop(e.dataTransfer);const plan=csPlan(list);if(!plan.length)return;
-    if(confirm(`이렇게 나눠 올릴게요.\n\n${csPlanText(plan)}\n\n진행할까요?`))csUpload(plan,re)};
-  $('csPickDir').onchange=e=>{const plan=csPlan(csFromInput(e.target.files));e.target.value='';if(plan.length&&confirm(`이렇게 나눠 올릴게요.\n\n${csPlanText(plan)}\n\n진행할까요?`))csUpload(plan,re)};
-  $('csPickFiles').onchange=e=>{const plan=csPlan(csFromInput(e.target.files));e.target.value='';if(plan.length)csUpload(plan,re)};
-  m.querySelectorAll('.cs-slot').forEach(sl=>{const i=+sl.dataset.slot;
-    sl.ondragover=e=>{e.preventDefault();e.stopPropagation();sl.classList.add('over')};sl.ondragleave=()=>sl.classList.remove('over');
-    sl.ondrop=async e=>{e.preventDefault();e.stopPropagation();sl.classList.remove('over');const plan=csPlan(await csReadDrop(e.dataTransfer),i);
-      if(plan.length&&confirm(`"${CS.slots[i]}" 칸에 ${plan.length}개 (${csSize(plan.reduce((a,x)=>a+x.file.size,0))})를 올릴까요?`))csUpload(plan,re)};});
-  m.querySelectorAll('[data-addto]').forEach(inp=>inp.onchange=()=>{const plan=csPlan(csFromInput(inp.files),+inp.dataset.addto);inp.value='';if(plan.length)csUpload(plan,re)});
+  m.querySelectorAll('[data-mv]').forEach(a=>a.onclick=()=>{if(a.nextElementSibling&&a.nextElementSibling.tagName==='SELECT')return;const from=+a.dataset.from;
+    const s=document.createElement('select');s.className='cs-mv';s.innerHTML='<option value="">어느 칸으로?</option>'+CS.slots.map((n,i)=>i===from?'':`<option value="${i}">${esc(n)}</option>`).join('');
+    a.after(s);s.focus();s.onblur=()=>setTimeout(()=>s.isConnected&&!s.value&&s.remove(),200);
+    s.onchange=async()=>{if(!s.value)return;try{toast('옮기는 중…');await call('rsMove',TOKEN,k.id,a.dataset.mv,+s.value);await csLoadFiles(k.id);re();toast(`${CS.slots[+s.value]} 칸으로 옮겼어요`)}catch(e){toast(e.message)}}});
   m.querySelectorAll('[data-more]').forEach(a=>a.onclick=()=>{CS_OPEN[a.dataset.more]=!CS_OPEN[a.dataset.more];re()});
   m.querySelectorAll('[data-get]').forEach(a=>a.onclick=async()=>{const sz=+a.dataset.sz;
     if(sz>30*1024*1024){window.open('https://drive.google.com/file/d/'+a.dataset.get+'/view','_blank');return}
