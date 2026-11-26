@@ -416,7 +416,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='3.3';
+const APP_VER='3.4';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -837,7 +837,7 @@ function ctFormView(b,m){
     <h3>계약 정보</h3>
     <div class="ctrow c3">${ctIn('date','계약일 *',f.date,{type:'date'})}<label>계약번호<input value="${esc(c.id||'저장하면 자동으로 붙어요')}" disabled></label><label>양식 버전<input value="${c.tplVer?'v'+c.tplVer:'최신 v'+((CT.templates[c.company+'_'+c.type]||{}).ver||'-')}" disabled></label>
       ${nda?ctIn('recDate','복구 계약 체결일',f.recDate,{type:'date'})+ctIn('ndaFrom','계약기간 시작',f.ndaFrom,{type:'date'})+ctIn('ndaTo','계약기간 끝',f.ndaTo,{type:'date'}):''}
-      ${nda?'':`<label class="wide">우리 담당자 선택<select id="ctOurPick"><option value="">직접 입력</option>${(CT.ours||[]).map((o,i)=>`<option value="${i}"${o.mgr===f.our_mgr&&o.tel===f.our_tel?' selected':''}>${esc(o.mgr)} · ${esc(o.tel)}</option>`).join('')}</select></label>`
+      ${nda?'':`<label class="wide">우리 담당자 선택<select id="ctOurPick">${(CT.ours||[]).map((o,i)=>`<option value="${i}"${o.mgr===f.our_mgr&&o.tel===f.our_tel?' selected':''}>${esc(o.mgr)} · ${esc(o.tel)}</option>`).join('')}<option value=""${(CT.ours||[]).some(o=>o.mgr===f.our_mgr&&o.tel===f.our_tel)?'':' selected'}>직접 입력</option></select></label>`
         +ctIn('our_mgr','우리 담당자(직책)',f.our_mgr,{ph:'예: 홍길동(대리)'})+ctIn('our_tel','우리 연락처',f.our_tel,{ph:'010-0000-0000'})+ctIn('our_email','우리 Email',f.our_email,{ph:'name@koreadr.kr'})}</div>
     ${nda?'':`<h3>비용 (자동 견적)</h3>
     <div class="ctrow">${ctIn('base',c.type==='pay'?'기준 금액 (해커비, 원) *':'기준 금액 (원) *',f.base?won(f.base):'',{num:1,ph:'0',wide:1})}
