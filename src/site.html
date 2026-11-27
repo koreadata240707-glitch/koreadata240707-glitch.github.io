@@ -478,6 +478,20 @@ tr.click{cursor:pointer}
 .cs-h4r{display:inline-flex;align-items:center;gap:6px;flex:none}.cs-delslot{cursor:pointer;font-size:14px;line-height:1;padding:2px;opacity:.7}.cs-delslot:hover{opacity:1}
 .cs-add{border-style:dashed;background:#f8fafc}.cs-add small{display:block;color:var(--sub);font-size:11.5px;margin-top:6px;line-height:1.5}
 .cs-addf{display:flex;gap:6px}.cs-addf input{flex:1;min-width:0;width:0;margin:0;padding:6px 8px;font-size:13px}.cs-addf .btn{padding:6px 12px;font-size:13px;white-space:nowrap}
+.hk-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 10px}.hk-bar select{width:auto;margin:0;padding:7px 10px;font-size:14px}.hk-bar .btn{padding:7px 14px;font-size:13.5px}
+.hk-sum{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px}.hk-sum div{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:12px;color:var(--sub)}
+.hk-sum b{display:block;font-size:16px;color:var(--ink);font-variant-numeric:tabular-nums}.hk-sum b.neg{color:#dc2626}
+.hk-wrap{overflow:auto;max-height:calc(100vh - 260px);border:1px solid var(--line);border-radius:10px;background:#fff;-webkit-overflow-scrolling:touch}
+table.hk{border-collapse:separate;border-spacing:0;font-size:12.5px;min-width:100%}
+table.hk th,table.hk td{border-right:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;padding:5px 8px;white-space:nowrap;background:#fff}
+table.hk th{min-width:64px;position:sticky;top:0;background:#f1f5f9;z-index:2;font-size:11.5px;white-space:pre-line;text-align:center;vertical-align:bottom;line-height:1.35}
+table.hk td.n{text-align:right;font-variant-numeric:tabular-nums}table.hk td.neg{color:#dc2626}
+table.hk td.calc{background:#f8fafc;color:#475569}table.hk td.in{cursor:pointer}table.hk td.in.y{background:#fefce8}
+table.hk td.in:hover{box-shadow:inset 0 0 0 2px #93c5fd}table.hk td.ox{text-align:center;min-width:42px}table.hk td.saving{opacity:.45}
+table.hk .co{position:sticky;left:0;z-index:1;box-shadow:1px 0 0 #e5e7eb}table.hk th.co{z-index:3}
+table.hk tr.hk-total td{background:#eef2ff;font-weight:700;color:#1e3a8a}table.hk tr.hk-total td.neg{color:#dc2626}
+table.hk td input{width:100%;min-width:110px;margin:0;padding:3px 6px;font-size:12.5px;box-sizing:border-box}
+@media (max-width:700px){.hk-wrap{max-height:calc(100vh - 230px)}table.hk{font-size:12px}table.hk .co{max-width:130px;overflow:hidden;text-overflow:ellipsis}}
 </style>
 <style>th.th2l{white-space:pre-line}@media (min-width:701px){th.dcol,td.dcol{display:none}}#segK{flex-wrap:wrap}</style><style>
 .bellw{position:relative}.bell{position:relative;border:1px solid var(--line);background:#fff;border-radius:10px;width:38px;height:33px;cursor:pointer;display:grid;place-items:center;padding:0}
@@ -600,7 +614,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='5.7';
+const APP_VER='5.8';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -1018,6 +1032,7 @@ function ctIsFinal(c){return ['승인','발행','체결'].includes(c.status)}
 /* ---------- 화면 ---------- */
 async function renderContract(m,head){
   if(head!==undefined)renderContract._head=head;head=renderContract._head||'';
+  if(CT_MODE==='hk'){hkView(m,head);return;}   // 9번은 구글 시트만 씀 (계약서 자료 필요 없음)
   const ctReady=()=>CT&&CT.templates&&Object.keys(CT.templates).length;
   if(CT_MODE==='case'&&!ctReady()){   // 사건 자료함은 계약서 자료(4초쯤) 없이 먼저 그림 → 계약서 목록은 받는 대로 채움
     csView(m,head);
@@ -1990,10 +2005,78 @@ async function csZipAll(k){
   finally{CS_BUSY=false;window.removeEventListener('beforeunload',stay)}
 }
 
+/* ═══════ 9. 누적 계약 진행사항 ═══════
+   구글 시트 '연도별_HK정산'(2026.HK · 2025.HK …)을 그대로 보여 줌. 노란(입력) 칸을 눌러 고치면 그 칸만 시트에 바로 저장되고,
+   계산 칸(공급가액·부가세·수익 등)은 시트 수식이 계산함. 합친 칸(1-1차·1-2차)도 시트처럼 합쳐서 보여 줌 */
+let HK=null,HK_BUSY=false;
+const hkNum=s=>{const t=String(s==null?'':s).replace(/[,\s원₩]/g,'');return /^-?\d+(\.\d+)?$/.test(t)?Number(t):null};
+const hkFmt=n=>(n<0?'-':'')+Math.abs(Math.round(n)).toLocaleString('ko-KR');
+const hkKey=l=>String(l||'').replace(/\s/g,'');
+const hkIsDate=l=>hkKey(l)==='송금일자';
+const hkIsOX=l=>['계약서','입금','계산서'].includes(hkKey(l));
+function hkIso(s){const m=/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/.exec(String(s||''));return m?`${m[1]}-${('0'+m[2]).slice(-2)}-${('0'+m[3]).slice(-2)}`:''}
+async function hkLoad(name){const r=await call('hkInit',TOKEN,name||'');HK=r;return r}
+async function hkView(m,head){
+  if(!ctHere('hk'))return;
+  const top=`<div class="ctmode"><b>9. 누적 계약 진행사항</b> · 구글 시트 '연도별_HK정산'과 연결돼 있어요 · <b>노란 칸</b>만 눌러 고치면 바로 시트에 저장되고, 나머지 칸은 시트 수식이 계산해요</div>`;
+  if(!HK){m.innerHTML=head+top+'<div class="loading"><div class="spin"></div>시트를 불러오는 중…</div>';
+    try{await hkLoad()}catch(e){if(ctHere('hk'))m.innerHTML=head+top+`<div class="banner err">${esc(e.message)}</div><button class="btn sec" id="hkRetry">↻ 다시 불러오기</button>`;const b=$('hkRetry');if(b)b.onclick=()=>{HK=null;hkView(m,head)};return}
+    if(!ctHere('hk'))return;}
+  const T=HK,re=()=>hkView(m,head),C=T.cols,N=C.length,rowIdx={};T.rows.forEach((x,i)=>rowIdx[x.r]=i);
+  // 합친 칸: 시작 칸에 rowspan/colspan (보이는 줄만 셈), 나머지 칸은 그리지 않음
+  const span={},skip={};
+  T.merges.forEach(x=>{if(x.rs<2&&x.cs<2)return;const vis=T.rows.filter(y=>y.r>=x.r&&y.r<x.r+x.rs);if(!vis.length)return;
+    span[vis[0].r+':'+x.c]={rs:vis.length,cs:x.cs};vis.forEach(y=>{for(let c=x.c;c<x.c+x.cs;c++)if(y.r!==vis[0].r||c!==x.c)skip[y.r+':'+c]=1})});
+  // 숫자 칸 합계 (합친 칸은 한 번만 셈 · % · 날짜 · 사업자 번호 칸은 빼고)
+  const numCol=C.map((col,i)=>{if(col.label==='%'||hkIsDate(col.label)||/사업자번호/.test(hkKey(col.label)))return false;
+    const vs=T.rows.map(x=>x.cells[i]).filter(v=>String(v).trim());return vs.length>0&&vs.filter(v=>hkNum(v)!==null).length>=vs.length*0.7});
+  const sum=C.map((col,i)=>numCol[i]?T.rows.reduce((a,x)=>a+(skip[x.r+':'+col.c]?0:(hkNum(x.cells[i])||0)),0):null);
+  const pick=k=>{const i=C.findIndex(c=>hkKey(c.label).includes(k));return i>=0&&sum[i]!=null?{l:C[i].label.replace(/\s+/g,' '),v:sum[i]}:null};
+  const chips=['해커출금액','입금액','법인수익','개인수익'].map(pick).filter(Boolean);
+  const yellow=i=>/^#?(ffff00|fff2cc|ffe599|fef08a|ffff99)$/i.test(String((T.bg||[])[i]||'').replace('#',''));
+  const coI=C.findIndex(c=>hkKey(c.label)==='업체명');
+  const th=C.map((c,i)=>`<th class="${i===coI?'co':''}">${esc(c.label||'')}</th>`).join('');
+  const tot=`<tr class="hk-total">${C.map((c,i)=>`<td class="${i===coI?'co ':''}${sum[i]!=null?'n':''}${sum[i]<0?' neg':''}">${i===coI?'<b>합계</b>':sum[i]!=null?hkFmt(sum[i]):''}</td>`).join('')}</tr>`;
+  const body=T.rows.map(x=>`<tr data-row="${x.r}">${C.map((c,i)=>{const k=x.r+':'+c.c;if(skip[k])return '';const sp=span[k],v=x.cells[i],calc=x.calc[i],n=hkNum(v);
+    const cls=[i===coI?'co':'',calc?'calc':'in',!calc&&yellow(i)?'y':'',n!==null||/%$/.test(v)?'n':'',n!==null&&n<0?'neg':'',hkIsOX(c.label)?'ox':''].filter(Boolean).join(' ');
+    return `<td class="${cls}"${sp&&sp.rs>1?` rowspan="${sp.rs}"`:''}${sp&&sp.cs>1?` colspan="${sp.cs}"`:''}${calc?'':` data-r="${x.r}" data-c="${c.c}" data-i="${i}"`} title="${esc(calc?'계산 칸 (시트 수식)':'눌러서 고치기')}">${esc(v)}</td>`}).join('')}</tr>`).join('');
+  m.innerHTML=head+top+`<div class="hk-bar"><select id="hkSheet">${(T.sheets||[]).map(n=>`<option${n===T.name?' selected':''}>${esc(n)}</option>`).join('')}</select>
+    <button class="btn" id="hkAdd">+ 줄 추가</button><button class="btn sec" id="hkRe">↻ 새로고침</button>
+    ${T.url?`<a class="btn sec" href="${esc(T.url)}" target="_blank" rel="noopener" style="text-decoration:none">📄 시트에서 열기 ↗</a>`:''}<span class="muted" style="font-size:12px">${T.rows.length}건</span></div>
+  ${chips.length?`<div class="hk-sum">${chips.map(x=>`<div>${esc(x.l)}<b class="${x.v<0?'neg':''}">${hkFmt(x.v)}</b></div>`).join('')}</div>`:''}
+  <div class="hk-wrap"><table class="hk"><tbody><tr class="hk-h">${th}</tr>${tot}${body||`<tr><td colspan="${N}" class="muted" style="padding:14px">아직 줄이 없어요. [+ 줄 추가]를 눌러 주세요</td></tr>`}</tbody></table></div>
+  <p class="muted" style="font-size:12px;margin:8px 0 0">회색 칸은 시트 수식이 계산해요. 계약서·입금·계산서 칸은 누를 때마다 ㅇ/빈칸이 바뀌어요. 시트에서 직접 고친 내용은 [↻ 새로고침]하면 보여요.</p>`;
+  $('hkSheet').onchange=async e=>{const n=e.target.value;m.querySelector('.hk-wrap').style.opacity=.5;try{await hkLoad(n);re()}catch(err){toast(err.message);re()}};
+  $('hkRe').onclick=async()=>{toast('시트를 다시 읽는 중…');try{await hkLoad(T.name);re();toast('새로 불러왔어요')}catch(e){toast(e.message)}};
+  $('hkAdd').onclick=async()=>{if(HK_BUSY)return;HK_BUSY=true;$('hkAdd').disabled=true;toast('줄을 추가하는 중…');
+    try{const r=await call('hkAdd',TOKEN,T.name);HK=r;HK_BUSY=false;re();const td=m.querySelector(`tr[data-row="${r.added}"] td[data-i="${coI}"]`);if(td){td.scrollIntoView({block:'center'});hkEdit(td,m,head)}toast('줄을 추가했어요 · 업체명부터 넣어 주세요')}
+    catch(e){toast(e.message);const b=$('hkAdd');if(b)b.disabled=false}finally{HK_BUSY=false}};
+  m.querySelectorAll('td[data-r]').forEach(td=>td.onclick=()=>hkEdit(td,m,head));
+}
+async function hkSave(td,m,head,val){
+  if(HK_BUSY){toast('저장 중이에요. 잠시 뒤 다시 눌러 주세요');return}
+  const name=HK.name,r=+td.dataset.r,c=+td.dataset.c;HK_BUSY=true;td.classList.add('saving');
+  try{HK=await call('hkSet',TOKEN,name,r,c,val);toast('시트에 저장했어요')}catch(e){toast(e.message)}
+  finally{HK_BUSY=false;if(ctHere('hk'))hkView(m,head)}
+}
+function hkEdit(td,m,head){
+  if(td.querySelector('input')||HK_BUSY)return;
+  const i=+td.dataset.i,col=HK.cols[i],old=td.textContent;
+  if(hkIsOX(col.label)){hkSave(td,m,head,old.trim()?'':'ㅇ');return}   // ㅇ ↔ 빈칸
+  const date=hkIsDate(col.label),num=hkNum(old)!==null||td.classList.contains('y');
+  const inp=document.createElement('input');inp.type=date?'date':'text';inp.value=date?hkIso(old):(hkNum(old)!==null?String(hkNum(old)):old);
+  if(num&&!date)inp.inputMode='numeric';
+  td.textContent='';td.appendChild(inp);inp.focus();if(inp.select&&!date)inp.select();
+  let done=false;const fin=save=>{if(done)return;done=true;const v=inp.value;
+    const same=date?v===hkIso(old):(hkNum(old)!==null?hkNum(v)===hkNum(old):v===old);
+    if(!save||same){td.textContent=old;return}hkSave(td,m,head,v)};
+  inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();fin(true)}else if(e.key==='Escape'){e.preventDefault();fin(false)}};
+  inp.onblur=()=>fin(true);
+}
 /* 상단 큰 구분: 1. 매출 대시보드 / 2. 복구 프로젝트 (관리자만 보임).
    복구 프로젝트의 아래탭(매출 대시보드 아래탭과 같은 모양): 1. 사건 자료함 / 2. 계약서 / 4. 결과보고서 / 0. 법인_개인계약서 */
 let CT_LAST='home';
-const CT_SUBS=[['case','1. 사건 자료함'],['corp','2. 계약서'],['rep','4. 결과보고서'],['ind','0. 법인_개인계약서']];   // 3번은 비워 둠
+const CT_SUBS=[['case','1. 사건 자료함'],['corp','2. 계약서'],['rep','4. 결과보고서'],['ind','0. 법인_개인계약서'],['hk','9. 누적 계약 진행사항']];   // 3번은 비워 둠
 function ctSec(on){const s=document.getElementById('secsw');if(!s)return;s.hidden=!on;
   if(on&&!ctSec.pre){ctSec.pre=1;setTimeout(csPrefetch,4000)}   // 관리자: 사건 자료함을 뒤에서 미리 받아 둠
   s.querySelectorAll('button').forEach(b=>{if(b.dataset.s!=='sales')b.remove()});
