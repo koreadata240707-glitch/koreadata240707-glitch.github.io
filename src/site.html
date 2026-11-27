@@ -600,7 +600,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='5.5';
+const APP_VER='5.6';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -1018,6 +1018,12 @@ function ctIsFinal(c){return ['승인','발행','체결'].includes(c.status)}
 /* ---------- 화면 ---------- */
 async function renderContract(m,head){
   if(head!==undefined)renderContract._head=head;head=renderContract._head||'';
+  const ctReady=()=>CT&&CT.templates&&Object.keys(CT.templates).length;
+  if(CT_MODE==='case'&&!ctReady()){   // 사건 자료함은 계약서 자료(4초쯤) 없이 먼저 그림 → 계약서 목록은 받는 대로 채움
+    csView(m,head);
+    if(!ctLoad.bg)ctLoad.bg=ctLoad(true).then(()=>{const a=document.activeElement;
+      if(ctHere('case')&&!(a&&a.closest&&a.closest('#main')&&/^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName)))csView(m,head)}).catch(()=>{}).finally(()=>{ctLoad.bg=null});
+    return;}
   if(!CT||!CT.templates||!Object.keys(CT.templates).length){
     m.innerHTML=head+'<div class="loading"><div class="spin"></div>불러오는 중…</div>';
     try{await ctLoad(true)}catch(e){if(TAB==='contract')m.innerHTML=head+`<div class="banner err">${esc(e.message)}</div>`;return}
@@ -1723,7 +1729,8 @@ function csSave(){try{if(!CS||!CS.slots||!ME)return;const c={};Object.keys(CS_CA
   store.set('cd_cs',JSON.stringify({u:ME.id,cs:{cases:CS.cases,slots:CS.slots,rootUrl:CS.rootUrl,rootName:CS.rootName},cache:c}))}catch(e){}}
 function csRestore(){try{const s=JSON.parse(store.get('cd_cs')||'null');if(!s||!ME||s.u!==ME.id||!s.cs||!s.cs.slots)return false;
   CS=Object.assign(CS||{},s.cs);Object.keys(s.cache||{}).forEach(i=>{if(!CS_CACHE[i])CS_CACHE[i]=s.cache[i]});return true}catch(e){return false}}
-async function csPrefetch(){   // 로그인 뒤 뒤에서 미리 받아 둠: 사건 목록 + 최근 사건 3개의 파일 목록 (화면은 건드리지 않음)
+async function csPrefetch(){   // 로그인 뒤 뒤에서 미리 받아 둠: 계약서 자료 + 사건 목록 + 최근 사건 3개의 파일 목록 (화면은 건드리지 않음)
+  if(!CT||!CT.templates)ctLoad(true).catch(()=>{});   // 2. 계약서도 바로 열리게 (사건 쪽과 같이 받음)
   try{if(!CS||!CS.fresh)await csLoad(true);
     for(const c of (CS.cases||[]).slice(0,3)){if(TAB==='contract'&&CT_MODE==='case')return;   // 사건 자료함을 보고 있으면 그쪽 요청에 양보
       const r=await call('rsFiles',TOKEN,c.id);if(r.case.removed||CS_GONE.has(c.id))continue;CS_CACHE[c.id]={cur:r.case,files:r.files,folderUrl:r.folderUrl};}
