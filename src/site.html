@@ -465,6 +465,16 @@ tr.click{cursor:pointer}
 .rpcase-row,.ctform .rpcase-row{display:flex;gap:8px;align-items:center;font-size:12.5px;padding:5px 0;border-bottom:1px dashed #ccfbf1;font-weight:400;color:var(--ink)}.rpcase-row input[type=checkbox]{width:auto;margin:0}
 .rpcase-row .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rpcase-row .s{color:var(--sub);white-space:nowrap}.rpcase-row select{width:auto;margin:0;padding:3px 6px;font-size:12px}
 @media (max-width:700px){.rpcase-row,.ctform .rpcase-row{flex-wrap:wrap}.rpcase-row .s{flex-basis:100%;order:3;padding-left:22px}}
+.csimp-all{display:flex;gap:8px;align-items:center;font-size:13px;font-weight:600;margin:0 0 6px}.csimp-all input{width:auto;margin:0}
+.csimp-list{max-height:420px;overflow:auto;border-top:1px solid var(--line)}
+.csimp-row{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.csimp-n{display:flex;gap:8px;align-items:center;flex:1 1 220px;min-width:0;font-weight:400;margin:0}.csimp-n input{width:auto;margin:0;flex:none}
+.csimp-n b{min-width:0;word-break:break-all}.csimp-s{color:var(--sub);font-size:12px;white-space:nowrap}
+.csimp-in{display:flex;gap:6px;flex:1 1 300px;min-width:0}.csimp-in input{margin:0;padding:6px 8px;font-size:13px;min-width:0;width:0}.csimp-in input[type=date]{flex:0 0 140px}.csimp-in input:first-child{flex:1}
+.csimp-e{flex-basis:100%;font-style:normal;color:#b91c1c;font-size:12px}
+.csimp-opt{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin-top:10px;font-size:13px}.csimp-opt label{display:flex;gap:6px;align-items:center;margin:0;font-weight:400}
+.csimp-opt input{width:auto;margin:0}.csimp-opt select{width:auto;margin:0;padding:5px 8px;font-size:13px}
+@media (max-width:700px){.csimp-in{flex-basis:100%}.csimp-in input[type=date]{flex-basis:130px}}
 </style>
 <style>th.th2l{white-space:pre-line}@media (min-width:701px){th.dcol,td.dcol{display:none}}#segK{flex-wrap:wrap}</style><style>
 .bellw{position:relative}.bell{position:relative;border:1px solid var(--line);background:#fff;border-radius:10px;width:38px;height:33px;cursor:pointer;display:grid;place-items:center;padding:0}
@@ -587,7 +597,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='5.1';
+const APP_VER='5.2';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -1755,18 +1765,20 @@ async function csView(m,head){
   <div class="cs-grid"><div class="card cs-left">
     <input id="csQ" class="fld" placeholder="사건·고객사 검색" value="${esc(q)}" style="margin:0 0 8px">
     <button class="btn" id="csNewBtn" style="width:100%;margin-bottom:6px">+ 새 사건</button>
+    <button class="btn sec" id="csImpBtn" style="width:100%;margin-bottom:6px">📂 기존 폴더 불러오기</button>
     ${CS.rootUrl?`<a class="cs-root" href="${esc(CS.rootUrl)}" target="_blank" rel="noopener">📂 ${esc(CS.rootName)} 열기 · 공유</a>`:''}
     ${list.map(x=>`<div class="cs-case${k&&k.id===x.id?' on':''}" data-cs="${esc(x.id)}"><b>${esc(x.name)}</b><span>${esc(x.date||'-')} · ${esc(x.kind||'')} · ${x.filled||0}/12칸 · ${csSize(x.bytes)}</span>
       <div class="cs-bar"><i style="width:${Math.round((x.filled||0)/12*100)}%"></i></div></div>`).join('')||'<div class="muted" style="font-size:13px;padding:8px 2px">아직 사건이 없어요</div>'}
-  </div><div id="csRight">${k?csDetail(k):CS.newForm?csNewForm():`<div class="card"><h3 style="margin:0 0 8px">사건 자료함 쓰는 법</h3>
+  </div><div id="csRight">${k?csDetail(k):CS.imp?csImpView():CS.newForm?csNewForm():`<div class="card"><h3 style="margin:0 0 8px">사건 자료함 쓰는 법</h3>
     <ol class="cs-howto"><li><b>[+ 새 사건]</b>을 누르고 계약서를 고르거나 고객사명만 넣으면 드라이브에 사건 폴더와 칸 12개가 자동으로 생겨요.</li>
       <li>사건을 열고 파일을 <b>알맞은 칸에 끌어다 놓으면</b> 그 칸 폴더로 올라가요. 칸 이름을 누르면 드라이브에서 그 칸 폴더가 열려서 거기에 넣어도 돼요 (넣은 뒤 [↻ 새로고침]).</li>
       <li>잘못 들어간 파일은 ↔ 로 칸을 옮기고, 모아서 받을 땐 [📦 전체 파일 다운로드(zip)]를 눌러요.</li>
       <li><b>다른 구글 계정으로 드라이브 폴더를 열려면</b> 왼쪽 [📂 ${esc(CS.rootName)} 열기 · 공유]에서 그 계정을 <b>편집자</b>로 한 번만 공유하세요. 안에 있는 사건 폴더와 앞으로 만들 사건 폴더까지 모두 열려요.</li></ol></div>`}</div></div>`;
   const qi=$('csQ');qi.oninput=()=>{CS.q=qi.value;clearTimeout(csView._t);csView._t=setTimeout(()=>{re();const n=$('csQ');n.focus();n.setSelectionRange(n.value.length,n.value.length)},250)};
-  $('csNewBtn').onclick=()=>{CS.cur=null;CS.newForm={};re()};
+  $('csNewBtn').onclick=()=>{if(CS_BUSY&&CS.imp)return;CS.cur=null;CS.imp=null;CS.newForm={};re()};
+  $('csImpBtn').onclick=()=>{if(CS_BUSY&&CS.imp)return;CS.cur=null;CS.newForm=null;csImpLoad(re)};
   // 누르자마자 그 사건 화면으로 (처음이면 칸마다 '불러오는 중', 전에 열었던 사건이면 기억해 둔 목록) → 서버 답이 오면 다시 그림
-  m.querySelectorAll('[data-cs]').forEach(el=>el.onclick=async()=>{CS.newForm=null;const id=el.dataset.cs,c=CS_CACHE[id];
+  m.querySelectorAll('[data-cs]').forEach(el=>el.onclick=async()=>{if(CS_BUSY&&CS.imp){toast('폴더를 불러오는 중이에요');return}CS.newForm=null;CS.imp=null;const id=el.dataset.cs,c=CS_CACHE[id];
     if(c){CS.cur=c.cur;CS.files=c.files;CS.folderUrl=c.folderUrl;CS.loading=false}
     else{CS.cur=Object.assign({},CS.cases.find(x=>x.id===id),{contracts:[],log:[]});CS.files=null;CS.loading=true}
     re();
@@ -1787,7 +1799,54 @@ async function csView(m,head){
         if(el('ct').value)await call('rsSave',TOKEN,r.case.id,{contracts:[el('ct').value]});
         CS.newForm=null;await csLoadFiles(r.case.id);toast('사건 폴더를 만들었어요 · 칸에 파일을 끌어다 놓으면 올라가요');re()}catch(err){toast(err.message)}};
     $('csNewCancel').onclick=()=>{CS.newForm=null;re()};}
+  if(!k&&CS.imp)csImpBind(re);
   if(k&&!CS.loading)csBind(m,re);
+}
+/* 드라이브에 원래 있던 사건 폴더를 골라서 사건으로 한꺼번에 등록 (폴더 이름·위치는 그대로) */
+function csImpView(){const I=CS.imp,L=I.list,dis=I.busy?' disabled':'';
+  const body=I.err?`<div class="banner err">${esc(I.err)}</div>`:!L?'<div class="loading"><div class="spin"></div>드라이브에서 폴더를 찾는 중…</div>'
+    :!L.length?`<div class="muted" style="padding:8px 0;font-size:13.5px">불러올 폴더가 없어요. '${esc(CS.rootName)}' 안의 폴더가 모두 사건으로 등록돼 있어요.</div>`
+    :`<label class="csimp-all"><input type="checkbox" id="csImpAll"${L.every(f=>I.pick[f.id])?' checked':''}${dis}> 전체 선택 (${L.length}개)</label>
+    <div class="csimp-list">${L.map((f,i)=>`<div class="csimp-row">
+      <label class="csimp-n"><input type="checkbox" data-pick="${i}"${I.pick[f.id]?' checked':''}${dis}><b>📁 ${esc(f.name)}</b></label>
+      <span class="csimp-s">맞는 칸 ${f.slots}/12${f.other?` · 칸 밖 ${f.other}개`:''}</span>
+      <span class="csimp-in"><input data-cn="${i}" value="${esc(f.cname||'')}" placeholder="고객사명 *"${dis}><input type="date" data-dt="${i}" value="${esc(f.date||'')}"${dis}></span>
+      ${I.msg[f.id]?`<em class="csimp-e">${esc(I.msg[f.id])}</em>`:''}</div>`).join('')}</div>
+    <div class="csimp-opt"><label>종류 <select id="csImpKind"${dis}><option>랜섬웨어</option><option>데이터 복구</option><option>기타</option></select></label>
+      <label><input type="checkbox" id="csImpTidy"${I.tidy?' checked':''}${dis}> 칸에 안 맞는 폴더·파일은 '${esc((CS.slots||[]).slice(-1)[0]||'기타')}' 칸으로 옮기기</label></div>`;
+  const n=L?L.filter(f=>I.pick[f.id]).length:0;
+  return `<div class="card"><h3 style="margin:0 0 6px">기존 폴더 불러오기</h3>
+  <p class="muted" style="font-size:12.5px;margin:0 0 10px;line-height:1.6">드라이브 '${esc(CS.rootName)}' 바로 안에 있는데 아직 사건으로 등록 안 된 폴더예요. 고르고 [불러오기]를 누르면 <b>폴더 이름·위치는 그대로 두고</b> 사건으로 등록해요.
+  안의 하위 폴더 중 칸 이름이 같은 것(예: '계약서' = '2. 계약서')은 그 칸으로 쓰고, 없는 칸만 새로 만들어요. 고객사명이 같은 계약서는 자동으로 연결돼요.</p>
+  ${I.note?`<div class="banner ok" style="margin:0 0 10px">${I.note}</div>`:''}${body}
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">${L&&L.length?`<button class="btn" id="csImpGo"${I.busy||!n?' disabled':''}>${I.busy?esc(I.busy):`선택한 폴더 불러오기 (${n}개)`}</button>`:''}
+    <button class="btn sec" id="csImpRe"${dis}>↻ 다시 찾기</button><button class="btn sec" id="csImpX"${dis}>닫기</button></div></div>`}
+async function csImpLoad(re){CS.imp={list:null,pick:{},msg:{},tidy:true};re();
+  try{const r=await call('rsScan',TOKEN);if(!CS.imp)return;CS.imp.list=r.folders||[]}catch(e){if(!CS.imp)return;CS.imp.err=e.message}
+  if(ctHere('case')&&CS.imp&&!CS.cur)re()}
+function csImpBind(re){const I=CS.imp,L=I.list||[],go=$('csImpGo');
+  const cnt=()=>{const n=L.filter(f=>I.pick[f.id]).length;if(go&&!I.busy){go.textContent=`선택한 폴더 불러오기 (${n}개)`;go.disabled=!n}const a=$('csImpAll');if(a)a.checked=!!L.length&&n===L.length};
+  document.querySelectorAll('[data-pick]').forEach(el=>el.onchange=()=>{I.pick[L[+el.dataset.pick].id]=el.checked;cnt()});
+  document.querySelectorAll('[data-cn]').forEach(el=>el.oninput=()=>{L[+el.dataset.cn].cname=el.value});
+  document.querySelectorAll('[data-dt]').forEach(el=>el.oninput=el.onchange=()=>{L[+el.dataset.dt].date=el.value});
+  const all=$('csImpAll');if(all)all.onchange=()=>{L.forEach(f=>I.pick[f.id]=all.checked);document.querySelectorAll('[data-pick]').forEach(el=>el.checked=all.checked);cnt()};
+  const t=$('csImpTidy');if(t)t.onchange=()=>{I.tidy=t.checked};
+  const kd=$('csImpKind');if(kd){if(I.kind)kd.value=I.kind;kd.onchange=()=>{I.kind=kd.value}}
+  $('csImpRe').onclick=()=>csImpLoad(re);$('csImpX').onclick=()=>{CS.imp=null;re()};
+  if(go)go.onclick=async()=>{const sel=L.filter(f=>I.pick[f.id]);if(!sel.length)return;
+    const no=sel.find(f=>!String(f.cname||'').trim());if(no){toast('고객사명을 넣어 주세요: '+no.name);return}
+    if(CS_BUSY){toast('지금 다른 작업 중이에요');return}
+    CS_BUSY=true;I.msg={};I.note='';let ok=0;const left=[];
+    for(let i=0;i<sel.length;i++){const f=sel[i];I.busy=`불러오는 중 ${i+1}/${sel.length}…`;if(CS.imp===I&&!CS.cur)re();
+      try{const r=await call('rsImport',TOKEN,{folderId:f.id,cname:f.cname.trim(),date:f.date||'',kind:I.kind||'랜섬웨어',tidy:!!I.tidy}),s=r.case;ok++;
+        I.list=I.list.filter(x=>x.id!==f.id);delete I.pick[f.id];
+        CS.cases=CS.cases.filter(x=>x.id!==s.id);CS.cases.unshift({id:s.id,name:s.name,cname:s.cname,date:s.date,kind:s.kind,updated:s.updated,count:0,bytes:0,filled:0,contracts:(s.contracts||[]).length});
+        if(r.left)left.push(`${s.name} ${r.left}개`)}
+      catch(e){I.msg[f.id]=e.message}}
+    CS_BUSY=false;I.busy='';const bad=Object.keys(I.msg).length;
+    I.note=ok?`${ok}개 폴더를 사건으로 불러왔어요. 왼쪽 목록에서 누르면 칸별 파일이 보여요.`+(left.length?`<br><span style="font-weight:400">칸 밖 파일·폴더(대시보드 칸에는 안 보이고 드라이브에 그대로 있음): ${esc(left.join(', '))}</span>`:'')+
+      (bad?`<br><span style="color:#b91c1c">못 불러온 폴더 ${bad}개 · 아래 빨간 글씨를 확인해 주세요</span>`:''):'';
+    toast(ok?`${ok}개 불러왔어요`:'불러오지 못했어요');if(CS.imp===I&&!CS.cur&&ctHere('case'))re()};
 }
 function csNewForm(){const cs=csAllContracts();return `<div class="card"><h3 style="margin:0 0 10px">새 사건</h3><form id="csNewF" class="ctform"><div class="ctrow">
   <label class="wide">계약서에서 가져오기 (선택)<select name="ct"><option value="">선택 안 함</option>${cs.map(x=>`<option value="${esc(x.id)}">${esc(x.id)} · ${esc(x.sec==='ind'?(ctCase(x.caseName)||'법인_개인'):(x.cname||''))}</option>`).join('')}</select></label>
