@@ -500,6 +500,13 @@ table.hk td input{width:100%;min-width:110px;margin:0;padding:3px 6px;font-size:
 .hk-box.hk-full{position:fixed;inset:0;z-index:900;background:var(--bg,#f5f7fb);padding:10px 12px;display:flex;flex-direction:column}
 .hk-box.hk-full .hk-wrap{flex:1;max-height:none;min-height:0}.hk-box.hk-full .hk-sum{margin-bottom:8px}
 @media (max-width:700px){.hk-pan{margin-left:0}}
+/* 9번 표를 촘촘하게: 1000px 안팎 창에서 입금액 칸까지 한 화면에 보이게 */
+table.hk{font-size:12px}table.hk th,table.hk td{padding:4px 6px}table.hk th{min-width:52px;font-size:11px}
+table.hk td.co{max-width:150px;overflow:hidden;text-overflow:ellipsis}
+table.hk th.mg,table.hk td.mg{min-width:0;width:32px;padding:0 3px;text-align:center;background:#f8fafc}table.hk th.mg{font-size:10.5px}
+table.hk .mgb{border:1px solid var(--line);background:#fff;border-radius:6px;width:24px;height:18px;padding:0;font-size:12px;line-height:1;vertical-align:middle;cursor:pointer;color:#475569}
+table.hk .mgb:hover{border-color:#2563eb;color:#2563eb;background:#eff6ff}table.hk .mgb:disabled{opacity:.4}
+table.hk th.num{min-width:98px}   /* 금액 칸: -10,000,000,000(100억)까지 한 줄로 */
 </style>
 <style>th.th2l{white-space:pre-line}@media (min-width:701px){th.dcol,td.dcol{display:none}}#segK{flex-wrap:wrap}</style><style>
 .bellw{position:relative}.bell{position:relative;border:1px solid var(--line);background:#fff;border-radius:10px;width:38px;height:33px;cursor:pointer;display:grid;place-items:center;padding:0}
@@ -622,7 +629,7 @@ table.hk td input{width:100%;min-width:110px;margin:0;padding:3px 6px;font-size:
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='5.9';
+const APP_VER='6.0';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -813,6 +820,8 @@ function ctIsInd(c){return !!(c&&c.f&&c.f.sec==='ind')}
 function ctTplKey(c){return ctIsInd(c)?'IND_'+c.type:c.company+'_'+c.type}
 function ctSealKey(c){return ctIsInd(c)?c.f.eul:c.company}
 function ctNeed(c){return ctIsInd(c)?CT_NEED_IND:CT_NEED}
+function ctCaseSlot(c){return (c&&c.f?c.f.sec==='ind':CT_MODE==='ind')?'7. 신고·기타':'3. 견적서및계약서'}   // 0번 → 7번 칸, 2번 → 3번 칸
+function ctDrvSub(c){return `(드라이브 자동 생성 → 1. 사건 자료함 › ${ctCaseSlot(c)})`}
 function ctCase(s){s=String(s||'').trim();return s&&!/건$/.test(s)?s+'의 건':s}
 function ctCorpFill(f){const o=((CT&&CT.corps)||{})[f.company];if(o)['cname','bizno','ceo','addr','biztype','bizitem','rep'].forEach(k=>f[k]=o[k]||'');
   const kj=((CT&&CT.ours)||[]).find(ctIndOur);if(kj){f.mgr=kj.mgr;f.tel=kj.tel;f.email=kj.email;}}   // 갑(우리 법인) 담당자 = 대표이사
@@ -1113,12 +1122,12 @@ function ctFormView(b,m){
       <div class="card ctbtns">
         <button class="btn" id="ctSave"${lock?' disabled':''}>저장 (새 버전 v${(c.ver||0)+1})</button>
         <button class="btn sec" id="ctPrev">전체 페이지 미리보기</button>
-        <button class="btn ct-2line" id="ctPdf" style="background:#0f766e">PDF 계약서 생성<small class="ct-sub">(드라이브 자동 생성)</small></button>
+        <button class="btn ct-2line" id="ctPdf" style="background:#0f766e">PDF 계약서 생성<small class="ct-sub">${ctDrvSub(c)}</small></button>
         <button class="btn sec" id="ctPrint">인쇄</button>
         <button class="btn sec" id="ctEditBody"${lock?' disabled':''}>계약서 본문 직접 수정</button>
         <button class="btn sec" id="ctNew">새 계약서 (같은 고객으로)</button>
         <div class="muted" style="font-size:12px;line-height:1.6">PDF 파일명: ${esc(ctFileName(c))}</div>
-        <div class="ct-casenote" id="ctCaseNote">📁 [PDF 계약서 생성]을 누르면 <b>1. 사건 자료함</b>의 <b>3. 견적서및계약서</b> 칸에도 자동 저장돼요 (고객사명이 같은 사건)${c.id?' · 확인 중…':''}</div>
+        <div class="ct-casenote" id="ctCaseNote">📁 [PDF 계약서 생성]을 누르면 <b>1. 사건 자료함</b>의 <b>${ctCaseSlot(c)}</b> 칸에도 자동 저장돼요 (${c.f&&c.f.sec==='ind'?'건명':'고객사명'}이 같은 사건)${c.id?' · 확인 중…':''}</div>
       </div>
       ${c.id?`<div class="card"><b>파일</b><div class="ctfiles" style="font-size:13px;line-height:1.9;margin-top:6px">${(c.files||[]).length?(c.files||[]).slice().reverse().map(x=>`<div>${x.kind==='signed'?'✍️ 서명본':x.kind==='pdf'?'📄 발행본':'📝 초안'} v${x.ver||'-'} · <a data-fid="${esc(x.fid)}" data-fn="${esc(x.name)}">${esc(x.name)}</a> <span class="muted">${esc(x.at||'')}</span></div>`).join(''):'<span class="muted">아직 없어요</span>'}</div>
         <label class="btn sec" style="margin-top:8px;display:flex;justify-content:center;cursor:pointer">서명 완료된 계약서 올리기<input type="file" id="ctSigned" accept=".pdf,.jpg,.jpeg,.png" hidden></label></div>
@@ -1195,12 +1204,12 @@ function ctApprView(c,m){
   if(c.id&&!['체결','취소'].includes(c.status))act.push(['cancel','계약 취소']);
   if(c.id&&c.status==='취소'){act.push(['reopen','다시 작성']);act.push(['delete','계약서 지우기'])}   // 지우기는 취소된 계약서만
   html+=act.length?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${act.map(([k,l])=>`<button class="btn ${k==='approve'?'':'sec'}" style="padding:6px 10px;font-size:12.5px${k==='delete'?';color:#b91c1c':''}" data-ca="${k}">${l}</button>`).join('')}</div>`:'';
-  if(c.id&&c.status==='취소')html+='<div class="muted" style="font-size:12px;margin-top:6px">취소된 계약서만 지울 수 있어요. 지우면 계약 이력에서 사라지고, PDF·서명본과 1. 사건 자료함 3. 견적서및계약서 칸의 사본은 드라이브 휴지통으로 가요 (30일 안에 되살릴 수 있어요).</div>';
+  if(c.id&&c.status==='취소')html+='<div class="muted" style="font-size:12px;margin-top:6px">취소된 계약서만 지울 수 있어요. 지우면 계약 이력에서 사라지고, PDF·서명본과 1. 사건 자료함 '+ctCaseSlot(c)+' 칸의 사본은 드라이브 휴지통으로 가요 (30일 안에 되살릴 수 있어요).</div>';
   el.innerHTML=html;
   el.querySelectorAll('[data-ca]').forEach(x=>x.onclick=async()=>{
     const k=x.dataset.ca;let memo='';
     if(k==='delete'){
-      if(!confirm(`${c.id} 계약서를 지울까요?\n\n· 계약 이력에서 사라져요\n· 이 계약서의 PDF·서명본과 1. 사건 자료함 '3. 견적서및계약서' 칸의 사본은 드라이브 휴지통으로 가요 (30일 안에 되살릴 수 있어요)`))return;
+      if(!confirm(`${c.id} 계약서를 지울까요?\n\n· 계약 이력에서 사라져요\n· 이 계약서의 PDF·서명본과 1. 사건 자료함 '${ctCaseSlot(c)}' 칸의 사본은 드라이브 휴지통으로 가요 (30일 안에 되살릴 수 있어요)`))return;
       x.disabled=true;
       try{const r=await call('ctDelete',TOKEN,c.id);CT.contracts=CT.contracts.filter(y=>y.id!==c.id);CT.cur=ctBlank();CT.sub='list';CS=null;toast(`지웠어요 · 파일 ${r.trashed||0}개 휴지통`);renderContract(m)}
       catch(e){toast(e.message);x.disabled=false}
@@ -1263,7 +1272,7 @@ async function ctPreview(c,mode,readonly){
   const ov=document.createElement('div');ov.className='ctmodal';
   ov.innerHTML=`<div class="ctmbar"><b>${esc(CT_TYPES[c.type])} · ${esc(ctIsInd(c)?(ctCase(c.f.caseName)||'건명 미입력'):(c.f.cname||'고객사 미입력'))} ${final?'':'<span class="ctst" style="background:#dc2626;margin-left:6px">검토용 초안</span>'}</b>
     ${final&&CT.seals[ctSealKey(c)]?'<label style="font-size:13px;display:flex;gap:4px;align-items:center"><input type="checkbox" id="ctSeal" checked> 직인 넣기</label><label style="font-size:13px;display:flex;gap:4px;align-items:center"><input type="checkbox" id="ctGan" checked> 페이지마다 간인</label>':''}
-    <button class="btn ct-2line" id="ctMPdf" style="background:#0f766e">${final?'PDF 계약서 생성':'초안 PDF 받기'}<small class="ct-sub">(드라이브 자동 생성)</small></button><button class="btn sec" id="ctMPrint">인쇄</button><button class="btn sec" id="ctMClose">닫기</button></div>
+    <button class="btn ct-2line" id="ctMPdf" style="background:#0f766e">${final?'PDF 계약서 생성':'초안 PDF 받기'}<small class="ct-sub">${ctDrvSub(c)}</small></button><button class="btn sec" id="ctMPrint">인쇄</button><button class="btn sec" id="ctMClose">닫기</button></div>
     <div class="ctmbody"><div class="ctpages" id="ctPages"><div class="loading" style="color:#fff"><div class="spin"></div>페이지 만드는 중…</div></div><div class="ctcheck" id="ctChecks"></div></div>`;
   document.body.appendChild(ov);document.body.style.overflow='hidden';
   const close=()=>{ov.remove();document.body.style.overflow='';const h=$('ctHost');if(h)h.innerHTML=''};
@@ -1301,7 +1310,7 @@ async function ctPreview(c,mode,readonly){
       }else toast('PDF를 받았어요');
       window.__ctLastPdf={name,size:blob.size,pages:built.pages.length};
     }catch(e){toast(e.message||'PDF를 만들지 못했어요')}
-    btn.disabled=false;btn.innerHTML=(final?'PDF 계약서 생성':'초안 PDF 받기')+'<small class="ct-sub">(드라이브 자동 생성)</small>';
+    btn.disabled=false;btn.innerHTML=(final?'PDF 계약서 생성':'초안 PDF 받기')+'<small class="ct-sub">'+ctDrvSub(c)+'</small>';
   };
   if(mode==='pdf')$('ctMPdf').click();
   if(mode==='print')$('ctMPrint').click();
@@ -1733,9 +1742,9 @@ async function rpPreview(R,mode){
 async function ctCaseNote(c){const el=$('ctCaseNote');if(!el)return;
   const go=async id=>{ctSetMode('case');try{if(!CS||!CS.slots)await csLoad(true);CS.newForm=null;CS.cur=null;await csLoadFiles(id)}catch(e){toast(e.message)}show('contract')};
   const paint=list=>{if(!el.isConnected)return;
-    if(list.length){el.innerHTML=`📁 [PDF 계약서 생성]을 누르면 <b>1. 사건 자료함</b> ${list.map(x=>`<a data-csgo="${esc(x.id)}">${esc(x.name)}</a>`).join(', ')}의 <b>3. 견적서및계약서</b> 칸에도 자동 저장돼요.`;
+    if(list.length){el.innerHTML=`📁 [PDF 계약서 생성]을 누르면 <b>1. 사건 자료함</b> ${list.map(x=>`<a data-csgo="${esc(x.id)}">${esc(x.name)}</a>`).join(', ')}의 <b>${ctCaseSlot(c)}</b> 칸에도 자동 저장돼요.`;
       el.querySelectorAll('[data-csgo]').forEach(a=>a.onclick=()=>go(a.dataset.csgo));return}
-    el.innerHTML=`📁 <b>1. 사건 자료함</b>에 이 고객사 사건이 없어요. 사건을 만들면 PDF가 그 사건의 <b>3. 견적서및계약서</b> 칸에 자동 저장돼요.<button type="button" class="btn sec" id="ctMkCase">1. 사건 자료함에 사건 만들기</button>`;
+    el.innerHTML=`📁 <b>1. 사건 자료함</b>에 이 고객사 사건이 없어요. 사건을 만들면 PDF가 그 사건의 <b>${ctCaseSlot(c)}</b> 칸에 자동 저장돼요.<button type="button" class="btn sec" id="ctMkCase">1. 사건 자료함에 사건 만들기</button>`;
     $('ctMkCase').onclick=async()=>{const nm=(c.f.sec==='ind'?String(c.f.caseName||'').replace(/\s*의\s*건$/,''):String(c.f.cname||'')).trim();
       if(!nm){toast(c.f.sec==='ind'?'"~의 건"을 먼저 넣고 저장해 주세요':'고객사명을 먼저 넣고 저장해 주세요');return}
       const d=ctToday();try{toast('사건 만드는 중…');const r=await call('rsCreate',TOKEN,{name:`${d.replace(/-/g,'').slice(2)}.${nm}`,cname:nm,date:d,kind:'랜섬웨어'});
@@ -2043,18 +2052,22 @@ async function hkView(m,head){
   const chips=['해커출금액','입금액','법인수익','개인수익'].map(pick).filter(Boolean);
   const yellow=i=>/^#?(ffff00|fff2cc|ffe599|fef08a|ffff99)$/i.test(String((T.bg||[])[i]||'').replace('#',''));
   const coI=C.findIndex(c=>hkKey(c.label)==='업체명');
-  const th=C.map((c,i)=>`<th class="${i===coI?'co':''}">${esc(c.label||'')}</th>`).join('');
-  const tot=`<tr class="hk-total">${C.map((c,i)=>`<td class="${i===coI?'co ':''}${sum[i]!=null?'n':''}${sum[i]<0?' neg':''}">${i===coI?'<b>합계</b>':sum[i]!=null?hkFmt(sum[i]):''}</td>`).join('')}</tr>`;
-  const body=T.rows.map(x=>`<tr data-row="${x.r}">${C.map((c,i)=>{const k=x.r+':'+c.c;if(skip[k])return '';const sp=span[k],v=x.cells[i],calc=x.calc[i],n=hkNum(v);
+  // 맨 왼쪽 '합치기' 칸: ⤒ 윗줄과 입금 합치기 / ✂ 나누기 (합쳐진 줄의 아래쪽 줄)
+  const lowerOf=r=>T.merges.some(x=>x.rs>1&&r>x.r&&r<x.r+x.rs);
+  const mg=(x,k)=>k===0?'<td class="mg"></td>':lowerOf(x.r)?`<td class="mg"><button class="mgb" data-split="${x.r}" title="윗줄과 합친 입금 칸 나누기">✂</button></td>`
+    :T.rows[k-1].r===x.r-1?`<td class="mg"><button class="mgb" data-merge="${x.r}" title="입금 칸(공급가액·부가세·입금액 등)을 윗줄과 합치기 (1-1차·1-2차처럼 입금 한 번에 출금 여러 번)">⤒</button></td>`:'<td class="mg"></td>';
+  const th='<th class="mg" title="입금 한 번에 출금 여러 번이면 ⤒로 윗줄과 합치기">합치기</th>'+C.map((c,i)=>`<th class="${[i===coI?'co':'',numCol[i]?'num':''].filter(Boolean).join(' ')}">${esc(c.label||'')}</th>`).join('');
+  const tot=`<tr class="hk-total"><td class="mg"></td>${C.map((c,i)=>`<td class="${i===coI?'co ':''}${sum[i]!=null?'n':''}${sum[i]<0?' neg':''}">${i===coI?'<b>합계</b>':sum[i]!=null?hkFmt(sum[i]):''}</td>`).join('')}</tr>`;
+  const body=T.rows.map((x,k)=>`<tr data-row="${x.r}">${mg(x,k)}${C.map((c,i)=>{const k=x.r+':'+c.c;if(skip[k])return '';const sp=span[k],v=x.cells[i],calc=x.calc[i],n=hkNum(v);
     const cls=[i===coI?'co':'',calc?'calc':'in',!calc&&yellow(i)?'y':'',n!==null||/%$/.test(v)?'n':'',n!==null&&n<0?'neg':'',hkIsOX(c.label)?'ox':''].filter(Boolean).join(' ');
-    return `<td class="${cls}"${sp&&sp.rs>1?` rowspan="${sp.rs}"`:''}${sp&&sp.cs>1?` colspan="${sp.cs}"`:''}${calc?'':` data-r="${x.r}" data-c="${c.c}" data-i="${i}"`} title="${esc(calc?'계산 칸 (시트 수식)':'눌러서 고치기')}">${esc(v)}</td>`}).join('')}</tr>`).join('');
+    return `<td class="${cls}"${sp&&sp.rs>1?` rowspan="${sp.rs}"`:''}${sp&&sp.cs>1?` colspan="${sp.cs}"`:''}${calc?'':` data-r="${x.r}" data-c="${c.c}" data-i="${i}"`} title="${esc(i===coI?v:calc?'계산 칸 (시트 수식)':'눌러서 고치기')}">${esc(v)}</td>`}).join('')}</tr>`).join('');
   m.innerHTML=head+top+`<div class="hk-box${HK_FULL?' hk-full':''}" id="hkBox"><div class="hk-bar"><select id="hkSheet">${(T.sheets||[]).map(n=>`<option${n===T.name?' selected':''}>${esc(n)}</option>`).join('')}</select>
     <button class="btn" id="hkAdd">+ 줄 추가</button><button class="btn sec" id="hkRe">↻ 새로고침</button>
     <button class="btn sec" id="hkYear">+ 연도 추가</button><span class="hk-year" id="hkYearBox" hidden><input id="hkYearIn" type="number" inputmode="numeric" min="2018" max="${new Date().getFullYear()+1}" placeholder="예: 2023"><button class="btn" id="hkYearGo">만들기</button></span>
     ${T.url?`<a class="btn sec" href="${esc(T.url)}" target="_blank" rel="noopener" style="text-decoration:none">📄 시트에서 열기 ↗</a>`:''}<span class="muted" style="font-size:12px">${T.rows.length}건</span>
     <span class="hk-pan"><button class="btn sec" id="hkLeft" title="표를 왼쪽으로">◀</button><button class="btn sec" id="hkRight" title="표를 오른쪽으로">▶</button><button class="btn sec" id="hkFull">${HK_FULL?'✕ 작게 보기':'⛶ 크게 보기'}</button></span></div>
   ${chips.length?`<div class="hk-sum">${chips.map(x=>`<div>${esc(x.l)}<b class="${x.v<0?'neg':''}">${hkFmt(x.v)}</b></div>`).join('')}</div>`:''}
-  <div class="hk-wrap"><table class="hk"><tbody><tr class="hk-h">${th}</tr>${tot}${body||`<tr><td colspan="${N}" class="muted" style="padding:14px">아직 줄이 없어요. [+ 줄 추가]를 눌러 주세요</td></tr>`}</tbody></table></div>
+  <div class="hk-wrap"><table class="hk"><tbody><tr class="hk-h">${th}</tr>${tot}${body||`<tr><td colspan="${N+1}" class="muted" style="padding:14px">아직 줄이 없어요. [+ 줄 추가]를 눌러 주세요</td></tr>`}</tbody></table></div>
   <p class="muted" style="font-size:12px;margin:8px 0 0">회색 칸은 시트 수식이 계산해요. 계약서·입금·계산서 칸은 누를 때마다 ㅇ/빈칸이 바뀌어요. 시트에서 직접 고친 내용은 [↻ 새로고침]하면 보여요. 표는 ◀ ▶ 버튼이나 마우스로 끌어서 옆으로 옮길 수 있어요.</p></div>`;
   $('hkSheet').onchange=async e=>{const n=e.target.value;m.querySelector('.hk-wrap').style.opacity=.5;try{await hkLoad(n);re()}catch(err){toast(err.message);re()}};
   $('hkRe').onclick=async()=>{toast('시트를 다시 읽는 중…');try{await hkLoad(T.name);re();toast('새로 불러왔어요')}catch(e){toast(e.message)}};
@@ -2062,6 +2075,13 @@ async function hkView(m,head){
     try{const r=await call('hkAdd',TOKEN,T.name);HK=r;HK_BUSY=false;re();const td=m.querySelector(`tr[data-row="${r.added}"] td[data-i="${coI}"]`);if(td){td.scrollIntoView({block:'center'});hkEdit(td,m,head)}toast('줄을 추가했어요 · 업체명부터 넣어 주세요')}
     catch(e){toast(e.message);const b=$('hkAdd');if(b)b.disabled=false}finally{HK_BUSY=false}};
   m.querySelectorAll('td[data-r]').forEach(td=>td.onclick=()=>hkEdit(td,m,head));
+  const nm=r=>{const x=T.rows.find(y=>y.r===r);return x?x.cells[coI]||(r+'행'):r+'행'};
+  m.querySelectorAll('[data-merge],[data-split]').forEach(b=>b.onclick=async e=>{e.stopPropagation();if(HK_BUSY)return;
+    const r=+(b.dataset.merge||b.dataset.split),isM=!!b.dataset.merge,up=T.rows[T.rows.findIndex(y=>y.r===r)-1];
+    if(isM&&!confirm(`"${nm(r)}" 줄의 입금 칸(공급가액·부가세·입금액·법인 출금 등)을 윗줄 "${up?nm(up.r):''}"과 합칠까요?\n\n· 입금 한 번에 해커 출금이 여러 번일 때 써요 (1-1차·1-2차)\n· 이 줄에 따로 넣은 입금액·법인 출금은 지워지고 윗줄 값만 남아요\n· 시트에도 똑같이 합쳐져요 (✂로 다시 나눌 수 있어요)`))return;
+    if(!isM&&!confirm(`"${nm(r)}" 줄의 합친 입금 칸을 나눌까요?\n\n· 맨 윗줄에 입금액이 남고, 아래 줄은 빈칸으로 돌아가요\n· 시트에도 똑같이 나눠져요`))return;
+    HK_BUSY=true;b.disabled=true;toast(isM?'윗줄과 합치는 중…':'나누는 중…');
+    try{HK=await call(isM?'hkMerge':'hkSplit',TOKEN,T.name,r);HK_BUSY=false;re();toast(isM?'윗줄과 합쳤어요':'나눴어요')}catch(err){toast(err.message);b.disabled=false}finally{HK_BUSY=false}});
   // 옆으로 옮기기: ◀ ▶ · 마우스로 끌기 · 크게 보기(창 전체) · 표 높이를 화면에 맞춰 아래 가로 막대가 늘 보이게
   const wr=m.querySelector('.hk-wrap');
   if(wr){wr.scrollLeft=HK_X||0;wr.onscroll=()=>{HK_X=wr.scrollLeft};
