@@ -507,6 +507,7 @@ table.hk th.mg,table.hk td.mg{min-width:0;width:32px;padding:0 3px;text-align:ce
 table.hk .mgb{border:1px solid var(--line);background:#fff;border-radius:6px;width:24px;height:18px;padding:0;font-size:12px;line-height:1;vertical-align:middle;cursor:pointer;color:#475569}
 table.hk .mgb:hover{border-color:#2563eb;color:#2563eb;background:#eff6ff}table.hk .mgb:disabled{opacity:.4}
 table.hk th.num{min-width:98px}   /* 금액 칸: -10,000,000,000(100억)까지 한 줄로 */
+.cs-sort{margin:0 0 8px;padding:7px 10px;font-size:13px;width:100%}
 </style>
 <style>th.th2l{white-space:pre-line}@media (min-width:701px){th.dcol,td.dcol{display:none}}#segK{flex-wrap:wrap}</style><style>
 .bellw{position:relative}.bell{position:relative;border:1px solid var(--line);background:#fff;border-radius:10px;width:38px;height:33px;cursor:pointer;display:grid;place-items:center;padding:0}
@@ -630,7 +631,7 @@ table.hk th.num{min-width:98px}   /* 금액 칸: -10,000,000,000(100억)까지 �
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='6.1';
+const APP_VER='6.2';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -1822,10 +1823,11 @@ async function csView(m,head){
   if(!CS||!CS.slots){m.innerHTML=head+'<div class="loading"><div class="spin"></div>불러오는 중…</div>';try{await csLoad(true)}catch(e){if(ctHere('case'))m.innerHTML=head+`<div class="banner err">${esc(e.message)}</div>`;return}
     if(!ctHere('case'))return;}
   const re=()=>csView(m,head),q=(CS.q||'').trim(),k=CS.cur;
-  const list=CS.cases.filter(x=>!q||[x.name,x.cname,x.id].join(' ').includes(q));
+  const list=csSorted(CS.cases.filter(x=>!q||[x.name,x.cname,x.id].join(' ').includes(q)));
   m.innerHTML=head+`<div class="ctmode"><b>1. 사건 자료함</b> · 사건을 만들면 드라이브 '${esc(CS.rootName)}' 안에 폴더와 칸 ${CS.slots.length}개가 자동으로 생겨요 · 파일은 드라이브의 칸 폴더에 직접 넣어요</div>
   <div class="cs-grid"><div class="card cs-left">
     <input id="csQ" class="fld" placeholder="사건·고객사 검색" value="${esc(q)}" style="margin:0 0 8px">
+    <select id="csSort" class="fld cs-sort">${CS_SORTS.map(([k,l])=>`<option value="${k}"${k===csSortKey()?' selected':''}>정렬: ${l}</option>`).join('')}</select>
     <button class="btn" id="csNewBtn" style="width:100%;margin-bottom:6px">+ 새 사건</button>
     <button class="btn sec" id="csImpBtn" style="width:100%;margin-bottom:6px">📂 기존 폴더 불러오기</button>
     ${CS.rootUrl?`<a class="cs-root" href="${esc(CS.rootUrl)}" target="_blank" rel="noopener">📂 ${esc(CS.rootName)} 열기 · 공유</a>`:''}
@@ -1836,6 +1838,7 @@ async function csView(m,head){
       <li>사건을 열고 파일을 <b>알맞은 칸에 끌어다 놓으면</b> 그 칸 폴더로 올라가요. 칸 이름을 누르면 드라이브에서 그 칸 폴더가 열려서 거기에 넣어도 돼요 (넣은 뒤 [↻ 새로고침]).</li>
       <li>잘못 들어간 파일은 ↔ 로 칸을 옮기고, 모아서 받을 땐 [📦 전체 파일 다운로드(zip)]를 눌러요.</li>
       <li><b>다른 구글 계정으로 드라이브 폴더를 열려면</b> 왼쪽 [📂 ${esc(CS.rootName)} 열기 · 공유]에서 그 계정을 <b>편집자</b>로 한 번만 공유하세요. 안에 있는 사건 폴더와 앞으로 만들 사건 폴더까지 모두 열려요.</li></ol></div>`}</div></div>`;
+  $('csSort').onchange=e=>{try{localStorage.setItem('cd_cs_sort',e.target.value)}catch(x){}re()};
   const qi=$('csQ');qi.oninput=()=>{CS.q=qi.value;clearTimeout(csView._t);csView._t=setTimeout(()=>{re();const n=$('csQ');n.focus();n.setSelectionRange(n.value.length,n.value.length)},250)};
   $('csNewBtn').onclick=()=>{if(CS_BUSY&&CS.imp)return;CS.cur=null;CS.imp=null;CS.newForm={};re()};
   $('csImpBtn').onclick=()=>{if(CS_BUSY&&CS.imp)return;CS.cur=null;CS.newForm=null;csImpLoad(re)};
@@ -1917,6 +1920,15 @@ function csNewForm(){const cs=csAllContracts();return `<div class="card"><h3 sty
   <label>폴더 이름 (자동)<input name="name" placeholder="자동으로 만들어져요"></label></div>
   <div style="display:flex;gap:8px;margin-top:12px"><button class="btn">사건 만들기</button><button type="button" class="btn sec" id="csNewCancel">취소</button></div></form>
   <p class="muted" style="font-size:12.5px;margin:10px 0 6px">[사건 만들기]를 누르면 드라이브 '${esc(CS.rootName)}' 안에 아래 폴더가 자동으로 생겨요. 폴더를 따로 만들 필요 없어요.</p><div class="cs-pre">${(CS.slots||[]).map(n=>`<span>📁 ${esc(n)}</span>`).join('')}</div></div>`}
+/* 사건 목록 정렬 (이 PC에 기억). 사건일이 비어 있으면 폴더 이름 앞 날짜(YYMMDD)로 */
+const CS_SORTS=[['date_desc','사건일 최근순'],['date_asc','사건일 오래된순'],['upd','최근 수정순'],['name','이름순']];
+function csSortKey(){let k='date_desc';try{k=localStorage.getItem('cd_cs_sort')||k}catch(e){}return CS_SORTS.some(x=>x[0]===k)?k:'date_desc'}
+function csDay(x){if(x.date)return x.date;const m=/^(\d{2})(\d{2})(\d{2})/.exec(x.name||'');return m?`20${m[1]}-${m[2]}-${m[3]}`:''}
+function csSorted(arr){const k=csSortKey(),a=arr.slice(),nm=(p,q)=>String(p.name||'').localeCompare(String(q.name||''),'ko');
+  if(k==='upd')a.sort((p,q)=>String(q.updated||'').localeCompare(String(p.updated||'')));
+  else if(k==='name')a.sort(nm);
+  else a.sort((p,q)=>{const d=csDay(p).localeCompare(csDay(q))||nm(p,q);return k==='date_asc'?d:-d});
+  return a}
 function csAllContracts(){return ((CT&&CT.contracts)||[])}
 function csDetail(k){
   if(CS.loading)return `<div class="card"><div class="cs-head"><div><h2>${esc(k.name||'')}</h2><p>${esc(k.id||'')} · 드라이브에서 자료를 불러오는 중…</p></div></div>
@@ -1926,7 +1938,7 @@ function csDetail(k){
   return `<div class="card"><div class="cs-head"><div><h2>${esc(k.name)}</h2><p>${esc(k.id)} · 자료 ${k.count||0}개 · ${csSize(k.bytes)} · ${k.filled||0}/${CS.slots.length}칸 · 수정 ${esc(k.updated||'')}</p></div>
     <div class="cs-acts"><a class="btn" style="background:#0f766e" href="${esc(CS.folderUrl)}" target="_blank" rel="noopener" title="드라이브에서 이 사건 폴더 열기">📂 드라이브</a><button class="btn" id="csZip" style="background:#1d4ed8" title="전체 파일 다운로드(zip)">📦 전체 받기(zip)</button>
       <button class="btn sec" id="csRefresh">↻ 새로고침</button><button class="btn sec" id="csToRp" title="이 사건으로 결과보고서 만들기">결과보고서 →</button><button class="btn sec" id="csRemove" style="color:#b91c1c">사건 지우기</button></div></div>
-    <div class="ctform"><div class="ctrow cs-info"><label>고객사명<input id="cs_cname" value="${esc(k.cname||'')}"></label><label>사건일<input id="cs_date" type="date" value="${esc(k.date||'')}"></label>
+    <div class="ctform"><div class="ctrow cs-info"><label class="wide">사건 이름 (드라이브 폴더 이름)<input id="cs_name" value="${esc(k.name||'')}"></label><label>고객사명<input id="cs_cname" value="${esc(k.cname||'')}"></label><label>사건일<input id="cs_date" type="date" value="${esc(k.date||'')}"></label>
       <label>종류<select id="cs_kind">${['랜섬웨어','데이터 복구','기타'].map(x=>`<option${k.kind===x?' selected':''}>${x}</option>`).join('')}</select></label>
       <label>메모<input id="cs_memo" value="${esc(k.memo||'')}" placeholder="예: 협상 진행 중"></label></div>
       <div class="cs-ct"><b>연결된 계약서</b> ${linked.map(id=>{const x=cs.find(c=>c.id===id);return `<span class="cs-chip" data-open="${esc(id)}">${esc(x?lab(x):id)} <i data-unlink="${esc(id)}">×</i></span>`}).join('')||'<span class="muted">없음</span>'}
@@ -1959,8 +1971,8 @@ function csBind(m,re){const k=CS.cur;
       if(CS_BUSY){toast('지금 올리는 중이에요');return}
       const list=(await csReadDrop(e.dataTransfer)).filter(x=>!/^(\.|~\$)|^thumbs\.db$|^desktop\.ini$/i.test(x.file.name));
       csUpload(list.map(x=>({file:x.file,slot:i,rel:x.path.split('/').slice(0,-1).join('/')})),re)};});
-  const sv=async(contracts)=>{try{const r=await call('rsSave',TOKEN,k.id,{cname:$('cs_cname').value,date:$('cs_date').value,kind:$('cs_kind').value,memo:$('cs_memo').value,contracts:contracts||k.contracts||[]});
-    Object.assign(CS.cur,r.case);const i=CS.cases.findIndex(x=>x.id===k.id);if(i>=0)Object.assign(CS.cases[i],{cname:r.case.cname,date:r.case.date,kind:r.case.kind,updated:r.case.updated,contracts:(r.case.contracts||[]).length});toast('저장했어요');re()}catch(e){toast(e.message)}};
+  const sv=async(contracts)=>{try{const r=await call('rsSave',TOKEN,k.id,{name:$('cs_name').value,cname:$('cs_cname').value,date:$('cs_date').value,kind:$('cs_kind').value,memo:$('cs_memo').value,contracts:contracts||k.contracts||[]});
+    Object.assign(CS.cur,r.case);const i=CS.cases.findIndex(x=>x.id===k.id);if(i>=0)Object.assign(CS.cases[i],{name:r.case.name,cname:r.case.cname,date:r.case.date,kind:r.case.kind,updated:r.case.updated,contracts:(r.case.contracts||[]).length});toast('저장했어요');re()}catch(e){toast(e.message)}};
   $('csSaveInfo').onclick=()=>sv();
   $('csLink').onchange=e=>{if(e.target.value)sv((k.contracts||[]).concat(e.target.value))};
   m.querySelectorAll('[data-unlink]').forEach(x=>x.onclick=ev=>{ev.stopPropagation();sv((k.contracts||[]).filter(id=>id!==x.dataset.unlink))});
