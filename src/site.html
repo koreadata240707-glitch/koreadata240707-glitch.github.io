@@ -600,7 +600,7 @@ tr.click{cursor:pointer}
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='5.6';
+const APP_VER='5.7';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -1095,7 +1095,7 @@ function ctFormView(b,m){
         <button class="btn sec" id="ctEditBody"${lock?' disabled':''}>계약서 본문 직접 수정</button>
         <button class="btn sec" id="ctNew">새 계약서 (같은 고객으로)</button>
         <div class="muted" style="font-size:12px;line-height:1.6">PDF 파일명: ${esc(ctFileName(c))}</div>
-        <div class="ct-casenote" id="ctCaseNote">📁 [PDF 계약서 생성]을 누르면 <b>3. 사건 자료함</b>의 <b>3. 견적서및계약서</b> 칸에도 자동 저장돼요 (고객사명이 같은 사건)${c.id?' · 확인 중…':''}</div>
+        <div class="ct-casenote" id="ctCaseNote">📁 [PDF 계약서 생성]을 누르면 <b>1. 사건 자료함</b>의 <b>3. 견적서및계약서</b> 칸에도 자동 저장돼요 (고객사명이 같은 사건)${c.id?' · 확인 중…':''}</div>
       </div>
       ${c.id?`<div class="card"><b>파일</b><div class="ctfiles" style="font-size:13px;line-height:1.9;margin-top:6px">${(c.files||[]).length?(c.files||[]).slice().reverse().map(x=>`<div>${x.kind==='signed'?'✍️ 서명본':x.kind==='pdf'?'📄 발행본':'📝 초안'} v${x.ver||'-'} · <a data-fid="${esc(x.fid)}" data-fn="${esc(x.name)}">${esc(x.name)}</a> <span class="muted">${esc(x.at||'')}</span></div>`).join(''):'<span class="muted">아직 없어요</span>'}</div>
         <label class="btn sec" style="margin-top:8px;display:flex;justify-content:center;cursor:pointer">서명 완료된 계약서 올리기<input type="file" id="ctSigned" accept=".pdf,.jpg,.jpeg,.png" hidden></label></div>
@@ -1172,12 +1172,12 @@ function ctApprView(c,m){
   if(c.id&&!['체결','취소'].includes(c.status))act.push(['cancel','계약 취소']);
   if(c.id&&c.status==='취소'){act.push(['reopen','다시 작성']);act.push(['delete','계약서 지우기'])}   // 지우기는 취소된 계약서만
   html+=act.length?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${act.map(([k,l])=>`<button class="btn ${k==='approve'?'':'sec'}" style="padding:6px 10px;font-size:12.5px${k==='delete'?';color:#b91c1c':''}" data-ca="${k}">${l}</button>`).join('')}</div>`:'';
-  if(c.id&&c.status==='취소')html+='<div class="muted" style="font-size:12px;margin-top:6px">취소된 계약서만 지울 수 있어요. 지우면 계약 이력에서 사라지고, PDF·서명본과 3. 사건 자료함 3. 견적서및계약서 칸의 사본은 드라이브 휴지통으로 가요 (30일 안에 되살릴 수 있어요).</div>';
+  if(c.id&&c.status==='취소')html+='<div class="muted" style="font-size:12px;margin-top:6px">취소된 계약서만 지울 수 있어요. 지우면 계약 이력에서 사라지고, PDF·서명본과 1. 사건 자료함 3. 견적서및계약서 칸의 사본은 드라이브 휴지통으로 가요 (30일 안에 되살릴 수 있어요).</div>';
   el.innerHTML=html;
   el.querySelectorAll('[data-ca]').forEach(x=>x.onclick=async()=>{
     const k=x.dataset.ca;let memo='';
     if(k==='delete'){
-      if(!confirm(`${c.id} 계약서를 지울까요?\n\n· 계약 이력에서 사라져요\n· 이 계약서의 PDF·서명본과 3. 사건 자료함 '3. 견적서및계약서' 칸의 사본은 드라이브 휴지통으로 가요 (30일 안에 되살릴 수 있어요)`))return;
+      if(!confirm(`${c.id} 계약서를 지울까요?\n\n· 계약 이력에서 사라져요\n· 이 계약서의 PDF·서명본과 1. 사건 자료함 '3. 견적서및계약서' 칸의 사본은 드라이브 휴지통으로 가요 (30일 안에 되살릴 수 있어요)`))return;
       x.disabled=true;
       try{const r=await call('ctDelete',TOKEN,c.id);CT.contracts=CT.contracts.filter(y=>y.id!==c.id);CT.cur=ctBlank();CT.sub='list';CS=null;toast(`지웠어요 · 파일 ${r.trashed||0}개 휴지통`);renderContract(m)}
       catch(e){toast(e.message);x.disabled=false}
@@ -1413,7 +1413,7 @@ function rpLogoView(b,m,head){
 }
 function rpTextLogo(k){return `<div class="rplogo"><span>${k==='KD'?'KD':'KDRC'}</span><b>${k==='KD'?'한국데이터':'한국<br>데이터복구센터'}</b></div>`}
 
-/* 4번 결과보고서 ← 3번 사건 자료함: 사건 칸의 사진(JPG·PNG 등)을 보고서 사진 칸으로, 해커 메모장 .txt 는 랜섬 노트 글로 가져오기.
+/* 4번 결과보고서 ← 1번 사건 자료함: 사건 칸의 사진(JPG·PNG 등)을 보고서 사진 칸으로, 해커 메모장 .txt 는 랜섬 노트 글로 가져오기.
    칸별 기본 자리: 3 감염파일→로그 화면 사진, 4 해커 메모장·6 해커 접촉내역→랜섬 노트 캡처, 7 해커 비용지불→송금 내역 캡처 (나머지는 '안 넣음', 골라서 넣을 수 있음) */
 let RP_CASE={id:'',items:null,busy:false};
 const RP_CASE_TO={hostImgs:'로그 화면 사진',noteImgs:'랜섬 노트 캡처',payImgs:'송금 내역 캡처',note:'랜섬 노트 내용(글)'};
@@ -1421,11 +1421,11 @@ function rpCaseDefault(slot,isTxt){if(isTxt)return slot===5?'note':'';return slo
 function rpCaseNorm(s){return String(s||'').replace(/주식회사|㈜|\(주\)|\s+/g,'')}
 async function rpCaseBox(r,redraw){
   const el=$('rpCaseBox');if(!el)return;
-  if(!CS||!CS.cases){el.innerHTML='<span class="muted">3번 사건 목록을 불러오는 중…</span>';try{await csLoad(true)}catch(e){el.innerHTML=`<span class="muted">사건 목록을 못 불러왔어요: ${esc(e.message)}</span>`;return}if(!el.isConnected)return}
+  if(!CS||!CS.cases){el.innerHTML='<span class="muted">1번 사건 목록을 불러오는 중…</span>';try{await csLoad(true)}catch(e){el.innerHTML=`<span class="muted">사건 목록을 못 불러왔어요: ${esc(e.message)}</span>`;return}if(!el.isConnected)return}
   const cases=CS.cases||[];
   if(!RP_CASE.id){const n=rpCaseNorm(r.cname);const hit=(r.caseId&&cases.find(x=>x.id===r.caseId))||(n&&cases.find(x=>rpCaseNorm(x.cname)===n));if(hit)RP_CASE.id=hit.id}
   const it=RP_CASE.items;
-  el.innerHTML=`<div class="rpcase-h"><b>📁 3번 사건 자료에서 가져오기</b><select id="rpCaseSel"><option value="">사건 고르기</option>${cases.map(x=>`<option value="${esc(x.id)}"${x.id===RP_CASE.id?' selected':''}>${esc(x.name)}</option>`).join('')}</select>
+  el.innerHTML=`<div class="rpcase-h"><b>📁 1번 사건 자료에서 가져오기</b><select id="rpCaseSel"><option value="">사건 고르기</option>${cases.map(x=>`<option value="${esc(x.id)}"${x.id===RP_CASE.id?' selected':''}>${esc(x.name)}</option>`).join('')}</select>
       <button type="button" class="btn sec rpsm" id="rpCaseFind"${RP_CASE.id?'':' disabled'}>사진·메모 찾기</button></div>
     ${it?(it.length?`<div class="rpcase-list">${it.map((x,i)=>`<label class="rpcase-row"><input type="checkbox" data-ci="${i}"${x.on?' checked':''}><span class="n" title="${esc(x.path+x.name)}">${esc(x.name)}</span><span class="s">${esc(x.slotName)} · ${csSize(x.size)}</span>
         <select data-ct="${i}"><option value="">안 넣음</option>${Object.entries(RP_CASE_TO).filter(([k])=>x.txt?k==='note':k!=='note').map(([k,l])=>`<option value="${k}"${x.to===k?' selected':''}>${l}</option>`).join('')}</select></label>`).join('')}</div>
@@ -1706,20 +1706,20 @@ async function rpPreview(R,mode){
   if(mode==='pdf')make();
 }
 
-/* 2번·0번 계약서 화면: 만든 PDF(초안·정식·서명본)가 들어갈 3번 사건 안내 (복사는 서버가 PDF 만들 때 자동으로) */
+/* 2번·0번 계약서 화면: 만든 PDF(초안·정식·서명본)가 들어갈 1번 사건 안내 (복사는 서버가 PDF 만들 때 자동으로) */
 async function ctCaseNote(c){const el=$('ctCaseNote');if(!el)return;
   const go=async id=>{ctSetMode('case');try{if(!CS||!CS.slots)await csLoad(true);CS.newForm=null;CS.cur=null;await csLoadFiles(id)}catch(e){toast(e.message)}show('contract')};
   const paint=list=>{if(!el.isConnected)return;
-    if(list.length){el.innerHTML=`📁 [PDF 계약서 생성]을 누르면 <b>3. 사건 자료함</b> ${list.map(x=>`<a data-csgo="${esc(x.id)}">${esc(x.name)}</a>`).join(', ')}의 <b>3. 견적서및계약서</b> 칸에도 자동 저장돼요.`;
+    if(list.length){el.innerHTML=`📁 [PDF 계약서 생성]을 누르면 <b>1. 사건 자료함</b> ${list.map(x=>`<a data-csgo="${esc(x.id)}">${esc(x.name)}</a>`).join(', ')}의 <b>3. 견적서및계약서</b> 칸에도 자동 저장돼요.`;
       el.querySelectorAll('[data-csgo]').forEach(a=>a.onclick=()=>go(a.dataset.csgo));return}
-    el.innerHTML=`📁 <b>3. 사건 자료함</b>에 이 고객사 사건이 없어요. 사건을 만들면 PDF가 그 사건의 <b>3. 견적서및계약서</b> 칸에 자동 저장돼요.<button type="button" class="btn sec" id="ctMkCase">3. 사건 자료함에 사건 만들기</button>`;
+    el.innerHTML=`📁 <b>1. 사건 자료함</b>에 이 고객사 사건이 없어요. 사건을 만들면 PDF가 그 사건의 <b>3. 견적서및계약서</b> 칸에 자동 저장돼요.<button type="button" class="btn sec" id="ctMkCase">1. 사건 자료함에 사건 만들기</button>`;
     $('ctMkCase').onclick=async()=>{const nm=(c.f.sec==='ind'?String(c.f.caseName||'').replace(/\s*의\s*건$/,''):String(c.f.cname||'')).trim();
       if(!nm){toast(c.f.sec==='ind'?'"~의 건"을 먼저 넣고 저장해 주세요':'고객사명을 먼저 넣고 저장해 주세요');return}
       const d=ctToday();try{toast('사건 만드는 중…');const r=await call('rsCreate',TOKEN,{name:`${d.replace(/-/g,'').slice(2)}.${nm}`,cname:nm,date:d,kind:'랜섬웨어'});
-        await call('rsSave',TOKEN,r.case.id,{contracts:[c.id]});CS=null;paint([{id:r.case.id,name:r.case.name}]);toast('3. 사건 자료함에 사건을 만들었어요')}catch(e){toast(e.message)}}};
+        await call('rsSave',TOKEN,r.case.id,{contracts:[c.id]});CS=null;paint([{id:r.case.id,name:r.case.name}]);toast('1. 사건 자료함에 사건을 만들었어요')}catch(e){toast(e.message)}}};
   try{const r=await call('rsForCt',TOKEN,c.id);paint(r.cases||[])}catch(e){}}
 
-/* ═══════ 3. 사건 자료함 ═══════
+/* ═══════ 1. 사건 자료함 ═══════
    사건 하나 = 드라이브 폴더 하나(칸 8개). 파일은 드라이브의 칸 폴더에 직접 넣고, 여기서는 칸별 목록·받기·옮기기·지우기만 함.
    전체 다운로드는 드라이브 폴더를 열어 "다운로드"(드라이브가 zip으로 묶어 줌). */
 let CS=null;const CS_OPEN={},CS_CACHE={},CS_GONE=new Set();   // CS_GONE: 이 화면에서 지운 사건 (늦게 도착한 목록 응답이 되살리지 않게)
@@ -1788,7 +1788,7 @@ async function csView(m,head){
     if(!ctHere('case'))return;}
   const re=()=>csView(m,head),q=(CS.q||'').trim(),k=CS.cur;
   const list=CS.cases.filter(x=>!q||[x.name,x.cname,x.id].join(' ').includes(q));
-  m.innerHTML=head+`<div class="ctmode"><b>3. 사건 자료함</b> · 사건을 만들면 드라이브 '${esc(CS.rootName)}' 안에 폴더와 칸 ${CS.slots.length}개가 자동으로 생겨요 · 파일은 드라이브의 칸 폴더에 직접 넣어요</div>
+  m.innerHTML=head+`<div class="ctmode"><b>1. 사건 자료함</b> · 사건을 만들면 드라이브 '${esc(CS.rootName)}' 안에 폴더와 칸 ${CS.slots.length}개가 자동으로 생겨요 · 파일은 드라이브의 칸 폴더에 직접 넣어요</div>
   <div class="cs-grid"><div class="card cs-left">
     <input id="csQ" class="fld" placeholder="사건·고객사 검색" value="${esc(q)}" style="margin:0 0 8px">
     <button class="btn" id="csNewBtn" style="width:100%;margin-bottom:6px">+ 새 사건</button>
@@ -1991,9 +1991,9 @@ async function csZipAll(k){
 }
 
 /* 상단 큰 구분: 1. 매출 대시보드 / 2. 복구 프로젝트 (관리자만 보임).
-   복구 프로젝트의 아래탭(매출 대시보드 아래탭과 같은 모양): 2. 계약서 / 3. 사건 자료함 / 4. 결과보고서 / 0. 법인_개인계약서 */
+   복구 프로젝트의 아래탭(매출 대시보드 아래탭과 같은 모양): 1. 사건 자료함 / 2. 계약서 / 4. 결과보고서 / 0. 법인_개인계약서 */
 let CT_LAST='home';
-const CT_SUBS=[['corp','2. 계약서'],['case','3. 사건 자료함'],['rep','4. 결과보고서'],['ind','0. 법인_개인계약서']];
+const CT_SUBS=[['case','1. 사건 자료함'],['corp','2. 계약서'],['rep','4. 결과보고서'],['ind','0. 법인_개인계약서']];   // 3번은 비워 둠
 function ctSec(on){const s=document.getElementById('secsw');if(!s)return;s.hidden=!on;
   if(on&&!ctSec.pre){ctSec.pre=1;setTimeout(csPrefetch,4000)}   // 관리자: 사건 자료함을 뒤에서 미리 받아 둠
   s.querySelectorAll('button').forEach(b=>{if(b.dataset.s!=='sales')b.remove()});
@@ -2003,9 +2003,9 @@ function ctSec(on){const s=document.getElementById('secsw');if(!s)return;s.hidde
   n2.innerHTML=on?CT_SUBS.map(([md,l])=>`<button data-md="${md}">${l}</button>`).join(''):'';
   n2.onclick=e=>{const b=e.target.closest('button');if(!b)return;const md=b.dataset.md;if(TAB!=='contract'||md!==CT_MODE){ctSetMode(md);show('contract')}};
   s.onclick=e=>{const b=e.target.closest('button');if(!b)return;
-    if(b.dataset.s==='recov'){if(TAB!=='contract')show('contract')}   // 마지막으로 보던 아래탭으로
+    if(b.dataset.s==='recov'){if(TAB!=='contract'){if(!ctSec.seen)ctSetMode('case');show('contract')}}   // 처음엔 1. 사건 자료함, 그다음부턴 마지막으로 보던 아래탭
     else if(TAB==='contract')show(CT_LAST)};}
-function ctSecShow(t){const ct=t==='contract';if(!ct)CT_LAST=t;
+function ctSecShow(t){const ct=t==='contract';if(!ct)CT_LAST=t;else ctSec.seen=1;
   const n=document.getElementById('nav');if(n)n.style.display=ct?'none':'';
   const n2=document.getElementById('nav2');if(n2){n2.style.display=ct?'':'none';n2.querySelectorAll('button').forEach(b=>b.classList.toggle('on',ct&&b.dataset.md===CT_MODE))}
   document.querySelectorAll('#secsw button').forEach(b=>b.classList.toggle('on',b.dataset.s==='sales'?!ct:ct));}
