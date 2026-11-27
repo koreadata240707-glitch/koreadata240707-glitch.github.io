@@ -484,7 +484,7 @@ tr.click{cursor:pointer}
 .hk-wrap{overflow:auto;max-height:calc(100vh - 260px);border:1px solid var(--line);border-radius:10px;background:#fff;-webkit-overflow-scrolling:touch}
 table.hk{border-collapse:separate;border-spacing:0;font-size:12.5px;min-width:100%}
 table.hk th,table.hk td{border-right:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;padding:5px 8px;white-space:nowrap;background:#fff}
-table.hk th{min-width:64px;position:sticky;top:0;background:#f1f5f9;z-index:2;font-size:11.5px;white-space:pre-line;text-align:center;vertical-align:bottom;line-height:1.35}
+table.hk th{min-width:64px;position:sticky;top:0;background:#f1f5f9;z-index:2;font-size:11.5px;white-space:pre;text-align:center;vertical-align:bottom;line-height:1.35}
 table.hk td.n{text-align:right;font-variant-numeric:tabular-nums}table.hk td.neg{color:#dc2626}
 table.hk td.calc{background:#f8fafc;color:#475569}table.hk td.in{cursor:pointer}table.hk td.in.y{background:#fefce8}
 table.hk td.in:hover{box-shadow:inset 0 0 0 2px #93c5fd}table.hk td.ox{text-align:center;min-width:42px}table.hk td.saving{opacity:.45}
@@ -492,6 +492,14 @@ table.hk .co{position:sticky;left:0;z-index:1;box-shadow:1px 0 0 #e5e7eb}table.h
 table.hk tr.hk-total td{background:#eef2ff;font-weight:700;color:#1e3a8a}table.hk tr.hk-total td.neg{color:#dc2626}
 table.hk td input{width:100%;min-width:110px;margin:0;padding:3px 6px;font-size:12.5px;box-sizing:border-box}
 @media (max-width:700px){.hk-wrap{max-height:calc(100vh - 230px)}table.hk{font-size:12px}table.hk .co{max-width:130px;overflow:hidden;text-overflow:ellipsis}}
+.hk-year{display:inline-flex;gap:6px;align-items:center}.hk-year[hidden]{display:none}.hk-year input{width:110px;margin:0;padding:7px 8px;font-size:14px}
+.cs-acts{gap:6px}.cs-acts .btn{padding:6px 10px;font-size:12.5px;line-height:1.3;border-radius:8px;white-space:nowrap}
+@media (min-width:701px){.cs-head{flex-wrap:wrap}.cs-acts{flex-wrap:nowrap}}
+.hk-pan{display:inline-flex;gap:6px;margin-left:auto}.hk-pan .btn{padding:7px 12px}
+.hk-wrap{cursor:grab}.hk-wrap.drag{cursor:grabbing;user-select:none}.hk-wrap.drag td{cursor:grabbing}
+.hk-box.hk-full{position:fixed;inset:0;z-index:900;background:var(--bg,#f5f7fb);padding:10px 12px;display:flex;flex-direction:column}
+.hk-box.hk-full .hk-wrap{flex:1;max-height:none;min-height:0}.hk-box.hk-full .hk-sum{margin-bottom:8px}
+@media (max-width:700px){.hk-pan{margin-left:0}}
 </style>
 <style>th.th2l{white-space:pre-line}@media (min-width:701px){th.dcol,td.dcol{display:none}}#segK{flex-wrap:wrap}</style><style>
 .bellw{position:relative}.bell{position:relative;border:1px solid var(--line);background:#fff;border-radius:10px;width:38px;height:33px;cursor:pointer;display:grid;place-items:center;padding:0}
@@ -614,7 +622,7 @@ table.hk td input{width:100%;min-width:110px;margin:0;padding:3px 6px;font-size:
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='5.8';
+const APP_VER='5.9';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -1904,8 +1912,8 @@ function csDetail(k){
   const F=CS.files||{},linked=(k.contracts||[]);
   const cs=csAllContracts(),lab=x=>`${x.id} · ${x.sec==='ind'?(ctCase(x.caseName)||'법인_개인'):(x.cname||'')}`;
   return `<div class="card"><div class="cs-head"><div><h2>${esc(k.name)}</h2><p>${esc(k.id)} · 자료 ${k.count||0}개 · ${csSize(k.bytes)} · ${k.filled||0}/${CS.slots.length}칸 · 수정 ${esc(k.updated||'')}</p></div>
-    <div class="cs-acts"><a class="btn" style="background:#0f766e" href="${esc(CS.folderUrl)}" target="_blank" rel="noopener">📂 드라이브 바로가기</a><button class="btn" id="csZip" style="background:#1d4ed8">📦 전체 파일 다운로드(zip)</button>
-      <button class="btn sec" id="csRefresh">↻ 새로고침</button><button class="btn sec" id="csToRp">결과보고서 만들기 →</button><button class="btn sec" id="csRemove" style="color:#b91c1c">사건 지우기</button></div></div>
+    <div class="cs-acts"><a class="btn" style="background:#0f766e" href="${esc(CS.folderUrl)}" target="_blank" rel="noopener" title="드라이브에서 이 사건 폴더 열기">📂 드라이브</a><button class="btn" id="csZip" style="background:#1d4ed8" title="전체 파일 다운로드(zip)">📦 전체 받기(zip)</button>
+      <button class="btn sec" id="csRefresh">↻ 새로고침</button><button class="btn sec" id="csToRp" title="이 사건으로 결과보고서 만들기">결과보고서 →</button><button class="btn sec" id="csRemove" style="color:#b91c1c">사건 지우기</button></div></div>
     <div class="ctform"><div class="ctrow cs-info"><label>고객사명<input id="cs_cname" value="${esc(k.cname||'')}"></label><label>사건일<input id="cs_date" type="date" value="${esc(k.date||'')}"></label>
       <label>종류<select id="cs_kind">${['랜섬웨어','데이터 복구','기타'].map(x=>`<option${k.kind===x?' selected':''}>${x}</option>`).join('')}</select></label>
       <label>메모<input id="cs_memo" value="${esc(k.memo||'')}" placeholder="예: 협상 진행 중"></label></div>
@@ -2008,7 +2016,7 @@ async function csZipAll(k){
 /* ═══════ 9. 누적 계약 진행사항 ═══════
    구글 시트 '연도별_HK정산'(2026.HK · 2025.HK …)을 그대로 보여 줌. 노란(입력) 칸을 눌러 고치면 그 칸만 시트에 바로 저장되고,
    계산 칸(공급가액·부가세·수익 등)은 시트 수식이 계산함. 합친 칸(1-1차·1-2차)도 시트처럼 합쳐서 보여 줌 */
-let HK=null,HK_BUSY=false;
+let HK=null,HK_BUSY=false,HK_FULL=false,HK_X=0,hkFit=()=>{},hkUp=()=>{},hkEsc=()=>{};
 const hkNum=s=>{const t=String(s==null?'':s).replace(/[,\s원₩]/g,'');return /^-?\d+(\.\d+)?$/.test(t)?Number(t):null};
 const hkFmt=n=>(n<0?'-':'')+Math.abs(Math.round(n)).toLocaleString('ko-KR');
 const hkKey=l=>String(l||'').replace(/\s/g,'');
@@ -2040,18 +2048,47 @@ async function hkView(m,head){
   const body=T.rows.map(x=>`<tr data-row="${x.r}">${C.map((c,i)=>{const k=x.r+':'+c.c;if(skip[k])return '';const sp=span[k],v=x.cells[i],calc=x.calc[i],n=hkNum(v);
     const cls=[i===coI?'co':'',calc?'calc':'in',!calc&&yellow(i)?'y':'',n!==null||/%$/.test(v)?'n':'',n!==null&&n<0?'neg':'',hkIsOX(c.label)?'ox':''].filter(Boolean).join(' ');
     return `<td class="${cls}"${sp&&sp.rs>1?` rowspan="${sp.rs}"`:''}${sp&&sp.cs>1?` colspan="${sp.cs}"`:''}${calc?'':` data-r="${x.r}" data-c="${c.c}" data-i="${i}"`} title="${esc(calc?'계산 칸 (시트 수식)':'눌러서 고치기')}">${esc(v)}</td>`}).join('')}</tr>`).join('');
-  m.innerHTML=head+top+`<div class="hk-bar"><select id="hkSheet">${(T.sheets||[]).map(n=>`<option${n===T.name?' selected':''}>${esc(n)}</option>`).join('')}</select>
+  m.innerHTML=head+top+`<div class="hk-box${HK_FULL?' hk-full':''}" id="hkBox"><div class="hk-bar"><select id="hkSheet">${(T.sheets||[]).map(n=>`<option${n===T.name?' selected':''}>${esc(n)}</option>`).join('')}</select>
     <button class="btn" id="hkAdd">+ 줄 추가</button><button class="btn sec" id="hkRe">↻ 새로고침</button>
-    ${T.url?`<a class="btn sec" href="${esc(T.url)}" target="_blank" rel="noopener" style="text-decoration:none">📄 시트에서 열기 ↗</a>`:''}<span class="muted" style="font-size:12px">${T.rows.length}건</span></div>
+    <button class="btn sec" id="hkYear">+ 연도 추가</button><span class="hk-year" id="hkYearBox" hidden><input id="hkYearIn" type="number" inputmode="numeric" min="2018" max="${new Date().getFullYear()+1}" placeholder="예: 2023"><button class="btn" id="hkYearGo">만들기</button></span>
+    ${T.url?`<a class="btn sec" href="${esc(T.url)}" target="_blank" rel="noopener" style="text-decoration:none">📄 시트에서 열기 ↗</a>`:''}<span class="muted" style="font-size:12px">${T.rows.length}건</span>
+    <span class="hk-pan"><button class="btn sec" id="hkLeft" title="표를 왼쪽으로">◀</button><button class="btn sec" id="hkRight" title="표를 오른쪽으로">▶</button><button class="btn sec" id="hkFull">${HK_FULL?'✕ 작게 보기':'⛶ 크게 보기'}</button></span></div>
   ${chips.length?`<div class="hk-sum">${chips.map(x=>`<div>${esc(x.l)}<b class="${x.v<0?'neg':''}">${hkFmt(x.v)}</b></div>`).join('')}</div>`:''}
   <div class="hk-wrap"><table class="hk"><tbody><tr class="hk-h">${th}</tr>${tot}${body||`<tr><td colspan="${N}" class="muted" style="padding:14px">아직 줄이 없어요. [+ 줄 추가]를 눌러 주세요</td></tr>`}</tbody></table></div>
-  <p class="muted" style="font-size:12px;margin:8px 0 0">회색 칸은 시트 수식이 계산해요. 계약서·입금·계산서 칸은 누를 때마다 ㅇ/빈칸이 바뀌어요. 시트에서 직접 고친 내용은 [↻ 새로고침]하면 보여요.</p>`;
+  <p class="muted" style="font-size:12px;margin:8px 0 0">회색 칸은 시트 수식이 계산해요. 계약서·입금·계산서 칸은 누를 때마다 ㅇ/빈칸이 바뀌어요. 시트에서 직접 고친 내용은 [↻ 새로고침]하면 보여요. 표는 ◀ ▶ 버튼이나 마우스로 끌어서 옆으로 옮길 수 있어요.</p></div>`;
   $('hkSheet').onchange=async e=>{const n=e.target.value;m.querySelector('.hk-wrap').style.opacity=.5;try{await hkLoad(n);re()}catch(err){toast(err.message);re()}};
   $('hkRe').onclick=async()=>{toast('시트를 다시 읽는 중…');try{await hkLoad(T.name);re();toast('새로 불러왔어요')}catch(e){toast(e.message)}};
   $('hkAdd').onclick=async()=>{if(HK_BUSY)return;HK_BUSY=true;$('hkAdd').disabled=true;toast('줄을 추가하는 중…');
     try{const r=await call('hkAdd',TOKEN,T.name);HK=r;HK_BUSY=false;re();const td=m.querySelector(`tr[data-row="${r.added}"] td[data-i="${coI}"]`);if(td){td.scrollIntoView({block:'center'});hkEdit(td,m,head)}toast('줄을 추가했어요 · 업체명부터 넣어 주세요')}
     catch(e){toast(e.message);const b=$('hkAdd');if(b)b.disabled=false}finally{HK_BUSY=false}};
   m.querySelectorAll('td[data-r]').forEach(td=>td.onclick=()=>hkEdit(td,m,head));
+  // 옆으로 옮기기: ◀ ▶ · 마우스로 끌기 · 크게 보기(창 전체) · 표 높이를 화면에 맞춰 아래 가로 막대가 늘 보이게
+  const wr=m.querySelector('.hk-wrap');
+  if(wr){wr.scrollLeft=HK_X||0;wr.onscroll=()=>{HK_X=wr.scrollLeft};
+    const fit=()=>{if(!wr.isConnected)return;if(HK_FULL){wr.style.maxHeight='';return}   // 첫 화면에서 표 아래쪽(가로 막대)까지 다 보이게: 남은 높이만큼
+      const top=wr.getBoundingClientRect().top+scrollY,hd=document.querySelector('header'),left=innerHeight-top-14;
+      wr.style.maxHeight=(left>=300?left:Math.max(260,innerHeight-((hd&&hd.offsetHeight)||0)-60))+'px'};
+    fit();window.removeEventListener('resize',hkFit);hkFit=fit;window.addEventListener('resize',hkFit);
+    $('hkLeft').onclick=()=>wr.scrollBy({left:-wr.clientWidth*0.6,behavior:'smooth'});$('hkRight').onclick=()=>wr.scrollBy({left:wr.clientWidth*0.6,behavior:'smooth'});
+    let dx=null,moved=false;
+    wr.onmousedown=e=>{if(e.button!==0||e.target.closest('input,select,button,a'))return;dx={x:e.clientX,y:e.clientY,l:wr.scrollLeft,t:wr.scrollTop};moved=false};
+    hkUp=()=>{if(dx&&moved)setTimeout(()=>{moved=false},0);dx=null;wr.classList.remove('drag')};
+    wr.onmousemove=e=>{if(!dx)return;const mx=e.clientX-dx.x,my=e.clientY-dx.y;if(!moved&&Math.abs(mx)+Math.abs(my)<6)return;moved=true;wr.classList.add('drag');wr.scrollLeft=dx.l-mx;wr.scrollTop=dx.t-my;e.preventDefault()};
+    wr.addEventListener('click',e=>{if(moved){e.stopPropagation();e.preventDefault()}},true);}   // 끌기 끝난 클릭은 칸 고치기로 안 넘김
+  $('hkFull').onclick=()=>{HK_FULL=!HK_FULL;re()};
+  hkEsc=()=>{HK_FULL=false;re()};
+  if(!hkView.once){hkView.once=1;window.addEventListener('mouseup',()=>hkUp());   // 한 번만 붙임 (다른 화면의 키·마우스 처리를 덮어쓰지 않게)
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'&&HK_FULL&&ctHere('hk')&&!(document.activeElement&&document.activeElement.tagName==='INPUT'))hkEsc()});}
+  // 연도 시트 만들기 (2018년 ~ 내년): 가장 최근 연도 시트의 머리 줄·서식·계산식을 복사하고 자료는 빈 10줄
+  const yb=$('hkYearBox'),yi=$('hkYearIn');
+  $('hkYear').onclick=()=>{yb.hidden=!yb.hidden;if(!yb.hidden){const ys=(T.sheets||[]).map(n=>+String(n).slice(0,4)).filter(Boolean);yi.value=ys.length?Math.min(...ys)-1:'';yi.focus()}};
+  const mk=async()=>{const y=String(yi.value||'').trim(),max=new Date().getFullYear()+1;
+    if(!/^\d{4}$/.test(y)||+y<2018||+y>max){toast(`2018년부터 ${max}년까지만 만들 수 있어요`);yi.focus();return}
+    if((T.sheets||[]).includes(y+'.HK')){toast(`'${y}.HK' 시트가 이미 있어요`);return}
+    if(HK_BUSY)return;HK_BUSY=true;$('hkYearGo').disabled=true;toast(`${y}.HK 시트를 만드는 중…`);
+    try{HK=await call('hkAddYear',TOKEN,y);HK_BUSY=false;re();toast(`${y}.HK 시트를 만들었어요 · [+ 줄 추가]로 넣으면 돼요`)}
+    catch(e){toast(e.message);const b=$('hkYearGo');if(b)b.disabled=false}finally{HK_BUSY=false}};
+  $('hkYearGo').onclick=mk;yi.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();mk()}};
 }
 async function hkSave(td,m,head,val){
   if(HK_BUSY){toast('저장 중이에요. 잠시 뒤 다시 눌러 주세요');return}
@@ -2074,9 +2111,9 @@ function hkEdit(td,m,head){
   inp.onblur=()=>fin(true);
 }
 /* 상단 큰 구분: 1. 매출 대시보드 / 2. 복구 프로젝트 (관리자만 보임).
-   복구 프로젝트의 아래탭(매출 대시보드 아래탭과 같은 모양): 1. 사건 자료함 / 2. 계약서 / 4. 결과보고서 / 0. 법인_개인계약서 */
+   복구 프로젝트의 아래탭(매출 대시보드 아래탭과 같은 모양): 1. 사건 자료함 / 2. 계약서 / 4. 결과보고서 / 9. 누적 계약 진행사항 / 0. 법인_개인계약서 */
 let CT_LAST='home';
-const CT_SUBS=[['case','1. 사건 자료함'],['corp','2. 계약서'],['rep','4. 결과보고서'],['ind','0. 법인_개인계약서'],['hk','9. 누적 계약 진행사항']];   // 3번은 비워 둠
+const CT_SUBS=[['case','1. 사건 자료함'],['corp','2. 계약서'],['rep','4. 결과보고서'],['hk','9. 누적 계약 진행사항'],['ind','0. 법인_개인계약서']];   // 3번은 비워 둠
 function ctSec(on){const s=document.getElementById('secsw');if(!s)return;s.hidden=!on;
   if(on&&!ctSec.pre){ctSec.pre=1;setTimeout(csPrefetch,4000)}   // 관리자: 사건 자료함을 뒤에서 미리 받아 둠
   s.querySelectorAll('button').forEach(b=>{if(b.dataset.s!=='sales')b.remove()});
