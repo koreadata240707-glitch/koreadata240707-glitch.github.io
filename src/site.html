@@ -614,6 +614,7 @@ table.hk th.num{min-width:98px}   /* 금액 칸: -10,000,000,000(100억)까지 �
       <span class="bellw"><button class="bell" id="bellBtn" title="알림" onclick="toggleBell()"><svg viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="bcnt" id="bellCnt" hidden></span></button><div class="bpanel" id="bellPanel" hidden></div></span>
       <button class="bell mmore" title="메뉴" onclick="event.stopPropagation();document.getElementById('hbtns').classList.toggle('show')">⋯</button>
       <span class="hbtns" id="hbtns">
+      <button class="btn-ghost" id="staffBtn" hidden onclick="show('staff')">직원 관리</button>
       <button class="btn-ghost" onclick="openPwModal(false)">비밀번호 변경</button>
       <button class="btn-ghost" onclick="refreshData()">새로고침</button>
       <button class="btn-ghost" onclick="checkUpdate(true)">업데이트</button>
@@ -629,7 +630,7 @@ table.hk th.num{min-width:98px}   /* 금액 칸: -10,000,000,000(100억)까지 �
 
 <script>
 // 화면 버전: 화면(src/site.html)을 고쳐 올릴 때마다 0.1씩 올려 주세요 (업데이트 버튼·머리글에 표시)
-const APP_VER='6.0';
+const APP_VER='6.1';
 
 /* 휴대폰·폴드: 표를 카드로 바꾸기 위한 표시(머리글 이름을 칸마다 붙임). PC 화면에는 영향 없음 */
 const M_WIDE=['상품명','옵션명','상품','주문번호','고객','고객명','메모','사유','반품사유','입고 배치(차수)','제품넘버','시리얼','연락처','주소'];
@@ -668,7 +669,7 @@ const TABS = [
   {id:'ads', label:'광고', need:'광고 데이터 있음'},
   {id:'costs', label:'원가·마진', admin:true},
   {id:'warranty', label:'보증·교환'},
-  {id:'contract', label:'계약서', admin:true},
+  {id:'contract', label:'계약서'},
   {id:'staff', label:'직원 관리', admin:true},
 ];
 let TOKEN = null, ME = null, DATA = null, TAB = 'home', charts = {};
@@ -810,6 +811,7 @@ const CT_FL={cname:'고객사명',bizno:'사업자등록번호',ceo:'대표자�
 const CT_NEED=['cname','bizno','ceo','addr','date'];
 /* 0. 법인_개인계약서: 갑 = 법인(KD·KDRC), 을 = 개인사업자(474·184). 2. 계약서와 같은 화면·흐름을 모드로 나눠 씀 */
 const CT_NEED_IND=['cname','bizno','ceo','addr','date','caseName'];
+function ctAdm(){return !!(ME&&ME.role==='관리자')}   // 직원은 1·2·4번만 (0번·9번·발행 승인·양식·직인은 관리자)
 let CT_MODE='corp';const CT_KEEP={corp:{},ind:{},rep:{},case:{}};
 function ctIndKeys(){const ks=Object.keys((CT&&CT.inds)||{}),pref=['474','184'];return pref.filter(k=>ks.includes(k)).concat(ks.filter(k=>!pref.includes(k)))}
 function ctIndOur(o){return /^김영준/.test(o&&o.mgr||'')}
@@ -1049,6 +1051,7 @@ function ctIsFinal(c){return ['승인','발행','체결'].includes(c.status)}
 /* ---------- 화면 ---------- */
 async function renderContract(m,head){
   if(head!==undefined)renderContract._head=head;head=renderContract._head||'';
+  if(!ctAdm()&&['hk','ind'].includes(CT_MODE)){ctSetMode('case');ctSecShow('contract')}   // 직원: 0·9번은 열지 않음
   if(CT_MODE==='hk'){hkView(m,head);return;}   // 9번은 구글 시트만 씀 (계약서 자료 필요 없음)
   const ctReady=()=>CT&&CT.templates&&Object.keys(CT.templates).length;
   if(CT_MODE==='case'&&!ctReady()){   // 사건 자료함은 계약서 자료(4초쯤) 없이 먼저 그림 → 계약서 목록은 받는 대로 채움
@@ -1066,7 +1069,7 @@ async function renderContract(m,head){
   if(!CT.cur)CT.cur=ctBlank();
   const sub=CT.sub||'new',ind=CT_MODE==='ind';
   const nav=(ind?`<div class="ctmode"><b>0. 법인_개인계약서</b> · 갑 = 법인((주)한국데이터 / 주식회사 한국데이터복구센터), 을 = 개인사업자(474 / 184)</div>`:'')
-    +`<div class="ctsub">${[['new',CT.cur.id?'계약서 작성 · '+CT.cur.id:'새 계약서'],['list','계약 이력 ('+CT.contracts.filter(ctMineList).length+')'],['tpl','양식·직인 관리']].map(([k,l])=>`<button data-cs="${k}" class="${k===sub?'on':''}">${esc(l)}</button>`).join('')}</div>`;
+    +`<div class="ctsub">${[['new',CT.cur.id?'계약서 작성 · '+CT.cur.id:'새 계약서'],['list','계약 이력 ('+CT.contracts.filter(ctMineList).length+')'],['tpl','양식·직인 관리']].filter(([k])=>k!=='tpl'||ctAdm()).map(([k,l])=>`<button data-cs="${k}" class="${k===sub?'on':''}">${esc(l)}</button>`).join('')}</div>`;
   const noTpl=!Object.keys(CT.templates).length?`<div class="banner err">아직 계약서 양식이 서버에 없어요. [양식·직인 관리]에서 원본 양식을 올려 주세요.</div>`:'';
   m.innerHTML=head+nav+noTpl+`<div id="ctBody"></div>`;
   m.querySelector('.ctsub').onclick=e=>{const k=e.target.closest('[data-cs]');if(!k)return;CT.sub=k.dataset.cs;renderContract(m)};
@@ -1200,7 +1203,7 @@ function ctApprView(c,m){
   const act=[];
   if(!c.id)html+='<div class="muted" style="font-size:12px;margin-top:6px">먼저 저장해야 검토를 요청할 수 있어요. 승인 전 PDF에는 "검토용 초안" 표시가 들어가고 직인이 빠져요.</div>';
   else if(c.status==='작성중')act.push(['request','검토 요청']);
-  else if(c.status==='검토요청'){if(!a.legal)act.push(['legal','법률 검토 완료']);if(!a.tax)act.push(['tax','세무 검토 완료']);if(a.legal&&a.tax)act.push(['approve','발행 승인']);act.push(['reject','반려(다시 작성)']);}
+  else if(c.status==='검토요청'){if(!a.legal)act.push(['legal','법률 검토 완료']);if(!a.tax)act.push(['tax','세무 검토 완료']);if(a.legal&&a.tax&&ctAdm())act.push(['approve','발행 승인']);if(ctAdm())act.push(['reject','반려(다시 작성)']);}
   if(c.id&&!['체결','취소'].includes(c.status))act.push(['cancel','계약 취소']);
   if(c.id&&c.status==='취소'){act.push(['reopen','다시 작성']);act.push(['delete','계약서 지우기'])}   // 지우기는 취소된 계약서만
   html+=act.length?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${act.map(([k,l])=>`<button class="btn ${k==='approve'?'':'sec'}" style="padding:6px 10px;font-size:12.5px${k==='delete'?';color:#b91c1c':''}" data-ca="${k}">${l}</button>`).join('')}</div>`:'';
@@ -2140,7 +2143,7 @@ function ctSec(on){const s=document.getElementById('secsw');if(!s)return;s.hidde
   const rb=document.createElement('button');rb.dataset.s='recov';rb.textContent='2. 복구 프로젝트';s.appendChild(rb);
   let n2=document.getElementById('nav2');
   if(!n2){const n=document.getElementById('nav');n2=document.createElement('nav');n2.id='nav2';n2.style.display='none';if(n)n.after(n2);}
-  n2.innerHTML=on?CT_SUBS.map(([md,l])=>`<button data-md="${md}">${l}</button>`).join(''):'';
+  n2.innerHTML=on?CT_SUBS.filter(([md])=>ctAdm()||!['hk','ind'].includes(md)).map(([md,l])=>`<button data-md="${md}">${l}</button>`).join(''):'';
   n2.onclick=e=>{const b=e.target.closest('button');if(!b)return;const md=b.dataset.md;if(TAB!=='contract'||md!==CT_MODE){ctSetMode(md);show('contract')}};
   s.onclick=e=>{const b=e.target.closest('button');if(!b)return;
     if(b.dataset.s==='recov'){if(TAB!=='contract'){if(!ctSec.seen)ctSetMode('case');show('contract')}}   // 처음엔 1. 사건 자료함, 그다음부턴 마지막으로 보던 아래탭
@@ -2153,7 +2156,8 @@ function ctSecShow(t){const ct=t==='contract';if(!ct)CT_LAST=t;else ctSec.seen=1
 /* ---------- 앱 ---------- */
 function buildNav(){
   const tabs=TABS.filter(t=>(!t.admin||ME.role==='관리자')&&(!t.need||Number((DATA.kpi||{})[t.need])===1));
-  document.getElementById('nav').innerHTML=tabs.filter(t=>t.id!=='contract').map(t=>`<button data-t="${t.id}">${t.label}</button>`).join('');
+  {const sb=document.getElementById('staffBtn');if(sb)sb.hidden=ME.role!=='관리자';}
+  document.getElementById('nav').innerHTML=tabs.filter(t=>t.id!=='contract'&&t.id!=='staff').map(t=>`<button data-t="${t.id}">${t.label}</button>`).join('');
   document.getElementById('nav').onclick=e=>{const t=e.target.dataset.t;if(t)show(t)};
   if(!tabs.some(t=>t.id===TAB))TAB='home';
   ctSec(tabs.some(t=>t.id==='contract'));
@@ -2233,7 +2237,7 @@ window.addEventListener('popstate',()=>{
   if(!DATA||!ME)return;
   const parts=decodeURIComponent(location.hash.slice(1)).split('/');
   const t=parts[0],a=parts[1],b=parts.slice(2).join('/');
-  const ok=[...document.querySelectorAll('nav button')].some(x=>x.dataset.t===t)||(t==='contract'&&ME.role==='관리자');
+  const ok=[...document.querySelectorAll('nav button')].some(x=>x.dataset.t===t)||t==='contract'||(t==='staff'&&ME.role==='관리자');
   const tab=ok?t:'home';
   if(tab==='costs'&&TAB==='costs'&&typeof costGo==='function'&&BOOK){
     let v={view:'list',f:CV.f};
